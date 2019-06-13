@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup Label="Version">
+    <VersionPrefix>1.0.0</VersionPrefix>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Directory.Build.props" />
+</Project>

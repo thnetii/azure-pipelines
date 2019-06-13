@@ -7,11 +7,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>THNETII.AzureDevOps.Pipelines.MSBuild</RootNamespace>
     <Product>TH-NETII Azure DevOps Pipelines MSBuild support class library</Product>
-    <Description>
-      Provides support functionality for usage in an Azure DevOps Pipelines execution.
+    <Description>Provides support functionality for usage in an Azure DevOps Pipelines execution.</Description>
+    <PackageDescription>
+$(Description)
 
-      E.g. the Azure DevOps MSBuild logger that logs MSBuild output in a format that is understood by Azure DevOps build agents.
-    </Description>
+E.g. the Azure DevOps MSBuild logger that logs MSBuild output in a format that is understood by Azure DevOps build agents.
+    </PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
