@@ -5,20 +5,18 @@ parameters:
   configurationDisplayName: Debug
   runtimeId:
   runtimeDisplayName:
-
-variables:
-- ${{ if eq(parameters.runtimeId, '') }}:
-  jobId: ${{ parameters.configurationId }}
-- ${{ if ne(parameters.runtimeId, '') }}:
-  jobId: ${{ parameters.configurationId }}-${{ parameters.runtimeId }}
-- ${{ if eq(parameters.runtimeDisplayName, '') }}:
-  jobDisplayName: ${{ parameters.configurationDisplayName }}
-- ${{ if ne(parameters.runtimeDisplayName, '') }}:
-  jobDisplayName: ${{ parameters.configurationDisplayName }} (${{ parameters.runtimeDisplayName }})
+  ${{ if eq(parameters.runtimeId, '') }}:
+    jobId: ${{ parameters.configurationId }}
+  ${{ if ne(parameters.runtimeId, '') }}:
+    jobId: ${{ parameters.configurationId }}-${{ parameters.runtimeId }}
+  ${{ if eq(parameters.runtimeDisplayName, '') }}:
+    jobDisplayName: ${{ parameters.configurationDisplayName }}
+  ${{ if ne(parameters.runtimeDisplayName, '') }}:
+    jobDisplayName: ${{ parameters.configurationDisplayName }} (${{ parameters.runtimeDisplayName }})
 
 jobs:
-- job: ${{ variables.jobId }}
-  displayName: ${{ variables.jobDisplayName }}
+- job: ${{ parameters.jobId }}
+  displayName: ${{ parameters.jobDisplayName }}
   pool: ${{ parameters.pool }}
   steps:
   - pwsh: Write-Host 'Hello World'
