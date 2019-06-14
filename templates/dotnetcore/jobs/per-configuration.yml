@@ -1,0 +1,28 @@
+parameters:
+  defaultPool:
+    vmImage: windows-2019
+  configurationId:
+  configurationDisplayName:
+  configurationValue:
+  includeWithoutRuntime: true
+  runtimes: []
+
+jobs:
+- ${{ if parameters.includeWithoutRuntime }}:
+  - template: per-agentPool.yml
+    parameters:
+      pool: ${{ parameters.defaultPool }}
+      configurationId: ${{ parameters.configurationId }}
+      configurationDisplayName: ${{ parameters.configurationDisplayName }}
+      configurationValue: ${{ parameters.configurationValue }}
+- ${{ each r in parameters.runtimes }}:
+  - template: per-agentPool.yml
+    parameters:
+      pool: ${{ r.pool }}
+      configurationId: ${{ parameters.configurationId }}
+      configurationDisplayName: ${{ parameters.configurationDisplayName }}
+      configurationValue: ${{ parameters.configurationValue }}
+      runtimeId: ${{ r.runtime }}
+      runtimeDisplayName: ${{ r.displayName }}
+      runtimeValue: ${{ r.value }}
+

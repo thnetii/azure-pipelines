@@ -1,0 +1,17 @@
+parameters:
+  defaultPool:
+    vmImage: windows-2019
+  configurations:         []
+  includeWithoutRuntime:  true
+  runtimes:               []
+
+jobs:
+- ${{ each c in parameters.configurations }}:
+  - template: jobs/per-configuration.yml
+    parameters:
+      defaultPool: ${{ parameters.defaultPool }}
+      configurationId: ${{ c.configuration }}
+      configurationDisplayName: ${{ c.displayName }}
+      configurationValue: ${{ c.value }}
+      includeWithoutRuntime: ${{ parameters.includeWithoutRuntime }}
+      runtimes: ${{ parameters.runtimes }}

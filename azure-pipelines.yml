@@ -1,1 +1,26 @@
 name: $(Date:yyyy-MM-dd)-rev$(Rev:r)
+
+resources:
+  repositories:
+  - repository: templates
+    type:       github
+    name:       thnetii/azure-pipelines
+
+variables:
+  defaultPool:
+    vmImage: windows-2019
+
+  configurations:
+  - configuration:  debug
+    displayName:    Debug
+    value:          Debug
+
+  - configuration:  release
+    displayName:    Release
+    value:          Release
+
+jobs:
+- template: templates/dotnetcore/azure-pipelines.yml@templates
+  parameters:
+    configurations: ${{ variables.configurations }}
+    defaultPool:    ${{ variables.defaultPool }}
