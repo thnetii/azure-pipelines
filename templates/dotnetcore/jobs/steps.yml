@@ -1,0 +1,30 @@
+parameters:
+  configuration:
+    id: default
+    argValue:
+  runtime:
+    id: default
+    argValue:
+  restore:
+    displayName: dotnet restore
+  build:
+    displayName: dotnet build
+  test:
+    displayName: dotnet test
+  pack:
+    displayName: dotnet pack
+  publish:
+    displayName: dotnet publish
+
+steps:
+# - task: DotNetCoreCLI@2
+- pwsh: Write-Host restore
+  displayName: ${{ parameters.restore.displayName }}
+- pwsh: Write-Host build
+  displayName: ${{ parameters.build.displayName }}
+- pwsh: Write-Host test
+  displayName: ${{ parameters.test.displayName }}
+- pwsh: Write-Host pack
+  displayName: ${{ parameters.pack.displayName }}
+- pwsh: Write-Host publish
+  displayName: ${{ parameters.publish.displayName }}

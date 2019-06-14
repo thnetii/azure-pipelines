@@ -1,0 +1,38 @@
+parameters:
+  job:
+    id: default
+    pool:
+      vmImage: windows-2019
+  configuration:
+    id: default
+    displayName:
+    argValue:
+  runtime:
+    id: default
+    displayName:
+    argValue:
+
+jobs:
+- job: ${{ parameters.job.id }}
+  displayName: ${{ parameters.job.displayName }}
+  pool: ${{ parameters.job.pool }}
+  variables:
+    ${{ if ne(parameters.runtime.argValue, '') }}:
+      runtimeDisplayName: --runtime ${{ parameters.runtime.argValue }}
+    ${{ if ne(parameters.configuration.argValue, '') }}:
+      configurationDisplayName: --configuration ${{ parameters.configuration.argValue }}
+  steps:
+  - template: steps.yml
+    parameters:
+      configuration: ${{ parameters.configuration }}
+      runtime: ${{ parameters.runtime }}
+      restore:
+        displayName: dotnet restore ${{ variables.runtimeDisplayName }}
+      build:
+        displayName: dotnet build ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}
+      test:
+        displayName: dotnet test ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}
+      pack:
+        displayName: dotnet pack ${{ variables.configurationDisplayName }}
+      publish:
+        displayName: dotnet publish ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}

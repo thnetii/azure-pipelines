@@ -1,26 +1,27 @@
 parameters:
-  pool:
-    vmImage: windows-2019
-  configurationId:    debug
-  configurationValue: debug
-  configurationDisplayName: Debug
-  runtimeId:
-  runtimeValue:
-  runtimeDisplayName:
+  configuration:
+    id: default
+    displayName:
+    argValue:
+  runtime:
+    id: default
+    displayName:
+    argValue:
+    pool:
+      vmImage: windows-2019
 
 jobs:
-- template: jobs.yml
+- template: job.yml
   parameters:
-    pool: ${{ parameters.pool }}
-    ${{ if eq(parameters.runtimeId, '') }}:
-      jobId: ${{ parameters.configurationId }}
-    ${{ if ne(parameters.runtimeId, '') }}:
-      jobId: ${{ parameters.configurationId }}_${{ parameters.runtimeId }}
-    ${{ if eq(parameters.runtimeDisplayName, '') }}:
-      jobDisplayName: ${{ parameters.configurationDisplayName }}
-    ${{ if ne(parameters.runtimeDisplayName, '') }}:
-      jobDisplayName: ${{ parameters.configurationDisplayName }} (${{ parameters.runtimeDisplayName }})
-    configurationId:    ${{ parameters.configurationId }}
-    configurationValue: ${{ parameters.configurationValue }}
-    runtimeId:          ${{ parameters.runtimeId }}
-    runtimeValue:       ${{ parameters.runtimeValue }}
+    job:
+      ${{ if eq(parameters.runtime.id, '') }}:
+        id: ${{ parameters.configuration.id }}
+      ${{ if ne(parameters.runtime.id, '') }}:
+        id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
+      ${{ if eq(parameters.runtime.displayName, '') }}:
+        displayName: ${{ parameters.configuration.displayName }}
+      ${{ if ne(parameters.runtime.displayName, '') }}:
+        displayName: ${{ parameters.configuration.displayName }} (${{ parameters.runtime.displayName }})
+      pool: ${{ parameters.runtime.pool }}
+    configuration:  ${{ parameters.configuration }}
+    runtime:        ${{ parameters.runtime }}
