@@ -5,6 +5,7 @@ resources:
   - repository: templates
     type:       github
     name:       thnetii/azure-pipelines
+    endpoint:   thnetii
 
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
