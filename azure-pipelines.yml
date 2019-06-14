@@ -6,13 +6,12 @@ resources:
     type:       github
     name:       thnetii/azure-pipelines
 
-variables:
-  - name: defaultPool
-    value:
-      vmImage: windows-2019
-
-  - name: configurations
-    value:
+jobs:
+- template: templates/dotnetcore/azure-pipelines.yml@templates
+  parameters:
+    defaultPool:
+      vmImage:        windows-2019
+    configurations:
     - configuration:  debug
       displayName:    Debug
       value:          Debug
@@ -20,9 +19,7 @@ variables:
     - configuration:  release
       displayName:    Release
       value:          Release
-
-  - name: runtimes
-    value:
+    runtimes:
     - runtime:      win10-x64
       value:        win10-x64
       displayName:  Windows 10, 64-bit
@@ -38,9 +35,3 @@ variables:
       displayName:  macOS, 64-bit
       pool:
         vmImage:    macOS-10.14
-
-jobs:
-- template: templates/dotnetcore/azure-pipelines.yml@templates
-  parameters:
-    configurations: ${{ variables.configurations }}
-    defaultPool:    ${{ variables.defaultPool }}
