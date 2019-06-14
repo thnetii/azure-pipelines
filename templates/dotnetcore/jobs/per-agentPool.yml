@@ -1,23 +1,26 @@
 parameters:
   pool:
     vmImage: windows-2019
-  configurationId:  debug
+  configurationId:    debug
+  configurationValue: debug
   configurationDisplayName: Debug
   runtimeId:
+  runtimeValue:
   runtimeDisplayName:
-  ${{ if eq(parameters.runtimeId, '') }}:
-    jobId: ${{ parameters.configurationId }}
-  ${{ if ne(parameters.runtimeId, '') }}:
-    jobId: ${{ parameters.configurationId }}-${{ parameters.runtimeId }}
-  ${{ if eq(parameters.runtimeDisplayName, '') }}:
-    jobDisplayName: ${{ parameters.configurationDisplayName }}
-  ${{ if ne(parameters.runtimeDisplayName, '') }}:
-    jobDisplayName: ${{ parameters.configurationDisplayName }} (${{ parameters.runtimeDisplayName }})
 
 jobs:
-- job: ${{ parameters.jobId }}
-  displayName: ${{ parameters.jobDisplayName }}
-  pool: ${{ parameters.pool }}
-  steps:
-  - pwsh: Write-Host 'Hello World'
-    displayName: Write Hello World
+- template: jobs.yml
+  parameters:
+    pool: ${{ parameters.pool }}
+    ${{ if eq(parameters.runtimeId, '') }}:
+      jobId: ${{ parameters.configurationId }}
+    ${{ if ne(parameters.runtimeId, '') }}:
+      jobId: ${{ parameters.configurationId }}-${{ parameters.runtimeId }}
+    ${{ if eq(parameters.runtimeDisplayName, '') }}:
+      jobDisplayName: ${{ parameters.configurationDisplayName }}
+    ${{ if ne(parameters.runtimeDisplayName, '') }}:
+      jobDisplayName: ${{ parameters.configurationDisplayName }} (${{ parameters.runtimeDisplayName }})
+    configurationId:    ${{ parameters.configurationId }}
+    configurationValue: ${{ parameters.configurationValue }}
+    runtimeId:          ${{ parameters.runtimeId }}
+    runtimeValue:       ${{ parameters.runtimeValue }}
