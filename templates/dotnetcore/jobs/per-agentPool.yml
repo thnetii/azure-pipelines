@@ -15,7 +15,7 @@ jobs:
     ${{ if eq(parameters.runtimeId, '') }}:
       jobId: ${{ parameters.configurationId }}
     ${{ if ne(parameters.runtimeId, '') }}:
-      jobId: ${{ parameters.configurationId }}-${{ parameters.runtimeId }}
+      jobId: ${{ parameters.configurationId }}_${{ parameters.runtimeId }}
     ${{ if eq(parameters.runtimeDisplayName, '') }}:
       jobDisplayName: ${{ parameters.configurationDisplayName }}
     ${{ if ne(parameters.runtimeDisplayName, '') }}:

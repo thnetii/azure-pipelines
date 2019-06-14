@@ -21,17 +21,17 @@ jobs:
       displayName:    Release
       value:          Release
     runtimes:
-    - runtime:      win10-x64
+    - runtime:      winx64
       value:        win10-x64
-      displayName:  Windows 10, 64-bit
+      displayName:  Windows, 64-bit
       pool:
         vmImage:    windows-2019
-    - runtime:      linux-x64
+    - runtime:      linuxx64
       value:        linux-x64
       displayName:  Linux, 64-bit
       pool:
         vmImage:    ubuntu-16.04
-    - runtime:      osx-x64
+    - runtime:      osxx64
       value:        osx.10.14-x64
       displayName:  macOS, 64-bit
       pool:
