@@ -2,22 +2,40 @@ parameters:
   defaultPool:
     vmImage: windows-2019
   configurations:
-  - id: default
-    displayName:
-    argValue:
-  includeWithoutRuntime:  true
-  runtimes:
-  - id: default
-    displayName:
-    argValue:
-    pool:
-      vmImage: windows-2019
+  - id:
 
 jobs:
 - ${{ each c in parameters.configurations }}:
   - template: jobs/per-configuration.yml
     parameters:
-      defaultPool: ${{ parameters.defaultPool }}
       configuration: ${{ c }}
-      includeWithoutRuntime: ${{ parameters.includeWithoutRuntime }}
-      runtimes: ${{ parameters.runtimes }}
+      ${{ if ne('', c.id) }}:
+        # artifactPrefix
+        ${{ if ne('', parameters.artifactPrefix) }}:
+          artifactPrefix: ${{ parameters.artifactPrefix }}-${{ c.id }}
+        ${{ if eq('', parameters.artifactPrefix) }}:
+          artifactPrefix: ${{ c.id }}
+        # artifactFolder
+        ${{ if ne('', parameters.artifactFolder) }}:
+          artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
+        ${{ if eq('', parameters.artifactFolder) }}:
+          artifactFolder: ${{ r.id }}
+      ${{ each stepGroup in ['build', 'test', 'pack', 'publish'] }}:
+        ${{ stepGroup }}:
+          ${{ if ne('', c.argValue) }}:
+            # displayNameSuffix
+            ${{ if ne('', parameters[stepGroup].displayNameSuffix) }}:
+              displayNameSuffix: ${{ parameters[stepGroup].displayNameSuffix }} --configuration ${{ c.argValue }}
+            ${{ if eq('', parameters[stepGroup].displayNameSuffix) }}:
+                displayNameSuffix: --configuration ${{ c.argValue }}
+            # arguments
+            ${{ if ne('', parameters[stepGroup].arguments) }}:
+              arguments: ${{ parameters[stepGroup].arguments }} --configuration ${{ c.argValue }}
+            ${{ if eq('', parameters[stepGroup].arguments) }}:
+              arguments: --configuration ${{ c.argValue }}
+          ${{ each pair in parameters[stepGroup] }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'configurations', 'configuration', 'artifactPrefix', 'build', 'test', 'pack', 'publish') }}:
+          ${{ pair.key }}: ${{ pair.value }}

@@ -1,11 +1,8 @@
 parameters:
-  defaultPool:
-    vmImage: windows-2019
   configuration:
     id: default
     displayName:
     argValue:
-  includeWithoutRuntime: true
   runtimes:
   - id: default
     displayName:
@@ -14,18 +11,38 @@ parameters:
       vmImage: windows-2019
 
 jobs:
-- ${{ if parameters.includeWithoutRuntime }}:
-  - template: per-agentPool.yml
-    parameters:
-      configuration: ${{ parameters.configuration }}
-      runtime:
-        id:
-        displayName:
-        argValue:
-        pool: ${{ parameters.defaultPool }}
 - ${{ each r in parameters.runtimes }}:
   - template: per-agentPool.yml
     parameters:
-      configuration: ${{ parameters.configuration }}
       runtime: ${{ r }}
+      ${{ if ne('', r.id) }}:
+        # artifactPrefix
+        ${{ if ne('', parameters.artifactPrefix) }}:
+          artifactPrefix: ${{ parameters.artifactPrefix }}-${{ r.id }}
+        ${{ if eq('', parameters.artifactPrefix) }}:
+          artifactPrefix: ${{ r.id }}
+        # artifactFolder
+        ${{ if ne('', parameters.artifactFolder) }}:
+          artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
+        ${{ if eq('', parameters.artifactFolder) }}:
+          artifactFolder: ${{ r.id }}
+      ${{ each stepGroup in ['restore', 'build', 'test', 'pack', 'publish'] }}:
+        ${{ stepGroup }}:
+          ${{ if ne('', r.argValue) }}:
+            # displayNameSuffix
+            ${{ if ne('', parameters[stepGroup].displayNameSuffix) }}:
+              displayNameSuffix: ${{ parameters[stepGroup].displayNameSuffix }} --runtime ${{ r.argValue }}
+            ${{ if eq('', parameters[stepGroup].displayNameSuffix) }}:
+                displayNameSuffix: --runtime ${{ r.argValue }}
+            # arguments
+            ${{ if ne('', parameters[stepGroup].arguments) }}:
+              arguments: ${{ parameters[stepGroup].arguments }} --runtime ${{ r.argValue }}
+            ${{ if eq('', parameters[stepGroup].arguments) }}:
+              arguments: --runtime ${{ r.argValue }}
+          ${{ each pair in parameters[stepGroup] }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'restore', 'build', 'test', 'pack', 'publish') }}:
+          ${{ pair.key }}: ${{ pair.value }}
 

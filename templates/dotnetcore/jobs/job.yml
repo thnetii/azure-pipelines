@@ -1,4 +1,6 @@
 parameters:
+  defaultPool:
+    vmImage: windows-2019
   job:
     id: default
     pool:
@@ -13,26 +15,29 @@ parameters:
     argValue:
 
 jobs:
-- job: ${{ parameters.job.id }}
-  displayName: ${{ parameters.job.displayName }}
-  pool: ${{ parameters.job.pool }}
-  variables:
-    ${{ if ne(parameters.runtime.argValue, '') }}:
-      runtimeDisplayName: --runtime ${{ parameters.runtime.argValue }}
-    ${{ if ne(parameters.configuration.argValue, '') }}:
-      configurationDisplayName: --configuration ${{ parameters.configuration.argValue }}
+- ${{ if ne('', parameters.job.id) }}:
+    job:        ${{ parameters.job.id }}
+  ${{ if eq('', parameters.job.id) }}:
+    job:        default
+  condition:    ${{ parameters.job.condition }}
+  displayName:  ${{ parameters.job.displayName }}
+  ${{ if parameters.job.pool }}:
+    pool:       ${{ parameters.job.pool }}
+  ${{ if not(parameters.job.pool) }}:
+    pool:       ${{ parameters.defaultPool }}
   steps:
-  - template: steps.yml
+  - template:   steps.yml
     parameters:
-      configuration: ${{ parameters.configuration }}
-      runtime: ${{ parameters.runtime }}
-      restore:
-        displayName: dotnet restore ${{ variables.runtimeDisplayName }}
-      build:
-        displayName: dotnet build ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}
-      test:
-        displayName: dotnet test ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}
       pack:
-        displayName: dotnet pack ${{ variables.configurationDisplayName }}
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget/${{ parameters.artifactFolder }}" ${{ parameters.pack.arguments }}'
+        ${{ each pair in parameters.pack }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
       publish:
-        displayName: dotnet publish ${{ variables.configurationDisplayName }} ${{ variables.runtimeDisplayName }}
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts/${{ parameters.artifactFolder }}" ${{ parameters.pack.arguments }}'
+        ${{ each pair in parameters.pack }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'pack', 'publish') }}:
+          ${{ pair.key }}: ${{ pair.value }}

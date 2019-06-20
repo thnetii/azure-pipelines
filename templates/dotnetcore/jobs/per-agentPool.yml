@@ -1,27 +1,50 @@
 parameters:
-  configuration:
-    id: default
-    displayName:
-    argValue:
-  runtime:
-    id: default
-    displayName:
-    argValue:
-    pool:
-      vmImage: windows-2019
+  defaultPool:
+    vmImage: windows-2019
 
 jobs:
 - template: job.yml
   parameters:
     job:
-      ${{ if eq(parameters.runtime.id, '') }}:
-        id: ${{ parameters.configuration.id }}
-      ${{ if ne(parameters.runtime.id, '') }}:
-        id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
-      ${{ if eq(parameters.runtime.displayName, '') }}:
+      # id
+      ${{ if eq('', parameters.runtime.id) }}:
+        ${{ if ne('', parameters.configuration.id) }}:
+          id: ${{ parameters.configuration.id }}
+        ${{ if eq('', parameters.configuration.id) }}:
+          id: defaultJob
+      ${{ if ne('', parameters.runtime.id, ) }}:
+        ${{ if ne('', parameters.configuration.id) }}:
+          id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
+        ${{ if eq('', parameters.configuration.id) }}:
+          id: ${{ parameters.runtime.id }}
+
+      # displayName
+      ${{ if eq('', parameters.runtime.displayName) }}:
         displayName: ${{ parameters.configuration.displayName }}
-      ${{ if ne(parameters.runtime.displayName, '') }}:
+      ${{ if ne('', parameters.runtime.displayName) }}:
         displayName: ${{ parameters.configuration.displayName }} (${{ parameters.runtime.displayName }})
-      pool: ${{ parameters.runtime.pool }}
+
+      # condition
+      ${{ if ne('', parameters.configuration.condition) }}:
+        ${{ if ne('', parameters.runtime.condition) }}:
+          condition: and(${{ parameters.configuration.condition }}, ${{ parameters.runtime.condition }})
+        ${{ if eq('', parameters.runtime.condition) }}:
+          condition: ${{ parameters.configuration.condition }}
+      ${{ if eq('', parameters.configuration.condition) }}:
+        ${{ if ne('', parameters.runtime.condition) }}:
+          condition: ${{ parameters.runtime.condition }}
+
+      # pool
+      ${{ if ne(null, parameters.runtime.pool) }}:
+        pool: ${{ parameters.runtime.pool }}
+      ${{ if eq(null, parameters.runtime.pool) }}:
+        pool: ${{ parameters.defaultPool }}
+
+      ${{ each pair in parameters.job }}:
+        ${{ if notIn(pair.key, 'id', 'displayName', 'condition', 'pool') }}:
+          ${{ pair.key }}: ${{ pair.value }}
     configuration:  ${{ parameters.configuration }}
     runtime:        ${{ parameters.runtime }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'job', 'configuration', 'runtime') }}:
+        ${{ pair.key }}: ${{ pair.value }}

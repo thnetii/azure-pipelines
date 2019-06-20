@@ -1,30 +1,99 @@
 parameters:
-  configuration:
-    id: default
-    argValue:
-  runtime:
-    id: default
-    argValue:
   restore:
-    displayName: dotnet restore
+    displayNameSuffix:
+    projects: '*.sln'
+    arguments:
+    skip:     false
   build:
-    displayName: dotnet build
+    displayNameSuffix:
+    projects: '*.sln'
+    arguments:
+    skip:     false
   test:
-    displayName: dotnet test
+    displayNameSuffix:
+    projects: '[Tt]est/**/*.csproj'
+    arguments:
+    skip:     false
   pack:
-    displayName: dotnet pack
+    displayNameSuffix:
+    projects: '[Ss]rc/**/*.csproj'
+    arguments:
+    skip:     false
   publish:
-    displayName: dotnet publish
+    displayNameSuffix:
+    projects: '[Ss]rc/**/*.csproj'
+    arguments:
+    skip:     false
 
 steps:
-# - task: DotNetCoreCLI@2
-- pwsh: Write-Host restore
-  displayName: ${{ parameters.restore.displayName }}
-- pwsh: Write-Host build
-  displayName: ${{ parameters.build.displayName }}
-- pwsh: Write-Host test
-  displayName: ${{ parameters.test.displayName }}
-- pwsh: Write-Host pack
-  displayName: ${{ parameters.pack.displayName }}
-- pwsh: Write-Host publish
-  displayName: ${{ parameters.publish.displayName }}
+- ${{ if not(parameters.restore.skip) }}:
+  - task: DotNetCoreCLI@2
+    displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
+    condition:    and(ne(true, variables['SkipBuildTasks']), ${{ parameters.restore.condition }})
+    inputs:
+      command:    custom
+      custom:     restore
+      projects:   ${{ parameters.restore.projects }}
+      arguments:  ${{ parameters.restore.arguments }}
+      ${{ each pair in parameters.restore.inputs }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+- ${{ if not(parameters.build.skip) }}:
+  - task: DotNetCoreCLI@2
+    displayName:  dotnet build ${{ parameters.build.displayNameSuffix }}
+    condition:    and(ne(true, variables['SkipBuildTasks']), ${{ parameters.build.condition }})
+    inputs:
+      command:    build
+      projects:   ${{ parameters.build.projects }}
+      arguments:  ${{ parameters.build.arguments }}
+      ${{ each pair in parameters.build.inputs }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+- ${{ if not(parameters.test.skip) }}:
+  - task: DotNetCoreCLI@2
+    displayName:  dotnet test ${{ parameters.test.displayNameSuffix }}
+    condition:    ${{ parameters.test.condition }}
+    inputs:
+      command:    test
+      projects:   ${{ parameters.test.projects }}
+      arguments:  ${{ parameters.test.arguments }}
+      publishTestResults: true
+      ${{ each pair in parameters.test.inputs }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'publishTestResults') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+- ${{ if not(parameters.pack.skip) }}:
+  - task: DotNetCoreCLI@2
+    displayName:  dotnet pack ${{ parameters.pack.displayNameSuffix }}
+    condition:    ${{ parameters.pack.condition }}
+    inputs:
+      command:    custom
+      custom:     pack
+      projects:   ${{ parameters.pack.projects }}
+      arguments:  ${{ parameters.pack.arguments }}
+      ${{ each pair in parameters.pack.inputs }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+  - task: PublishBuildArtifacts@1
+    condition:        ${{ parameters.pack.condition }}
+    displayName:      Upload NuGet artifacts
+    inputs:
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/nuget'
+      artifactName:   '$(System.TeamProject)-nuget'
+- ${{ if not(parameters.publish.skip) }}:
+  - task: DotNetCoreCLI@2
+    displayName:  dotnet publish ${{ parameters.publish.displayNameSuffix }}
+    condition:    ${{ parameters.publish.condition }}
+    inputs:
+      command:    publish
+      projects:   ${{ parameters.publish.projects }}
+      arguments:  ${{ parameters.publish.arguments }}
+      zipAfterPublish:  false
+      ${{ each pair in parameters.publish.inputs }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+  - task: PublishBuildArtifacts@1
+    condition:        ${{ parameters.publish.condition }}
+    displayName:      Upload Binary artifacts
+    inputs:
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
+      artifactName:   '$(System.TeamProject)-artifacts'
