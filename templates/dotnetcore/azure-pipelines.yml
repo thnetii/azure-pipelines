@@ -1,85 +1,105 @@
 parameters:
-  defaultPool:
-    vmImage: windows-2019
-  configurations:
-  - id:
+  # defaultPool:                null
+
+  # common:                     null
+  #overrideCommon:              {}
+
+  # configurations:             null
+  disableConfigurationDebug:    false
+  disableConfigurationRelease:  false
+  #addConfigurations:           []
+
+  # runtimes:                   null
+  disableNoRuntime:             false
+  disableWindowsRuntime:        false
+  disableLinuxRuntime:          false
+  disableMacOSRuntime:          false
+  #addRuntimes:                 []
 
 jobs:
-- ${{ each c in parameters.configurations }}:
-  - template: jobs/per-configuration.yml
-    parameters:
-      configuration: ${{ c }}
-      ${{ if ne('', c.id) }}:
-        # artifactPrefix
-        ${{ if ne('', parameters.artifactPrefix) }}:
-          artifactPrefix: ${{ parameters.artifactPrefix }}-${{ c.id }}
-        ${{ if eq('', parameters.artifactPrefix) }}:
-          artifactPrefix: ${{ c.id }}
-        # artifactFolder
-        ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/${{ c.id }}
-        ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ c.id }}
-      build:
-        ${{ if ne('', c.argValue) }}:
-          # displayNameSuffix
-          ${{ if ne('', parameters.build.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.build.displayNameSuffix) }}:
-              displayNameSuffix: --configuration ${{ c.argValue }}
-          # arguments
-          ${{ if ne('', parameters.build.arguments) }}:
-            arguments: ${{ parameters.build.arguments }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.build.arguments) }}:
-            arguments: --configuration ${{ c.argValue }}
-        ${{ each pair in parameters.build }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+- template: jobs/each-configuration.yml
+  parameters:
+    ${{ if not(parameters.defaultPool) }}:
+      defaultPool:
+        vmImage: windows-2019
+    ${{ if not(parameters.common) }}:
+      common:
+        # allProjects
+        ${{ if not(parameters.overrideCommon.allProjects) }}:
+          allProjects:  '*.sln'
+        # srcProjects
+        ${{ if not(parameters.overrideCommon.srcProjects) }}:
+          srcProjects:  '[Ss]rc/*/*.csproj'
+        # testProjects
+        ${{ if not(parameters.overrideCommon.testProjects) }}:
+          testProjects: '[Tt]test/*/*.csproj'
+        # arguments:
+        ${{ if not(parameters.overrideCommon.arguments) }}:
+          ${{ if parameters.overrideCommon.addArguments }}:
+            arguments:    '-p:BuildId=$(Build.BuildId) $(AddCommonArguments) ${{ parameters.overrideCommon.addArguments }}'
+          ${{ if not(parameters.overrideCommon.addArguments) }}:
+            arguments:    '-p:BuildId=$(Build.BuildId) $(AddCommonArguments)'
+        ${{ if parameters.overrideCommon.arguments }}:
+          ${{ if parameters.overrideCommon.addArguments }}:
+            arguments:    ${{ parameters.overrideCommon.arguments }} ${{ parameters.overrideCommon.addArguments }}
+          ${{ if not(parameters.overrideCommon.addArguments) }}:
+            arguments:    ${{ parameters.overrideCommon.arguments }}
+        ${{ each pair in parameters.overrideCommon }}:
+          ${{ if notIn(pair.key, 'arguments', 'addArguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
-      test:
-        ${{ if ne('', c.argValue) }}:
-          # displayNameSuffix
-          ${{ if ne('', parameters.test.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.test.displayNameSuffix }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.test.displayNameSuffix) }}:
-              displayNameSuffix: --configuration ${{ c.argValue }}
-          # arguments
-          ${{ if ne('', parameters.test.arguments) }}:
-            arguments: ${{ parameters.test.arguments }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.test.arguments) }}:
-            arguments: --configuration ${{ c.argValue }}
-        ${{ each pair in parameters.test }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+    ${{ if not(parameters.configurations) }}:
+      configurations:
+      - ${{ if not(parameters.disableConfigurationDebug) }}:
+        - id:             debug
+          condition:      ne(variables['SkipConfigurationDebug'], 'true')
+          displayName:    Debug
+          argValue:       Debug
+          arguments:      '$(AddDebugArguments)'
+      - ${{ if not(parameters.disableConfigurationRelease) }}:
+        - id:             release
+          condition:      ne(variables['SkipConfigurationRelease'], 'true')
+          displayName:    Release
+          argValue:       Release
+          arguments:      '$(AddReleaseArguments)'
+      - ${{ each c in parameters.addConfigurations }}:
+        - ${{ each pair in c }}:
             ${{ pair.key }}: ${{ pair.value }}
-      pack:
-        ${{ if ne('', c.argValue) }}:
-          # displayNameSuffix
-          ${{ if ne('', parameters.pack.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.pack.displayNameSuffix) }}:
-              displayNameSuffix: --configuration ${{ c.argValue }}
-          # arguments
-          ${{ if ne('', parameters.pack.arguments) }}:
-            arguments: ${{ parameters.pack.arguments }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.pack.arguments) }}:
-            arguments: --configuration ${{ c.argValue }}
-        ${{ each pair in parameters.pack }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+    ${{ if not(parameters.runtimes) }}:
+      runtimes:
+      - ${{ if not(parameters.disableNoRuntime) }}:
+        - condition:    ne(variables['SkipNoRuntime'], 'true')
+      - ${{ if not(parameters.disableWindowsRuntime) }}:
+        - id:           win
+          condition:    ne(variables['SkipWindowsRuntime'], 'true')
+          argValue:     win10-x64
+          displayName:  Windows, 64-bit
+          pool:
+            vmImage:    windows-2019
+          pack:
+            skip:       true
+          arguments:    '$(AddWindowsArguments)'
+      - ${{ if not(parameters.disableLinuxRuntime) }}:
+        - id:           linux
+          condition:    ne(variables['SkipLinuxRuntime'], 'true')
+          argValue:     linux-x64
+          displayName:  Linux, 64-bit
+          pool:
+            vmImage:    ubuntu-16.04
+          pack:
+            skip:       true
+          arguments:    '$(AddLinuxArguments)'
+      - ${{ if not(parameters.disableMacOSRuntime) }}:
+        - id:           osx
+          condition:    ne(variables['SkipMacOSRuntime'], 'true')
+          argValue:     osx.10.14-x64
+          displayName:  macOS, 64-bit
+          pool:
+            vmImage:    macOS-10.14
+          pack:
+            skip:       true
+          arguments:    '$(AddMacOSArguments)'
+      - ${{ each r in parameters.addRuntimes }}:
+        - ${{ each pair in r }}:
             ${{ pair.key }}: ${{ pair.value }}
-      publish:
-        ${{ if ne('', c.argValue) }}:
-          # displayNameSuffix
-          ${{ if ne('', parameters.publish.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.publish.displayNameSuffix }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.publish.displayNameSuffix) }}:
-              displayNameSuffix: --configuration ${{ c.argValue }}
-          # arguments
-          ${{ if ne('', parameters.publish.arguments) }}:
-            arguments: ${{ parameters.publish.arguments }} --configuration ${{ c.argValue }}
-          ${{ if eq('', parameters.publish.arguments) }}:
-            arguments: --configuration ${{ c.argValue }}
-        ${{ each pair in parameters.publish }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
-            ${{ pair.key }}: ${{ pair.value }}
-      ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'configurations', 'configuration', 'artifactPrefix', 'artifactFolder', 'build', 'test', 'pack', 'publish') }}:
-          ${{ pair.key }}: ${{ pair.value }}
+    ${{ each pair parameters }}:
+      ${{ pair.key }}: ${{ pair.value }}

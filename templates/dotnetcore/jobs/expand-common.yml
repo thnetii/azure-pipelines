@@ -1,0 +1,81 @@
+jobs:
+- template: prepare-job.yml
+  parameters:
+    restore:
+      # projects
+      ${{ and(not(parameters.restore.projects), parameters.common.allProjects) }}:
+        projects:     ${{ parameters.common.allProjects }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.restore.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.restore.arguments }}
+        ${{ if not(parameters.restore.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.restore.arguments }}
+      ${{ each pair in parameters.restore }}:
+        ${{ if notIn(pair.key, 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    build:
+      # projects
+      ${{ and(not(parameters.build.projects), parameters.common.allProjects) }}:
+        projects:     ${{ parameters.common.allProjects }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.build.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.build.arguments }}
+        ${{ if not(parameters.build.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.build.arguments }}
+      ${{ each pair in parameters.build }}:
+        ${{ if notIn(pair.key, 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    test:
+      # projects
+      ${{ and(not(parameters.test.projects), parameters.common.testProjects) }}:
+        projects:     ${{ parameters.common.testProjects }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.test.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.test.arguments }}
+        ${{ if not(parameters.test.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.test.arguments }}
+      ${{ each pair in parameters.test }}:
+        ${{ if notIn(pair.key, 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    pack:
+      # projects
+      ${{ and(not(parameters.pack.projects), parameters.common.srcProjects) }}:
+        projects:     ${{ parameters.common.srcProjects }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.pack.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.pack.arguments }}
+        ${{ if not(parameters.pack.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.pack.arguments }}
+      ${{ each pair in parameters.pack }}:
+        ${{ if notIn(pair.key, 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    publish:
+      # projects
+      ${{ and(not(parameters.publish.projects), parameters.common.srcProjects) }}:
+        projects:     ${{ parameters.common.srcProjects }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.publish.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.publish.arguments }}
+        ${{ if not(parameters.publish.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.publish.arguments }}
+      ${{ each pair in parameters.publish }}:
+        ${{ if notIn(pair.key, 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'common') }}:
+        ${{ pair.key }}: ${{ pair.value }}

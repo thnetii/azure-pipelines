@@ -1,24 +1,18 @@
 parameters:
   defaultPool:
-    vmImage: windows-2019
+    vmImage:    windows-2019
+  artifactFolder:
   job:
     id: default
     pool:
-      vmImage: windows-2019
-  configuration:
-    id: default
-    displayName:
-    argValue:
-  runtime:
-    id: default
-    displayName:
-    argValue:
+      vmImage:  windows-2019
+  pack:
+    arguments:
+  publish:
+    arguments:
 
 jobs:
-- ${{ if ne('', parameters.job.id) }}:
-    job:        ${{ parameters.job.id }}
-  ${{ if eq('', parameters.job.id) }}:
-    job:        default
+- job:          ${{ coalesce(parameters.job.id, 'default') }}
   condition:    ${{ parameters.job.condition }}
   displayName:  ${{ parameters.job.displayName }}
   ${{ if parameters.job.pool }}:

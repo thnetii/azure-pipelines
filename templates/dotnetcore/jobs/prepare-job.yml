@@ -1,6 +1,22 @@
 parameters:
   defaultPool:
     vmImage: windows-2019
+  job:
+    id:
+  configuration:
+    id:
+    displayName:
+    condition:
+  runtime:
+    id:
+    displayName:
+    condition:
+    pool:
+  restore:
+  build:
+  test:
+  pack:
+  publish:
 
 jobs:
 - template: job.yml

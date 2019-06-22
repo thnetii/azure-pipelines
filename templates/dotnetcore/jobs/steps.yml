@@ -1,29 +1,9 @@
 parameters:
   restore:
-    displayNameSuffix:
-    projects: '*.sln'
-    arguments:
-    skip:     false
   build:
-    displayNameSuffix:
-    projects: '*.sln'
-    arguments:
-    skip:     false
   test:
-    displayNameSuffix:
-    projects: '[Tt]est/**/*.csproj'
-    arguments:
-    skip:     false
   pack:
-    displayNameSuffix:
-    projects: '[Ss]rc/**/*.csproj'
-    arguments:
-    skip:     false
   publish:
-    displayNameSuffix:
-    projects: '[Ss]rc/**/*.csproj'
-    arguments:
-    skip:     false
 
 steps:
 - ${{ if not(parameters.restore.skip) }}:
@@ -88,6 +68,7 @@ steps:
     inputs:
       pathtoPublish:  '$(Build.ArtifactStagingDirectory)/nuget'
       artifactName:   '$(System.TeamProject)-nuget'
+    continueOnError:  true
 - ${{ if not(parameters.publish.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet publish ${{ parameters.publish.displayNameSuffix }}
@@ -108,3 +89,4 @@ steps:
     inputs:
       pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
       artifactName:   '$(System.TeamProject)-artifacts'
+    continueOnError:  true
