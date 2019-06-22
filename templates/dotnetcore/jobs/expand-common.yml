@@ -91,5 +91,5 @@ jobs:
         ${{ if notIn(pair.key, 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
     ${{ each pair in parameters }}:
-      ${{ if notIn(pair.key, 'common') }}:
+      ${{ if notIn(pair.key, 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
         ${{ pair.key }}: ${{ pair.value }}
