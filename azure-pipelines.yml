@@ -9,4 +9,4 @@ resources:
 
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
-  parameters:
+  parameters: {}
