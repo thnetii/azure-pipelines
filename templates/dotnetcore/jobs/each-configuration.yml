@@ -41,13 +41,13 @@ jobs:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.common }}:
-          ${{ if and(notIn(pair.key, c.common.*.key), notIn(pair.key, 'arguments')) }}:
+          ${{ if and(not(containsValue(pair.key, c.common)), notIn(pair.key, 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       restore:
         ${{ each pair in c.restore }}:
           ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.restore }}:
-          ${{ if notIn(pair.key, c.restore.*.key) }}:
+          ${{ if not(containsValue(pair.key, c.restore)) }}:
             ${{ pair.key }}: ${{ pair.value }}
       build:
         ${{ if ne('', c.argValue) }}:
@@ -65,7 +65,7 @@ jobs:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.build }}:
-          ${{ if and(notIn(pair.key, c.build.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
+          ${{ if and(not(containsValue(pair.key, c.build)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       test:
         ${{ if ne('', c.argValue) }}:
@@ -83,7 +83,7 @@ jobs:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.test }}:
-          ${{ if and(notIn(pair.key, c.test.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
+          ${{ if and(not(containsValue(pair.key, c.test)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       pack:
         ${{ if ne('', c.argValue) }}:
@@ -101,7 +101,7 @@ jobs:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.pack }}:
-          ${{ if and(notIn(pair.key, c.pack.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
+          ${{ if and(not(containsValue(pair.key, c.pack)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       publish:
         ${{ if ne('', c.argValue) }}:
@@ -119,7 +119,7 @@ jobs:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
         ${{ each pair in parameters.publish }}:
-          ${{ if and(notIn(pair.key, c.publish.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
+          ${{ if and(not(containsValue(pair.key, c.publish)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
         ${{ if notIn(pair.key, 'configurations', 'configuration', 'artifactPrefix', 'artifactFolder', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:

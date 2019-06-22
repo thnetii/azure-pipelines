@@ -9,16 +9,3 @@ resources:
 
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
-  parameters: {}
-- job: logEnv
-  displayName: Log Environment
-  steps:
-  - ${{ each v in variables }}:
-    - pwsh: 'Write-Host "${{ v.key }}:`t${{ v.value }}"'
-      displayName: Log variable ${{ v.key }}
-      continueOnError: true
-  - pwsh: |
-      Write-Host "Keys: $[ variables.*.key]"
-      Write-Host "Values: $[ variables.*.value]"
-    displayName: Log runtime variables
-    continueOnError: true
