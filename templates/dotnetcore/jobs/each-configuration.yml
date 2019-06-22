@@ -1,16 +1,16 @@
 parameters:
-  job:
-  defaultPool:
-  artifactPrefix:
-  artifactFolder:
+  job:            {}
+  defaultPool:    {}
+  artifactPrefix: ''
+  artifactFolder: ''
   configurations: []
   runtimes:       []
-  common:
-  restore:
-  build:
-  test:
-  pack:
-  publish:
+  common:         {}
+  restore:        {}
+  build:          {}
+  test:           {}
+  pack:           {}
+  publish:        {}
 
 jobs:
 - ${{ each c in parameters.configurations }}:
@@ -33,7 +33,7 @@ jobs:
         ${{ if c.arguments }}:
           ${{ if parameters.common.arguments }}:
             arguments:  ${{ parameters.common.arguments }} ${{ c.arguments }}
-          ${{ if not(paramaters.common.arguments) }}:
+          ${{ if not(parameters.common.arguments) }}:
             arguments:  ${{ c.arguments }}
         ${{ if not(c.arguments) }}:
           arguments:    ${{ parameters.common.arguments }}

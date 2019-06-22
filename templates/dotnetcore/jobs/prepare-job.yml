@@ -1,16 +1,15 @@
 parameters:
-  job:
-  defaultPool:
-  artifactPrefix:
-  artifactFolder:
-  configuration:
-  runtime:
-  restore:
-  build:
-  test:
-  pack:
-  publish:
-
+  job:            {}
+  defaultPool:    {}
+  artifactPrefix: ''
+  artifactFolder: ''
+  configuration:  {}
+  runtime:        {}
+  restore:        {}
+  build:          {}
+  test:           {}
+  pack:           {}
+  publish:        {}
 
 jobs:
 - template: job.yml

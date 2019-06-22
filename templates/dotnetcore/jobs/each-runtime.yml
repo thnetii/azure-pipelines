@@ -1,16 +1,16 @@
 parameters:
-  job:
-  defaultPool:
-  artifactPrefix:
-  artifactFolder:
-  configuration:
+  job:            {}
+  defaultPool:    {}
+  artifactPrefix: ''
+  artifactFolder: ''
+  configuration:  {}
   runtimes:       []
-  common:
-  restore:
-  build:
-  test:
-  pack:
-  publish:
+  common:         {}
+  restore:        {}
+  build:          {}
+  test:           {}
+  pack:           {}
+  publish:        {}
 
 jobs:
 - ${{ each r in parameters.runtimes }}:

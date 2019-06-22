@@ -1,13 +1,13 @@
 parameters:
-  job:
-  defaultPool:
-  artifactPrefix:
-  artifactFolder:
-  restore:
-  build:
-  test:
-  pack:
-  publish:
+  job:            {}
+  defaultPool:    {}
+  artifactPrefix: ''
+  artifactFolder: ''
+  restore:        {}
+  build:          {}
+  test:           {}
+  pack:           {}
+  publish:        {}
 
 jobs:
 - job:          ${{ coalesce(parameters.job.id, 'default') }}
