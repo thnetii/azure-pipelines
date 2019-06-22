@@ -20,22 +20,66 @@ jobs:
           artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
         ${{ if eq('', parameters.artifactFolder) }}:
           artifactFolder: ${{ r.id }}
-      ${{ each stepGroup in ('build', 'test', 'pack', 'publish') }}:
-        ${{ stepGroup }}:
-          ${{ if ne('', c.argValue) }}:
-            # displayNameSuffix
-            ${{ if ne('', parameters[stepGroup].displayNameSuffix) }}:
-              displayNameSuffix: ${{ parameters[stepGroup].displayNameSuffix }} --configuration ${{ c.argValue }}
-            ${{ if eq('', parameters[stepGroup].displayNameSuffix) }}:
-                displayNameSuffix: --configuration ${{ c.argValue }}
-            # arguments
-            ${{ if ne('', parameters[stepGroup].arguments) }}:
-              arguments: ${{ parameters[stepGroup].arguments }} --configuration ${{ c.argValue }}
-            ${{ if eq('', parameters[stepGroup].arguments) }}:
-              arguments: --configuration ${{ c.argValue }}
-          ${{ each pair in parameters[stepGroup] }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
-              ${{ pair.key }}: ${{ pair.value }}
+      build:
+        ${{ if ne('', c.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.build.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.build.displayNameSuffix) }}:
+              displayNameSuffix: --configuration ${{ c.argValue }}
+          # arguments
+          ${{ if ne('', parameters.build.arguments) }}:
+            arguments: ${{ parameters.build.arguments }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.build.arguments) }}:
+            arguments: --configuration ${{ c.argValue }}
+        ${{ each pair in parameters.build }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      test:
+        ${{ if ne('', c.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.test.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.test.displayNameSuffix }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.test.displayNameSuffix) }}:
+              displayNameSuffix: --configuration ${{ c.argValue }}
+          # arguments
+          ${{ if ne('', parameters.test.arguments) }}:
+            arguments: ${{ parameters.test.arguments }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.test.arguments) }}:
+            arguments: --configuration ${{ c.argValue }}
+        ${{ each pair in parameters.test }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      pack:
+        ${{ if ne('', c.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.pack.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.pack.displayNameSuffix) }}:
+              displayNameSuffix: --configuration ${{ c.argValue }}
+          # arguments
+          ${{ if ne('', parameters.pack.arguments) }}:
+            arguments: ${{ parameters.pack.arguments }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.pack.arguments) }}:
+            arguments: --configuration ${{ c.argValue }}
+        ${{ each pair in parameters.pack }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      publish:
+        ${{ if ne('', c.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.publish.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.publish.displayNameSuffix }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.publish.displayNameSuffix) }}:
+              displayNameSuffix: --configuration ${{ c.argValue }}
+          # arguments
+          ${{ if ne('', parameters.publish.arguments) }}:
+            arguments: ${{ parameters.publish.arguments }} --configuration ${{ c.argValue }}
+          ${{ if eq('', parameters.publish.arguments) }}:
+            arguments: --configuration ${{ c.argValue }}
+        ${{ each pair in parameters.publish }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
         ${{ if notIn(pair.key, 'configurations', 'configuration', 'artifactPrefix', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}
