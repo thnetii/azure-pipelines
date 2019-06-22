@@ -20,6 +20,9 @@ jobs:
           artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
         ${{ if eq('', parameters.artifactFolder) }}:
           artifactFolder: ${{ r.id }}
+      ${{ if eq('', r.id) }}:
+        artifactPrefix: ${{ parameters.artifactPrefix }}
+        artifactFolder: ${{ parameters.artifactFolder }}
       common:
         ${{ if r.arguments }}:
           ${{ if parameters.common.arguments }}:

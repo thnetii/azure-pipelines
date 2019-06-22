@@ -47,6 +47,10 @@ jobs:
         ${{ each pair in parameters.overrideCommon }}:
           ${{ if notIn(pair.key, 'arguments', 'addArguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
+    ${{ if not(containsValue(parameters, 'publish')) }}:
+      publish:
+        publishWebProjects:   false
+        zipAfterPublish:      false
     ${{ if not(containsValue(parameters, 'configurations')) }}:
       configurations:
       - ${{ if ne(parameters.disableConfigurationDebug, 'true') }}:
