@@ -20,7 +20,7 @@ jobs:
           artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
         ${{ if eq('', parameters.artifactFolder) }}:
           artifactFolder: ${{ r.id }}
-      ${{ each stepGroup in ['build', 'test', 'pack', 'publish'] }}:
+      ${{ each stepGroup in ('build', 'test', 'pack', 'publish') }}:
         ${{ stepGroup }}:
           ${{ if ne('', c.argValue) }}:
             # displayNameSuffix

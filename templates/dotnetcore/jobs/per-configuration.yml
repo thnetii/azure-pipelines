@@ -26,7 +26,7 @@ jobs:
           artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
         ${{ if eq('', parameters.artifactFolder) }}:
           artifactFolder: ${{ r.id }}
-      ${{ each stepGroup in ['restore', 'build', 'test', 'pack', 'publish'] }}:
+      ${{ each stepGroup in ('restore', 'build', 'test', 'pack', 'publish') }}:
         ${{ stepGroup }}:
           ${{ if ne('', r.argValue) }}:
             # displayNameSuffix
