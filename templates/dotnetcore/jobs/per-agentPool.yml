@@ -35,9 +35,9 @@ jobs:
           condition: ${{ parameters.runtime.condition }}
 
       # pool
-      ${{ if ne(null, parameters.runtime.pool) }}:
+      ${{ if parameters.runtime.pool }}:
         pool: ${{ parameters.runtime.pool }}
-      ${{ if eq(null, parameters.runtime.pool) }}:
+      ${{ if not(parameters.runtime.pool) }}:
         pool: ${{ parameters.defaultPool }}
 
       ${{ each pair in parameters.job }}:
