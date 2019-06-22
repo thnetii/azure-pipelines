@@ -29,9 +29,9 @@ steps:
 - ${{ if not(parameters.restore.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
-    ${{ ne('', parameters.restore.condition) }}:
+    ${{ if ne('', parameters.restore.condition) }}:
       condition:    and(ne(variables['SkipBuildTasks'], 'true'), ${{ parameters.restore.condition }})
-    ${{ eq('', parameters.restore.condition) }}:
+    ${{ if eq('', parameters.restore.condition) }}:
       condition:    ne(variables['SkipBuildTasks'], 'true')
     inputs:
       command:    custom
@@ -44,9 +44,9 @@ steps:
 - ${{ if not(parameters.build.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet build ${{ parameters.build.displayNameSuffix }}
-    ${{ ne('', parameters.build.condition) }}:
+    ${{ if ne('', parameters.build.condition) }}:
       condition:    and(ne(variables['SkipBuildTasks'], 'true'), ${{ parameters.build.condition }})
-    ${{ eq('', parameters.build.condition) }}:
+    ${{ if eq('', parameters.build.condition) }}:
       condition:    ne(variables['SkipBuildTasks'], 'true')
     inputs:
       command:    build
@@ -58,7 +58,7 @@ steps:
 - ${{ if not(parameters.test.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet test ${{ parameters.test.displayNameSuffix }}
-    ${{ ne('', parameters.test.condition) }}:
+    ${{ if ne('', parameters.test.condition) }}:
       condition:  ${{ parameters.test.condition }}
     inputs:
       command:    test
@@ -71,7 +71,7 @@ steps:
 - ${{ if not(parameters.pack.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet pack ${{ parameters.pack.displayNameSuffix }}
-    ${{ ne('', parameters.pack.condition) }}:
+    ${{ if ne('', parameters.pack.condition) }}:
       condition:  ${{ parameters.pack.condition }}
     inputs:
       command:    custom
@@ -82,7 +82,7 @@ steps:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
-    ${{ ne('', parameters.pack.condition) }}:
+    ${{ if ne('', parameters.pack.condition) }}:
       condition:      ${{ parameters.pack.condition }}
     displayName:      Upload NuGet artifacts
     inputs:
@@ -91,7 +91,7 @@ steps:
 - ${{ if not(parameters.publish.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet publish ${{ parameters.publish.displayNameSuffix }}
-    ${{ ne('', parameters.publish.condition) }}:
+    ${{ if ne('', parameters.publish.condition) }}:
       condition:  ${{ parameters.publish.condition }}
     inputs:
       command:    publish
@@ -102,7 +102,7 @@ steps:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
-    ${{ ne('', parameters.publish.condition) }}:
+    ${{ if ne('', parameters.publish.condition) }}:
       condition:      ${{ parameters.publish.condition }}
     displayName:      Upload Binary artifacts
     inputs:
