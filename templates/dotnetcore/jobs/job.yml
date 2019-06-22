@@ -9,14 +9,13 @@ parameters:
   pack:
   publish:
 
-
 jobs:
 - job:          ${{ coalesce(parameters.job.id, 'default') }}
   condition:    ${{ parameters.job.condition }}
   displayName:  ${{ parameters.job.displayName }}
-  ${{ if parameters.job.pool }}:
+  ${{ if containsValue(parameters.job, 'pool') }}:
     pool:       ${{ parameters.job.pool }}
-  ${{ if not(parameters.job.pool) }}:
+  ${{ if not(containsValue(parameters.job, 'pool')) }}:
     pool:       ${{ parameters.defaultPool }}
   steps:
   - template:   steps.yml
