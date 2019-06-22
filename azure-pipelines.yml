@@ -17,7 +17,8 @@ jobs:
     - pwsh: 'Write-Host "${{ v.key }}:`t${{ v.value }}"'
       displayName: Log variable ${{ v.key }}
       continueOnError: true
-  - $[ each v in variables ]:
-    - pwsh: 'Write-Host "$[ v.key ]:`t$[ v.value ]"'
-      displayName: Log variable $[ v.key ]
-      continueOnError: true
+  - pwsh: |
+      Write-Host "Keys: $[ variables.*.key]"
+      Write-Host "Values: $[ variables.*.value]"
+    displayName: Log runtime variables
+    continueOnError: true
