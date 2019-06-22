@@ -101,5 +101,5 @@ jobs:
       - ${{ each r in parameters.addRuntimes }}:
         - ${{ each pair in r }}:
             ${{ pair.key }}: ${{ pair.value }}
-    ${{ each pair parameters }}:
+    ${{ each pair in parameters }}:
       ${{ pair.key }}: ${{ pair.value }}
