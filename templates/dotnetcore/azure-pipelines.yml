@@ -17,9 +17,9 @@ jobs:
           artifactPrefix: ${{ c.id }}
         # artifactFolder
         ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/${{ r.id }}
+          artifactFolder: ${{ parameters.artifactFolder }}/${{ c.id }}
         ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ r.id }}
+          artifactFolder: ${{ c.id }}
       build:
         ${{ if ne('', c.argValue) }}:
           # displayNameSuffix
