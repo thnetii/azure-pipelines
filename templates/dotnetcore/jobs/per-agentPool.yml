@@ -12,7 +12,7 @@ jobs:
           id: ${{ parameters.configuration.id }}
         ${{ if eq('', parameters.configuration.id) }}:
           id: defaultJob
-      ${{ if ne('', parameters.runtime.id, ) }}:
+      ${{ if ne('', parameters.runtime.id ) }}:
         ${{ if ne('', parameters.configuration.id) }}:
           id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
         ${{ if eq('', parameters.configuration.id) }}:

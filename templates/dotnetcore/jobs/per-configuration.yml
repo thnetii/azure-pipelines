@@ -102,6 +102,6 @@ jobs:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'artifactFolder', 'restore', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}
 
