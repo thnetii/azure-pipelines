@@ -1,16 +1,7 @@
 parameters:
-  job:            {}
-  defaultPool:    {}
+  configurations: []
   artifactPrefix: ''
   artifactFolder: ''
-  configurations: []
-  runtimes:       []
-  common:         {}
-  restore:        {}
-  build:          {}
-  test:           {}
-  pack:           {}
-  publish:        {}
 
 jobs:
 - ${{ each c in parameters.configurations }}:

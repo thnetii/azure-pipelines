@@ -36,9 +36,9 @@ jobs:
         # arguments:
         ${{ if not(parameters.overrideCommon.arguments) }}:
           ${{ if parameters.overrideCommon.addArguments }}:
-            arguments:    '-p:BuildId=$(Build.BuildId) $(AddCommonArguments) ${{ parameters.overrideCommon.addArguments }}'
+            arguments:    '-p:BuildId=$(Build.BuildId) ${{ parameters.overrideCommon.addArguments }}'
           ${{ if not(parameters.overrideCommon.addArguments) }}:
-            arguments:    '-p:BuildId=$(Build.BuildId) $(AddCommonArguments)'
+            arguments:    '-p:BuildId=$(Build.BuildId)'
         ${{ if parameters.overrideCommon.arguments }}:
           ${{ if parameters.overrideCommon.addArguments }}:
             arguments:    ${{ parameters.overrideCommon.arguments }} ${{ parameters.overrideCommon.addArguments }}
@@ -54,13 +54,11 @@ jobs:
           condition:      ne(variables['SkipConfigurationDebug'], 'true')
           displayName:    Debug
           argValue:       Debug
-          arguments:      '$(AddDebugArguments)'
       - ${{ if ne(parameters.disableConfigurationRelease, 'true') }}:
         - id:             release
           condition:      ne(variables['SkipConfigurationRelease'], 'true')
           displayName:    Release
           argValue:       Release
-          arguments:      '$(AddReleaseArguments)'
       - ${{ each c in parameters.addConfigurations }}:
         - ${{ each pair in c }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -68,6 +66,7 @@ jobs:
       runtimes:
       - ${{ if ne(parameters.disableNoRuntime, 'true') }}:
         - condition:    ne(variables['SkipNoRuntime'], 'true')
+          arguments:    '-p:NoNetFramework=true'
       - ${{ if ne(parameters.disableWindowsRuntime, 'true') }}:
         - id:           win
           condition:    ne(variables['SkipWindowsRuntime'], 'true')
@@ -77,7 +76,6 @@ jobs:
             vmImage:    windows-2019
           pack:
             skip:       true
-          arguments:    '$(AddWindowsArguments)'
       - ${{ if ne(parameters.disableLinuxRuntime, 'true') }}:
         - id:           linux
           condition:    ne(variables['SkipLinuxRuntime'], 'true')
@@ -87,7 +85,7 @@ jobs:
             vmImage:    ubuntu-16.04
           pack:
             skip:       true
-          arguments:    '$(AddLinuxArguments)'
+          arguments:    '-p:NoNetFramework=true'
       - ${{ if ne(parameters.disableMacOSRuntime, 'true') }}:
         - id:           osx
           condition:    ne(variables['SkipMacOSRuntime'], 'true')
@@ -97,7 +95,7 @@ jobs:
             vmImage:    macOS-10.14
           pack:
             skip:       true
-          arguments:    '$(AddMacOSArguments)'
+          arguments:    '-p:NoNetFramework=true'
       - ${{ each r in parameters.addRuntimes }}:
         - ${{ each pair in r }}:
             ${{ pair.key }}: ${{ pair.value }}

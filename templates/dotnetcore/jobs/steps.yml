@@ -1,11 +1,4 @@
-parameters:
-  artifactPrefix: ''
-  artifactFolder: ''
-  restore:        {}
-  build:          {}
-  test:           {}
-  pack:           {}
-  publish:        {}
+parameters: {}
 
 steps:
 - ${{ if not(parameters.restore.skip) }}:
