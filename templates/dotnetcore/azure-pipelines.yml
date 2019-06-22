@@ -19,10 +19,10 @@ parameters:
 jobs:
 - template: jobs/each-configuration.yml
   parameters:
-    ${{ if not(parameters.defaultPool) }}:
+    ${{ if not(containsValue(parameters, 'defaultPool')) }}:
       defaultPool:
         vmImage: windows-2019
-    ${{ if not(parameters.common) }}:
+    ${{ if not(containsValue(parameters, 'common')) }}:
       common:
         # allProjects
         ${{ if not(parameters.overrideCommon.allProjects) }}:
@@ -47,7 +47,7 @@ jobs:
         ${{ each pair in parameters.overrideCommon }}:
           ${{ if notIn(pair.key, 'arguments', 'addArguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    ${{ if not(parameters.configurations) }}:
+    ${{ if not(containsValue(parameters, 'configurations')) }}:
       configurations:
       - ${{ if not(parameters.disableConfigurationDebug) }}:
         - id:             debug
@@ -64,7 +64,7 @@ jobs:
       - ${{ each c in parameters.addConfigurations }}:
         - ${{ each pair in c }}:
             ${{ pair.key }}: ${{ pair.value }}
-    ${{ if not(parameters.runtimes) }}:
+    ${{ if not(containsValue(parameters, 'runtimes')) }}:
       runtimes:
       - ${{ if not(parameters.disableNoRuntime) }}:
         - condition:    ne(variables['SkipNoRuntime'], 'true')
