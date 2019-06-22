@@ -49,13 +49,13 @@ jobs:
             ${{ pair.key }}: ${{ pair.value }}
     ${{ if not(containsValue(parameters, 'configurations')) }}:
       configurations:
-      - ${{ if not(parameters.disableConfigurationDebug) }}:
+      - ${{ if ne(parameters.disableConfigurationDebug, 'true') }}:
         - id:             debug
           condition:      ne(variables['SkipConfigurationDebug'], 'true')
           displayName:    Debug
           argValue:       Debug
           arguments:      '$(AddDebugArguments)'
-      - ${{ if not(parameters.disableConfigurationRelease) }}:
+      - ${{ if ne(parameters.disableConfigurationRelease, 'true') }}:
         - id:             release
           condition:      ne(variables['SkipConfigurationRelease'], 'true')
           displayName:    Release
@@ -66,9 +66,9 @@ jobs:
             ${{ pair.key }}: ${{ pair.value }}
     ${{ if not(containsValue(parameters, 'runtimes')) }}:
       runtimes:
-      - ${{ if not(parameters.disableNoRuntime) }}:
+      - ${{ if ne(parameters.disableNoRuntime, 'true') }}:
         - condition:    ne(variables['SkipNoRuntime'], 'true')
-      - ${{ if not(parameters.disableWindowsRuntime) }}:
+      - ${{ if ne(parameters.disableWindowsRuntime, 'true') }}:
         - id:           win
           condition:    ne(variables['SkipWindowsRuntime'], 'true')
           argValue:     win10-x64
@@ -78,7 +78,7 @@ jobs:
           pack:
             skip:       true
           arguments:    '$(AddWindowsArguments)'
-      - ${{ if not(parameters.disableLinuxRuntime) }}:
+      - ${{ if ne(parameters.disableLinuxRuntime, 'true') }}:
         - id:           linux
           condition:    ne(variables['SkipLinuxRuntime'], 'true')
           argValue:     linux-x64
@@ -88,7 +88,7 @@ jobs:
           pack:
             skip:       true
           arguments:    '$(AddLinuxArguments)'
-      - ${{ if not(parameters.disableMacOSRuntime) }}:
+      - ${{ if ne(parameters.disableMacOSRuntime, 'true') }}:
         - id:           osx
           condition:    ne(variables['SkipMacOSRuntime'], 'true')
           argValue:     osx.10.14-x64
