@@ -33,7 +33,7 @@ jobs:
         ${{ if r.arguments }}:
           ${{ if parameters.common.arguments }}:
             arguments:  ${{ parameters.common.arguments }} ${{ r.arguments }}
-          ${{ if not(paramaters.common.arguments) }}:
+          ${{ if not(parameters.common.arguments) }}:
             arguments:  ${{ r.arguments }}
         ${{ if not(r.arguments) }}:
           arguments:    ${{ parameters.common.arguments }}
@@ -134,5 +134,5 @@ jobs:
           ${{ if and(notIn(pair.key, r.publish.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'artifactFolder', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'artifactFolder', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}
