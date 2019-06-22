@@ -1,7 +1,11 @@
 parameters:
+  job:
+  defaultPool:
   artifactPrefix:
   artifactFolder:
-  runtimes: []
+  configuration:
+  runtimes:       []
+  common:
   restore:
   build:
   test:
@@ -33,8 +37,11 @@ jobs:
             arguments:  ${{ r.arguments }}
         ${{ if not(r.arguments) }}:
           arguments:    ${{ parameters.common.arguments }}
-        ${{ each pair in parameters.common }}:
+        ${{ each pair in r.common }}:
           ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.common }}:
+          ${{ if and(notIn(pair.key, r.common.*.key), notIn(pair.key, 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       restore:
         ${{ if ne('', r.argValue) }}:
@@ -48,8 +55,11 @@ jobs:
             arguments: ${{ parameters.restore.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.restore.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
-        ${{ each pair in parameters.restore }}:
+        ${{ each pair in r.restore }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.restore }}:
+          ${{ if and(notIn(pair.key, r.restore.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       build:
         ${{ if ne('', r.argValue) }}:
@@ -63,8 +73,11 @@ jobs:
             arguments: ${{ parameters.build.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.build.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
-        ${{ each pair in parameters.build }}:
+        ${{ each pair in r.build }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.build }}:
+          ${{ if and(notIn(pair.key, r.build.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       test:
         ${{ if ne('', r.argValue) }}:
@@ -78,8 +91,11 @@ jobs:
             arguments: ${{ parameters.test.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.test.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
-        ${{ each pair in parameters.test }}:
+        ${{ each pair in r.test }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.test }}:
+          ${{ if and(notIn(pair.key, r.test.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       pack:
         ${{ if ne('', r.argValue) }}:
@@ -93,8 +109,11 @@ jobs:
             arguments: ${{ parameters.pack.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.pack.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
-        ${{ each pair in parameters.pack }}:
+        ${{ each pair in r.pack }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.pack }}:
+          ${{ if and(notIn(pair.key, r.pack.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       publish:
         ${{ if ne('', r.argValue) }}:
@@ -108,8 +127,11 @@ jobs:
             arguments: ${{ parameters.publish.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.publish.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
-        ${{ each pair in parameters.publish }}:
+        ${{ each pair in r.publish }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        ${{ each pair in parameters.publish }}:
+          ${{ if and(notIn(pair.key, r.publish.*.key), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
         ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'artifactFolder', 'restore', 'build', 'test', 'pack', 'publish') }}:

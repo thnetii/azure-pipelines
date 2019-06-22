@@ -102,5 +102,5 @@ jobs:
         - ${{ each pair in r }}:
             ${{ pair.key }}: ${{ pair.value }}
     ${{ each pair in parameters }}:
-      ${{ if not(startsWith(pair.key, 'disable')) }}:
+      ${{ if and(not(startsWith(pair.key, 'disable'), notIn(pair.key, 'overrideCommon'))) }}:
         ${{ pair.key }}: ${{ pair.value }}

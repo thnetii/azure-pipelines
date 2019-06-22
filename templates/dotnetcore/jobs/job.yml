@@ -1,15 +1,14 @@
 parameters:
-  defaultPool:
-    vmImage:    windows-2019
-  artifactFolder:
   job:
-    id: default
-    pool:
-      vmImage:  windows-2019
+  defaultPool:
+  artifactPrefix:
+  artifactFolder:
+  restore:
+  build:
+  test:
   pack:
-    arguments:
   publish:
-    arguments:
+
 
 jobs:
 - job:          ${{ coalesce(parameters.job.id, 'default') }}

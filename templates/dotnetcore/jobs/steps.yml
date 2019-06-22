@@ -1,9 +1,12 @@
 parameters:
+  artifactPrefix:
+  artifactFolder:
   restore:
   build:
   test:
   pack:
   publish:
+
 
 steps:
 - ${{ if not(parameters.restore.skip) }}:
