@@ -55,6 +55,9 @@ jobs:
             arguments: ${{ parameters.build.arguments }} --configuration ${{ c.argValue }}
           ${{ if eq('', parameters.build.arguments) }}:
             arguments: --configuration ${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.build.displayNameSuffix }}
+          arguments:          ${{ parameters.build.arguments }}
         ${{ each pair in c.build }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -73,6 +76,9 @@ jobs:
             arguments: ${{ parameters.test.arguments }} --configuration ${{ c.argValue }}
           ${{ if eq('', parameters.test.arguments) }}:
             arguments: --configuration ${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.test.displayNameSuffix }}
+          arguments:          ${{ parameters.test.arguments }}
         ${{ each pair in c.test }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -91,6 +97,9 @@ jobs:
             arguments: ${{ parameters.pack.arguments }} --configuration ${{ c.argValue }}
           ${{ if eq('', parameters.pack.arguments) }}:
             arguments: --configuration ${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.pack.displayNameSuffix }}
+          arguments:          ${{ parameters.pack.arguments }}
         ${{ each pair in c.pack }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -109,6 +118,9 @@ jobs:
             arguments: ${{ parameters.publish.arguments }} --configuration ${{ c.argValue }}
           ${{ if eq('', parameters.publish.arguments) }}:
             arguments: --configuration ${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.publish.displayNameSuffix }}
+          arguments:          ${{ parameters.publish.arguments }}
         ${{ each pair in c.publish }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}

@@ -49,6 +49,9 @@ jobs:
             arguments: ${{ parameters.restore.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.restore.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.restore.displayNameSuffix }}
+          arguments:          ${{ parameters.restore.arguments }}
         ${{ each pair in r.restore }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -67,6 +70,9 @@ jobs:
             arguments: ${{ parameters.build.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.build.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.build.displayNameSuffix }}
+          arguments:          ${{ parameters.build.arguments }}
         ${{ each pair in r.build }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -85,6 +91,9 @@ jobs:
             arguments: ${{ parameters.test.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.test.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.test.displayNameSuffix }}
+          arguments:          ${{ parameters.test.arguments }}
         ${{ each pair in r.test }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -103,6 +112,9 @@ jobs:
             arguments: ${{ parameters.pack.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.pack.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.pack.displayNameSuffix }}
+          arguments:          ${{ parameters.pack.arguments }}
         ${{ each pair in r.pack }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
@@ -121,6 +133,9 @@ jobs:
             arguments: ${{ parameters.publish.arguments }} --runtime ${{ r.argValue }}
           ${{ if eq('', parameters.publish.arguments) }}:
             arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.publish.displayNameSuffix }}
+          arguments:          ${{ parameters.publish.arguments }}
         ${{ each pair in r.publish }}:
           ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
