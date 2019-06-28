@@ -5,7 +5,7 @@ jobs:
   parameters:
     restore:
       # projects
-      ${{ and(not(parameters.restore.projects), parameters.common.allProjects) }}:
+      ${{ if not(parameters.restore.projects) }}:
         projects:     ${{ parameters.common.allProjects }}
       # arguments
       ${{ if parameters.common.arguments }}:
@@ -20,7 +20,7 @@ jobs:
           ${{ pair.key }}: ${{ pair.value }}
     build:
       # projects
-      ${{ and(not(parameters.build.projects), parameters.common.allProjects) }}:
+      ${{ if not(parameters.build.projects) }}:
         projects:     ${{ parameters.common.allProjects }}
       # arguments
       ${{ if parameters.common.arguments }}:
@@ -35,7 +35,7 @@ jobs:
           ${{ pair.key }}: ${{ pair.value }}
     test:
       # projects
-      ${{ and(not(parameters.test.projects), parameters.common.testProjects) }}:
+      ${{ if not(parameters.test.projects) }}:
         projects:     ${{ parameters.common.testProjects }}
       # arguments
       ${{ if parameters.common.arguments }}:
@@ -50,7 +50,7 @@ jobs:
           ${{ pair.key }}: ${{ pair.value }}
     pack:
       # projects
-      ${{ and(not(parameters.pack.projects), parameters.common.srcProjects) }}:
+      ${{ if not(parameters.pack.projects) }}:
         projects:     ${{ parameters.common.srcProjects }}
       # arguments
       ${{ if parameters.common.arguments }}:
@@ -65,7 +65,7 @@ jobs:
           ${{ pair.key }}: ${{ pair.value }}
     publish:
       # projects
-      ${{ and(not(parameters.publish.projects), parameters.common.srcProjects) }}:
+      ${{ if not(parameters.publish.projects) }}:
         projects:     ${{ parameters.common.srcProjects }}
       # arguments
       ${{ if parameters.common.arguments }}:
