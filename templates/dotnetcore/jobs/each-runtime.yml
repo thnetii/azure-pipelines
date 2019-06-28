@@ -1,5 +1,4 @@
 parameters:
-  artifactFolder: ''
   runtimes:       []
 
 jobs:
@@ -7,17 +6,6 @@ jobs:
   - template: expand-common.yml
     parameters:
       runtime: ${{ r }}
-      # artifactFolder
-      ${{ if ne('', r.id) }}:
-        ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/standalone/${{ r.id }}
-        ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: standalone/${{ r.id }}
-      ${{ if eq('', r.id) }}:
-        ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/default
-        ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: default
       common:
         ${{ if r.arguments }}:
           ${{ if parameters.common.arguments }}:
@@ -138,5 +126,5 @@ jobs:
           ${{ if and(not(containsValue(pair.key, r.publish)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'artifactPrefix', 'artifactFolder', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}

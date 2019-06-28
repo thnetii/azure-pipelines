@@ -62,7 +62,7 @@ steps:
     displayName:      Upload NuGet artifacts
     inputs:
       pathtoPublish:  '$(Build.ArtifactStagingDirectory)/nuget'
-      artifactName:   '$(System.TeamProject)-nuget'
+      artifactName:   ${{ coalesce(parameters.nugetArtifactName, '$(System.TeamProject)-nuget') }}
     continueOnError:  true
 - ${{ if not(parameters.publish.skip) }}:
   - task: DotNetCoreCLI@2
@@ -82,5 +82,5 @@ steps:
     displayName:      Upload Binary artifacts
     inputs:
       pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
-      artifactName:   '$(System.TeamProject)-artifacts'
+      artifactName:   ${{ coalesce(parameters.publishArtifactName, '$(System.TeamProject)-artifacts') }}
     continueOnError:  true

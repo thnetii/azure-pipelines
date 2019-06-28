@@ -1,24 +1,11 @@
 parameters:
   configurations: []
-  artifactPrefix: ''
-  artifactFolder: ''
 
 jobs:
 - ${{ each c in parameters.configurations }}:
   - template: each-runtime.yml
     parameters:
       configuration: ${{ c }}
-      # artifactFolder
-      ${{ if ne('', c.id) }}:
-        ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/${{ c.id }}
-        ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ c.id }}
-      ${{ if eq('', c.id) }}:
-        ${{ if ne('', parameters.artifactFolder) }}:
-          artifactFolder: ${{ parameters.artifactFolder }}/default
-        ${{ if eq('', parameters.artifactFolder) }}:
-          artifactFolder: default
       common:
         ${{ if c.arguments }}:
           ${{ if parameters.common.arguments }}:
@@ -124,5 +111,5 @@ jobs:
           ${{ if and(not(containsValue(pair.key, c.publish)), notIn(pair.key, 'displayNameSuffix', 'arguments')) }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'configurations', 'configuration', 'artifactFolder', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'configurations', 'configuration', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}

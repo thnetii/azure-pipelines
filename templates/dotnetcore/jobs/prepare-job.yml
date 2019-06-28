@@ -1,5 +1,4 @@
-parameters:
-  job:            {}
+parameters: {}
 
 jobs:
 - template: job.yml

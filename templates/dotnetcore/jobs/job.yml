@@ -1,7 +1,4 @@
-parameters:
-  job:            {}
-  artifactPrefix: ''
-  artifactFolder: ''
+parameters: {}
 
 jobs:
 - job:          ${{ coalesce(parameters.job.id, 'default') }}
@@ -14,13 +11,27 @@ jobs:
   steps:
   - template:   steps.yml
     parameters:
+      ${{ if eq('', parameters.configuration.id) }}:
+        ${{ if eq('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget
+          publishArtifactName:  $(System.TeamProject)-artifacts-default
+        ${{ if ne('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.runtime.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-standalone-${{ parameters.runtime.id }}
+      ${{ if ne('', parameters.configuration.id) }}:
+        ${{ if eq('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-default
+        ${{ if ne('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}-${{ parameters.runtime.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-standalone-${{ parameters.runtime.id }}
       pack:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget/${{ parameters.artifactFolder }}" ${{ parameters.pack.arguments }}'
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget" ${{ parameters.pack.arguments }}'
         ${{ each pair in parameters.pack }}:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       publish:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts/${{ parameters.artifactFolder }}" ${{ parameters.pack.arguments }}'
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.pack.arguments }}'
         ${{ each pair in parameters.publish }}:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
