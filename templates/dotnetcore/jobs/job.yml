@@ -21,7 +21,7 @@ jobs:
             ${{ pair.key }}: ${{ pair.value }}
       publish:
         arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts/${{ parameters.artifactFolder }}" ${{ parameters.pack.arguments }}'
-        ${{ each pair in parameters.pack }}:
+        ${{ each pair in parameters.publish }}:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
