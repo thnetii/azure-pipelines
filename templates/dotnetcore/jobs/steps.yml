@@ -13,7 +13,7 @@ steps:
       custom:     restore
       projects:   ${{ parameters.restore.projects }}
       arguments:  ${{ parameters.restore.arguments }}
-      ${{ each pair in parameters.restore.inputs }}:
+      ${{ each pair in parameters.restore }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.build.skip) }}:
@@ -27,7 +27,7 @@ steps:
       command:    build
       projects:   ${{ parameters.build.projects }}
       arguments:  ${{ parameters.build.arguments }}
-      ${{ each pair in parameters.build.inputs }}:
+      ${{ each pair in parameters.build }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.test.skip) }}:
@@ -40,7 +40,7 @@ steps:
       projects:   ${{ parameters.test.projects }}
       arguments:  ${{ parameters.test.arguments }}
       publishTestResults: true
-      ${{ each pair in parameters.test.inputs }}:
+      ${{ each pair in parameters.test }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'publishTestResults') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.pack.skip) }}:
@@ -53,7 +53,7 @@ steps:
       custom:     pack
       projects:   ${{ parameters.pack.projects }}
       arguments:  ${{ parameters.pack.arguments }}
-      ${{ each pair in parameters.pack.inputs }}:
+      ${{ each pair in parameters.pack }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
@@ -73,8 +73,7 @@ steps:
       command:    publish
       projects:   ${{ parameters.publish.projects }}
       arguments:  ${{ parameters.publish.arguments }}
-      zipAfterPublish:  false
-      ${{ each pair in parameters.publish.inputs }}:
+      ${{ each pair in parameters.publish }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
