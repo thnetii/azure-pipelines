@@ -26,9 +26,11 @@
     <FileVersion>$(VersionPrefix)</FileVersion>
     <AssemblyVersion>$(FileVersion)</AssemblyVersion>
   </PropertyGroup>
-  <PropertyGroup Label="CI Build" Condition="'$(BuildId)'!=''">
+  <PropertyGroup Label="CI Build" Condition="'$(BuildId)'!='' and !('$(Configuration)'=='Release' and ($(BuildSourceBranch.StartsWith('refs/heads/rel/')) or $(BuildSourceBranch.StartsWith('rel/'))))">
     <VersionSuffix Condition="'$(VersionSuffix)'!=''">$(VersionSuffix)-build$(BuildId)</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'==''">build$(BuildId)</VersionSuffix>
+  </PropertyGroup>
+  <PropertyGroup Label="CI Build" Condition="'$(BuildId)'!=''">
     <AssemblyVersion Condition="'$(FileVersion)'!=''">$(FileVersion).$(BuildId)</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
