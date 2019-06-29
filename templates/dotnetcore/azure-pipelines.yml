@@ -1,5 +1,6 @@
 parameters:
   # defaultPool:                null
+  defaultArguments:             -p:BuildId=$(Build.BuildId) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netstandard2.0/THNETII.AzureDevOps.Pipelines.MSBuild.dll"
 
   # common:                     null
   #overrideCommon:              {}
@@ -36,9 +37,9 @@ jobs:
         # arguments:
         ${{ if not(parameters.overrideCommon.arguments) }}:
           ${{ if parameters.overrideCommon.addArguments }}:
-            arguments:    '-p:BuildId=$(Build.BuildId) ${{ parameters.overrideCommon.addArguments }}'
+            arguments:    ${{ parameters.defaultArguments }} ${{ parameters.overrideCommon.addArguments }}
           ${{ if not(parameters.overrideCommon.addArguments) }}:
-            arguments:    '-p:BuildId=$(Build.BuildId)'
+            arguments:    ${{ parameters.defaultArguments }}
         ${{ if parameters.overrideCommon.arguments }}:
           ${{ if parameters.overrideCommon.addArguments }}:
             arguments:    ${{ parameters.overrideCommon.arguments }} ${{ parameters.overrideCommon.addArguments }}
