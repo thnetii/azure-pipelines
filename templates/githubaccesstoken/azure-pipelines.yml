@@ -19,12 +19,17 @@ steps:
       [System.Net.ServicePointManager]::SecurityProtocol -bor `
       [System.Net.SecurityProtocolType]::Tls12
 
-    [uri]$GitHubApiUri = "https://api.github.com/user"
     [securestring]$GitHubAccessToken = ConvertTo-SecureString $ENV:GitHubAccessToken -AsPlainText -Force
+    $GitHubApiHeaders = @{
+      Accept = "application/vnd.github.machine-man-preview+json"
+    };
 
+    [uri]$GitHubApiUri = "https://api.github.com/installation/repositories"
     try {
       $GitHubApiResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUri `
         -Authentication OAuth -Token $GitHubAccessToken `
+        -Headers $GitHubApiHeaders `
+        -SessionVariable GitHubApiSession `
         -ErrorVariable GitHubApiError
       $GitHubApiJson = $GitHubApiResponse | ConvertTo-Json
     } catch {
@@ -34,10 +39,12 @@ steps:
 
     Write-Host
 
-    [uri]$GitHubApiUri = "https://api.github.com/user/repos"
+    [uri]$GitHubApiUri = "https://api.github.com/user/installations"
     try {
       $GitHubApiResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUri `
         -Authentication OAuth -Token $GitHubAccessToken `
+        -Headers $GitHubApiHeaders `
+        -WebSession $GitHubApiSession `
         -ErrorVariable GitHubApiError
       $GitHubApiJson = $GitHubApiResponse | ConvertTo-Json
     } catch {
