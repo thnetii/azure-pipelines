@@ -24,7 +24,7 @@ steps:
 
     Write-Host
 
-    [uri]$GitHubApiGrant = "https://api.github.com/applications/grants"
+    [uri]$GitHubApiGrant = "https://api.github.com/authorizations"
     try {
       $GitHubGrantResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiGrant `
         -Authentication OAuth -Token $GitHubAccessToken `
