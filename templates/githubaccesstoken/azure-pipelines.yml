@@ -1,0 +1,20 @@
+name: $(Date:yyyy-MM-dd)-rev$(Rev:r)
+steps:
+- task: thnetii.thnetii-azuredevops-pipelines-githubtasklibrary.githubaccesstokentask.githubaccesstokentask@0
+  displayName: 'Get GitHub Access Token'
+  inputs:
+    gitHubConnection: thnetii
+- pwsh: |
+    [System.Net.ServicePointManager]::SecurityProtocol = `
+      [System.Net.ServicePointManager]::SecurityProtocol -bor `
+      [System.Net.SecurityProtocolType]::Tls12
+
+    [uri]$GitHubApiUser = "https://api.github.com/user"
+    [securestring]$GitHubAccessToken = ConvertTo-SecureString $ENV:GitHubAccessToken -AsPlainText -Force
+
+    $GitHubUserResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUser `
+      -Authentication OAuth -Token $GitHubAccessToken
+    $GitHubUserJson = $GitHubUserResponse | ConvertTo-Json
+    Write-Host $GitHubUserJson
+  env:
+    GitHubAccessToken: $(GitHub.AccessToken)

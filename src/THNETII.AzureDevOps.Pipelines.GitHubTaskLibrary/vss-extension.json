@@ -1,0 +1,36 @@
+{
+  "manifestVersion": 1,
+  "id": "thnetii-azuredevops-pipelines-githubtasklibrary",
+  "name": "GitHub ServiceConnection Tasks Library",
+  "version": "0.1.2",
+  "publisher": "thnetii",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "description": "",
+  "categories": [
+    "Azure Pipelines"
+  ],
+  "icons": {
+    "default": "images/icon.png"
+  },
+  "files": [
+    {
+      "path": "githubaccesstokentask"
+    }
+  ],
+  "contributions": [
+    {
+      "id": "githubaccesstokentask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
+      "properties": {
+        "name": "githubaccesstokentask"
+      }
+    }
+  ]
+}

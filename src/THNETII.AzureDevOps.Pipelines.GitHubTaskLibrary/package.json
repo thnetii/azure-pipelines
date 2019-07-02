@@ -1,0 +1,25 @@
+{
+  "name": "thnetii.azuredevops.pipelines.githubtasklibrary",
+  "version": "0.1.2-preview1",
+  "description": "GitHub ServiceConnection Tasks Library",
+  "scripts": {
+    "install": "npm install githubaccesstokentask",
+    "build": "pushd githubaccesstokentask && npm run build && popd && tfx extension create --manifests vss-extension.json --output-path ../../bin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/azure-pipelines.git"
+  },
+  "author": {
+    "name": "TH-NETII Rasch Solutions",
+    "url": "https://thnetii.td.org.uit.no"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "devDependencies": {
+    "tfx-cli": "^0.7.6"
+  }
+}
