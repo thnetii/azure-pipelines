@@ -13,10 +13,23 @@ steps:
     [securestring]$GitHubAccessToken = ConvertTo-SecureString $ENV:GitHubAccessToken -AsPlainText -Force
 
     try {
-      $GitHubUserResponse = Invoke-WebRequest -Method Get -Uri $GitHubApiUser `
+      $GitHubUserResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUser `
         -Authentication OAuth -Token $GitHubAccessToken `
         -ErrorVariable GitHubErrorResponse
       $GitHubUserJson = $GitHubUserResponse | ConvertTo-Json
+    } catch {
+      $GitHubUserJson = $GitHubErrorResponse[0].Message | ConvertFrom-Json | ConvertTo-Json
+    }
+    Write-Host $GitHubUserJson
+
+    Write-Host
+
+    [uri]$GitHubApiGrant = "https://api.github.com/applications/grants"
+    try {
+      $GitHubGrantResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiGrant `
+        -Authentication OAuth -Token $GitHubAccessToken `
+        -ErrorVariable GitHubErrorResponse
+      $GitHubUserJson = $GitHubGrantResponse | ConvertTo-Json
     } catch {
       $GitHubUserJson = $GitHubErrorResponse[0].Message | ConvertFrom-Json | ConvertTo-Json
     }
