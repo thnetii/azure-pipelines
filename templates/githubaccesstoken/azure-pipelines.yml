@@ -16,31 +16,31 @@ steps:
       [System.Net.ServicePointManager]::SecurityProtocol -bor `
       [System.Net.SecurityProtocolType]::Tls12
 
-    [uri]$GitHubApiUser = "https://api.github.com/user"
+    [uri]$GitHubApiUri = "https://api.github.com/user"
     [securestring]$GitHubAccessToken = ConvertTo-SecureString $ENV:GitHubAccessToken -AsPlainText -Force
 
     try {
-      $GitHubUserResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUser `
+      $GitHubApiResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUri `
         -Authentication OAuth -Token $GitHubAccessToken `
-        -ErrorVariable GitHubErrorResponse
-      $GitHubUserJson = $GitHubUserResponse | ConvertTo-Json
+        -ErrorVariable GitHubApiError
+      $GitHubApiJson = $GitHubApiResponse | ConvertTo-Json
     } catch {
-      $GitHubUserJson = $GitHubErrorResponse[0].Message | ConvertFrom-Json | ConvertTo-Json
+      $GitHubApiJson = $GitHubApiError[0].Message | ConvertFrom-Json | ConvertTo-Json
     }
-    Write-Host $GitHubUserJson
+    Write-Host $GitHubApiJson
 
     Write-Host
 
-    [uri]$GitHubApiGrant = "https://api.github.com/authorizations"
+    [uri]$GitHubApiUri = "https://api.github.com/orgs/thnetii"
     try {
-      $GitHubGrantResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiGrant `
+      $GitHubApiResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUri `
         -Authentication OAuth -Token $GitHubAccessToken `
-        -ErrorVariable GitHubErrorResponse
-      $GitHubUserJson = $GitHubGrantResponse | ConvertTo-Json
+        -ErrorVariable GitHubApiError
+      $GitHubApiJson = $GitHubApiResponse | ConvertTo-Json
     } catch {
-      $GitHubUserJson = $GitHubErrorResponse[0].Message | ConvertFrom-Json | ConvertTo-Json
+      $GitHubApiJson = $GitHubApiError[0].Message | ConvertFrom-Json | ConvertTo-Json
     }
-    Write-Host $GitHubUserJson
+    Write-Host $GitHubApiJson
 
   env:
     GitHubAccessToken: $(GitHub.AccessToken)
