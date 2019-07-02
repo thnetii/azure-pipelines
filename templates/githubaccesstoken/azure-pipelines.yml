@@ -1,4 +1,11 @@
 name: $(Date:yyyy-MM-dd)-rev$(Rev:r)
+trigger:
+  batch: true
+  paths:
+    include:
+    - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/*
+    - templates/githubaccesstoken/*
+pr: none
 steps:
 - task: thnetii.thnetii-azuredevops-pipelines-githubtasklibrary.githubaccesstokentask.githubaccesstokentask@0
   displayName: 'Get GitHub Access Token'
