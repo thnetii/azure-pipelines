@@ -1,6 +1,6 @@
 {
   "name": "thnetii.azuredevops.pipelines.githubtasklibrary.githubaccesstokentask",
-  "version": "0.1.2-preview",
+  "version": "0.1.6",
   "description": "GitHub Access Token task for Azure DevOps Pipelines",
   "main": "index.js",
   "repository": {
@@ -8,7 +8,10 @@
     "url": "git+https://github.com/thnetii/azure-pipelines.git"
   },
   "scripts": {
-    "build": "npx tsc"
+    "build": "npx tsc",
+    "patchInc": "npx tsc semverInc.ts && node semverInc.js patch && npm install && pushd .. && npm run patchInc && popd",
+    "minorInc": "npx tsc semverInc.ts && node semverInc.js minor && npm install && pushd .. && npm run minorInc && popd",
+    "majorInc": "npx tsc semverInc.ts && node semverInc.js major && npm install && pushd .. && npm run majorInc && popd"
   },
   "keywords": [
     "Azure DevOps",
@@ -30,6 +33,8 @@
   "devDependencies": {
     "@types/node": "^12.0.10",
     "@types/q": "^1.5.2",
+    "@types/semver": "^6.0.1",
+    "semver": "^6.2.0",
     "typescript": "^3.5.2"
   }
 }

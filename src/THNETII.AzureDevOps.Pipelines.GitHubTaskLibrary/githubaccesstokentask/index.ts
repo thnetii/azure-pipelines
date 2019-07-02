@@ -11,16 +11,15 @@ async function run(): Promise<void> {
 
       switch (githubEndpointObject.scheme) {
         case "PersonalAccessToken":
-        case "InstallationToken":
           githubEndpointToken = githubEndpointObject.parameters.accessToken;
           break;
+        case "Token":
         case "OAuth":
           githubEndpointToken = githubEndpointObject.parameters.AccessToken;
           break;
         default:
           if (githubEndpointObject.scheme) {
             const message = `Invalid GitHub service connection scheme: ${githubEndpointObject.scheme}`;
-            tl.logIssue(tl.IssueType.Error, message);
             throw new Error(message);
           }
           break;
@@ -29,7 +28,6 @@ async function run(): Promise<void> {
 
     if (!githubEndpointToken) {
       const message = `Invalid GitHub service endpoint: ${githubEndpointId}.`
-      tl.logIssue(tl.IssueType.Error, message);
       throw new Error(message);
     }
 

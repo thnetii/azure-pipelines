@@ -1,10 +1,13 @@
 {
   "name": "thnetii.azuredevops.pipelines.githubtasklibrary",
-  "version": "0.1.2-preview1",
+  "version": "0.1.6",
   "description": "GitHub ServiceConnection Tasks Library",
   "scripts": {
     "install": "npm install githubaccesstokentask",
-    "build": "pushd githubaccesstokentask && npm run build && popd && tfx extension create --manifests vss-extension.json --output-path ../../bin"
+    "build": "pushd githubaccesstokentask && npm run build && popd && tfx extension create --manifests vss-extension.json --output-path ../../bin",
+    "patchInc": "node semverInc.js patch && npm install",
+    "minorInc": "node semverInc.js minor && npm install",
+    "majorInc": "node semverInc.js major && npm install"
   },
   "repository": {
     "type": "git",
@@ -20,6 +23,11 @@
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "devDependencies": {
+    "@types/node": "^12.0.10",
+    "semver": "^6.2.0",
     "tfx-cli": "^0.7.6"
+  },
+  "dependencies": {
+    "thnetii.azuredevops.pipelines.githubtasklibrary.githubaccesstokentask": "file:githubaccesstokentask"
   }
 }
