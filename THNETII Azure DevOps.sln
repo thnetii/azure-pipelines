@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "THNETII.AzureDevOps.Pipelines.MSBuild", "src\THNETII.AzureDevOps.Pipelines.MSBuild\THNETII.AzureDevOps.Pipelines.MSBuild.csproj", "{12899C3C-BACF-4A58-8FC0-7A5173E47755}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "THNETII.AzureDevOps.Pipelines.VstsTaskSdk", "src\THNETII.AzureDevOps.Pipelines.VstsTaskSdk\THNETII.AzureDevOps.Pipelines.VstsTaskSdk.csproj", "{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,8 +51,21 @@ Global
 		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x64.Build.0 = Release|Any CPU
 		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x86.ActiveCfg = Release|Any CPU
 		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x86.Build.0 = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|x64.Build.0 = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|x86.Build.0 = Debug|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|x64.ActiveCfg = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|x64.Build.0 = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{12899C3C-BACF-4A58-8FC0-7A5173E47755} = {FB1E59F6-3502-4637-875B-4A22FE786735}
+		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E} = {FB1E59F6-3502-4637-875B-4A22FE786735}
 	EndGlobalSection
 EndGlobal

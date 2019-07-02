@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
-using THNETII.AzureDevOps.Pipelines.MSBuild.Internal;
+using THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal;
 
-namespace THNETII.AzureDevOps.Pipelines.MSBuild
+namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
 {
     public static class VstsLoggingCommand
     {
@@ -144,12 +145,14 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
                 ("result", result.ToEnumMemberString()).AsKeyValuePair()
             });
 
+
         /// <summary>
         /// Set progress and current operation for current task.
         /// </summary>
         /// <param name="percent">percentage of completion</param>
         /// <param name="currentOperation" />
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="percent"/> is less than <c>0</c> (zero) or greater than <c>100</c>.</exception>
+        [SuppressMessage("Globalization", "CA1303: Do not pass literals as localized parameters")]
         public static string FormatTaskSetProgress(int percent, string currentOperation = null)
         {
             if (percent < 0 || percent > 100)

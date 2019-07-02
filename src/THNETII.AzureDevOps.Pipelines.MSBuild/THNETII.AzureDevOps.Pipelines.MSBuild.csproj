@@ -20,4 +20,8 @@ E.g. the Azure DevOps MSBuild logger that logs MSBuild output in a format that i
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.0.461" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\THNETII.AzureDevOps.Pipelines.VstsTaskSdk\**\*.cs" />
+  </ItemGroup>
+
 </Project>

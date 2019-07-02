@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace THNETII.AzureDevOps.Pipelines.MSBuild.Internal
+namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal
 {
     internal static class EnumMemberStringExtensions
     {

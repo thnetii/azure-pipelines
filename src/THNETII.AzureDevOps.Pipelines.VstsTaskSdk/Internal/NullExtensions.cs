@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace THNETII.AzureDevOps.Pipelines.MSBuild.Internal
+namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal
 {
     internal static class NullExtensions
     {

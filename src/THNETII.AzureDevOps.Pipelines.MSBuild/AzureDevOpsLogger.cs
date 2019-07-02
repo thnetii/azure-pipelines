@@ -4,7 +4,8 @@ using System.IO;
 
 using Microsoft.Build.Framework;
 
-using THNETII.AzureDevOps.Pipelines.MSBuild.Internal;
+using THNETII.AzureDevOps.Pipelines.VstsTaskSdk;
+using THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal;
 
 using MSBuildLogger = Microsoft.Build.Utilities.Logger;
 
@@ -104,12 +105,6 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
             writer.WriteLine(FormatErrorEvent(e));
         }
 
-        private static int? GetVstsTaskOrderOrNull(BuildEventContext context)
-        {
-            int nodeId = context.NodeId;
-            return nodeId == BuildEventContext.InvalidNodeId ? null : (int?)nodeId;
-        }
-
         private static (int lineNumber, int columnNumber) GetLineAndColumnNumber(int lineNumber, int columnNumber, int endColumnNumber)
         {
             if (lineNumber == endColumnNumber && columnNumber == 0 && endColumnNumber == 0)
@@ -120,6 +115,8 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
         /// <inheritdoc />
         public override string FormatWarningEvent(BuildWarningEventArgs args)
         {
+            if (args is null)
+                return null;
             var (lineNumber, columnNumber) = GetLineAndColumnNumber(
                 args.LineNumber, args.ColumnNumber,
                 args.EndColumnNumber
@@ -133,6 +130,8 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
         /// <inheritdoc />
         public override string FormatErrorEvent(BuildErrorEventArgs args)
         {
+            if (args is null)
+                return null;
             var (lineNumber, columnNumber) = GetLineAndColumnNumber(
                 args.LineNumber, args.ColumnNumber,
                 args.EndColumnNumber

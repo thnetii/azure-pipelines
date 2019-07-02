@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace THNETII.AzureDevOps.Pipelines.MSBuild.Internal
+namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal
 {
     internal static class BooleanStringConverter
     {

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace THNETII.AzureDevOps.Pipelines.MSBuild
+namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
 {
     public enum VstsTaskResult
     {
