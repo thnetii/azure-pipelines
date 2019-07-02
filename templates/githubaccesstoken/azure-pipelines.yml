@@ -34,7 +34,7 @@ steps:
 
     Write-Host
 
-    [uri]$GitHubApiUri = "https://api.github.com/orgs/thnetii"
+    [uri]$GitHubApiUri = "https://api.github.com/user/repos"
     try {
       $GitHubApiResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUri `
         -Authentication OAuth -Token $GitHubAccessToken `
