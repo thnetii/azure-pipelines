@@ -12,9 +12,15 @@ steps:
     [uri]$GitHubApiUser = "https://api.github.com/user"
     [securestring]$GitHubAccessToken = ConvertTo-SecureString $ENV:GitHubAccessToken -AsPlainText -Force
 
-    $GitHubUserResponse = Invoke-RestMethod -Method Get -Uri $GitHubApiUser `
-      -Authentication OAuth -Token $GitHubAccessToken
-    $GitHubUserJson = $GitHubUserResponse | ConvertTo-Json
+    try {
+      $GitHubUserResponse = Invoke-WebRequest -Method Get -Uri $GitHubApiUser `
+        -Authentication OAuth -Token $GitHubAccessToken `
+        -ErrorVariable GitHubErrorResponse
+      $GitHubUserJson = $GitHubUserResponse | ConvertTo-Json
+    } catch {
+      $GitHubUserJson = $GitHubErrorResponse[0].Message | ConvertFrom-Json | ConvertTo-Json
+    }
     Write-Host $GitHubUserJson
+
   env:
     GitHubAccessToken: $(GitHub.AccessToken)
