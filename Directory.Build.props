@@ -22,7 +22,6 @@
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Label="Version" Condition="'$(VersionPrefix)'!=''">
-    <!--<VersionPrefix>0.0.1</VersionPrefix>-->
     <FileVersion>$(VersionPrefix)</FileVersion>
     <AssemblyVersion>$(FileVersion)</AssemblyVersion>
   </PropertyGroup>
