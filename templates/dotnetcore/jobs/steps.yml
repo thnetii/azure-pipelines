@@ -1,7 +1,9 @@
 parameters: {}
 
 steps:
-- template: ../../msbuildlogger/azure-pipelines.yml
+- ${{ each step in parameters.presteps }}:
+  - ${{ step }}
+- template: ../../msbuildlogger/steps.yml
 - ${{ if not(parameters.restore.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
@@ -85,3 +87,5 @@ steps:
       pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
       artifactName:   ${{ coalesce(parameters.publishArtifactName, '$(System.TeamProject)-artifacts') }}
     continueOnError:  true
+- ${{ each step in parameters.poststeps }}:
+  - ${{ step }}

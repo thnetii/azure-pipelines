@@ -1,5 +1,4 @@
 parameters: {}
-
 steps:
 - task: NuGetCommand@2
   displayName: Install MSBuild Logger
