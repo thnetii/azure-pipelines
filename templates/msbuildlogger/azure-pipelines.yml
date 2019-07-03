@@ -1,0 +1,8 @@
+parameters: {}
+
+steps:
+- task: NuGetCommand@2
+  displayName: Install MSBuild Logger
+  inputs:
+    command: custom
+    arguments: install -NonInteractive -OutputDirectory bld -ExcludeVersion -Prerelease -Source https://pkgs.dev.azure.com/thnetii/_packaging/azure-pipelines/nuget/v3/index.json THNETII.AzureDevOps.Pipelines.MSBuild
