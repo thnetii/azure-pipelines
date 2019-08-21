@@ -31,7 +31,7 @@ jobs:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       publish:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.pack.arguments }}'
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.publish.arguments }}'
         ${{ each pair in parameters.publish }}:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
