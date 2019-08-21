@@ -33,7 +33,7 @@ jobs:
           srcProjects:  '[Ss]rc/*/*.csproj'
         # testProjects
         ${{ if not(parameters.overrideCommon.testProjects) }}:
-          testProjects: '[Tt]test/*/*.csproj'
+          testProjects: '[Tt]est/*/*.csproj'
         # arguments:
         ${{ if not(parameters.overrideCommon.arguments) }}:
           ${{ if parameters.overrideCommon.addArguments }}:
