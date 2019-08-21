@@ -44,7 +44,7 @@ steps:
       arguments:  ${{ parameters.test.arguments }}
       publishTestResults: true
       ${{ each pair in parameters.test }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments''displayNameSuffix', 'publishTestResults') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'publishTestResults') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.pack.skip) }}:
   - task: DotNetCoreCLI@2
