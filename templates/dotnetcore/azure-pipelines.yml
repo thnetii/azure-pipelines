@@ -50,6 +50,7 @@ jobs:
             ${{ pair.key }}: ${{ pair.value }}
     ${{ if not(containsValue(parameters, 'publish')) }}:
       publish:
+        arguments:            -p:BuildDefaultTargetFramework=true
         publishWebProjects:   false
         zipAfterPublish:      false
     ${{ if not(containsValue(parameters, 'configurations')) }}:
