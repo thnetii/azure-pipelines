@@ -4,4 +4,4 @@ steps:
   displayName: Install MSBuild Logger
   inputs:
     command: custom
-    arguments: install -NonInteractive -OutputDirectory bld -ExcludeVersion -Prerelease -Source https://pkgs.dev.azure.com/thnetii/_packaging/azure-pipelines/nuget/v3/index.json THNETII.AzureDevOps.Pipelines.MSBuild
+    arguments: install -NonInteractive -OutputDirectory bld -ExcludeVersion -Prerelease -Source https://pat:kytcih33qnzu5xcibmbpetl5u7c3lgjharl2i5tv3xa3kgjvkooa@pkgs.dev.azure.com/thnetii/_packaging/azure-pipelines/nuget/v3/index.json THNETII.AzureDevOps.Pipelines.MSBuild
