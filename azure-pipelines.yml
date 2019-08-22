@@ -6,8 +6,7 @@ trigger:
     - master
     - rel/*
 pr:
-- master
-- rel/*
+- '*'
 resources:
   repositories:
   - repository: templates
