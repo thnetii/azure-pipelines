@@ -1,5 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using System;
+
 using THNETII.AzureDevOps.Pipelines.VstsTaskSdk;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
@@ -25,14 +28,47 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
         {
             if (!IsEnabled(logLevel))
                 return;
-
+            if (logLevel == LogLevel.None)
+                return;
             if (formatter is null)
                 throw new ArgumentNullException(nameof(formatter));
 
-            var text = formatter(state, exception) ?? exception?.ToString() ??
+            var message = formatter(state, exception) ?? exception?.ToString() ??
                 string.Empty;
 
+            var logIssueType = ToVstsTaskLogIssueType(logLevel);
 
+            string errCode = null;
+            string sourcePath = null;
+            int lineNumber = -1;
+            int columnNumber = -1;
+
+            var vsoOutput = logIssueType == VstsTaskLogIssueType.None
+                ? VstsLoggingCommand.FormatTaskDebug(message)
+                : VstsLoggingCommand.FormatTaskLogIssue(logIssueType, message,
+                    errCode, sourcePath, lineNumber, columnNumber);
+            if (!string.IsNullOrEmpty(vsoOutput))
+                LoggerProcessor.EnqueueMessage(vsoOutput);
+        }
+
+        private static VstsTaskLogIssueType ToVstsTaskLogIssueType(LogLevel logLevel)
+        {
+            VstsTaskLogIssueType logIssueType;
+            switch (logLevel)
+            {
+                default:
+                    logIssueType = VstsTaskLogIssueType.None;
+                    break;
+                case LogLevel.Warning:
+                    logIssueType = VstsTaskLogIssueType.Warning;
+                    break;
+                case LogLevel.Error:
+                case LogLevel.Critical:
+                    logIssueType = VstsTaskLogIssueType.Error;
+                    break;
+            }
+
+            return logIssueType;
         }
     }
 }

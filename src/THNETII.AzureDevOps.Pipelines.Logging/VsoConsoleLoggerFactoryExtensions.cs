@@ -8,7 +8,11 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
     {
         public static ILoggingBuilder AddVsoConsole(this ILoggingBuilder builder)
         {
-            builder?.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, VsoConsoleLoggerProvider>());
+            if (builder?.Services is IServiceCollection services)
+            {
+                services.AddSingleton<VsoConsoleProcessor>();
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, VsoConsoleLoggerProvider>());
+            }
 
             return builder;
         }

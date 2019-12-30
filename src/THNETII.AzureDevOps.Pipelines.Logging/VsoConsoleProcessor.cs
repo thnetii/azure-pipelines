@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
 {
-    internal class VsoConsoleProcessor : IDisposable
+    public class VsoConsoleProcessor : IDisposable
     {
         protected const int maxQueuedMessages = 1024;
         private readonly BlockingCollection<string> messageQueue =
@@ -31,15 +31,17 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                 }
                 catch (InvalidOperationException) { }
             }
-
-            // Adding is completed so just log the message
-            try
+            else
             {
-                WriteMessage(message);
-            }
+                // Adding is completed so just log the message
+                try
+                {
+                    WriteMessage(message);
+                }
 #pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception) { }
-#pragma warning restore CA1031 // Do not catch general exception types
+                catch (Exception) { }
+#pragma warning restore CA1031 // Do not catch general exception types 
+            }
         }
 
         protected virtual void WriteMessage(string message)
