@@ -75,7 +75,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
             messageQueue.CompleteAdding();
             try
             {
-                writerThread.Join(TimeSpan.FromMilliseconds(1500));
+                writerThread.Join();
             }
             catch (ThreadStateException) { }
 

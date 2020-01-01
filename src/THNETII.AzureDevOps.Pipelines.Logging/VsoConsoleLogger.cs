@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
 using THNETII.AzureDevOps.Pipelines.VstsTaskSdk;
+using THNETII.TypeConverter;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
 {
@@ -24,11 +25,10 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
 
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+            Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
-                return;
-            if (logLevel == LogLevel.None)
                 return;
             if (formatter is null)
                 throw new ArgumentNullException(nameof(formatter));
@@ -36,12 +36,39 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
             var message = formatter(state, exception) ?? exception?.ToString() ??
                 string.Empty;
 
-            var logIssueType = ToVstsTaskLogIssueType(logLevel);
+            var stateLookup = state switch
+            {
+                IEnumerable<KeyValuePair<string, string>> kvps => kvps
+                    .ToLookup(kvp => kvp.Key, kvp => (object)(kvp.Value)),
+                IEnumerable<KeyValuePair<string, object>> kvps => kvps
+                    .ToLookup(kvp => kvp.Key, kvp => kvp.Value),
+                _ => Enumerable.Empty<KeyValuePair<string, object>>()
+                    .ToLookup(kvp => kvp.Key, kvp => kvp.Value)
+            };
 
-            string errCode = null;
-            string sourcePath = null;
-            int lineNumber = -1;
-            int columnNumber = -1;
+            var logIssueType = stateLookup["type"].FirstOrDefault() switch
+            {
+                VstsTaskLogIssueType t => t,
+                string s => EnumStringConverter.ParseOrDefault(s, ToVstsTaskLogIssueType(logLevel)),
+                object o => EnumStringConverter.ParseOrDefault(o.ToString(), ToVstsTaskLogIssueType(logLevel)),
+                _ => ToVstsTaskLogIssueType(logLevel)
+            };
+            string errCode = stateLookup["code"].FirstOrDefault()?.ToString();
+            string sourcePath = stateLookup["sourcepath"].FirstOrDefault()?.ToString();
+            int lineNumber = stateLookup["linenumber"].FirstOrDefault() switch
+            {
+                int v => v,
+                string s => int.TryParse(s, out int v) ? v : -1,
+                object o => int.TryParse(o.ToString(), out int v) ? v : -1,
+                _ => -1
+            };
+            int columnNumber = stateLookup["columnnumber"].FirstOrDefault() switch
+            {
+                int v => v,
+                string s => int.TryParse(s, out int v) ? v : -1,
+                object o => int.TryParse(o.ToString(), out int v) ? v : -1,
+                _ => -1
+            };
 
             var vsoOutput = logIssueType == VstsTaskLogIssueType.None
                 ? VstsLoggingCommand.FormatTaskDebug(message)

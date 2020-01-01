@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Meta.props = Directory.Meta.props
 		Directory.Version.props = Directory.Version.props
 		LICENSE = LICENSE
+		nuget.config = nuget.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THNETII.AzureDevOps.Pipelines.MSBuild", "src\THNETII.AzureDevOps.Pipelines.MSBuild\THNETII.AzureDevOps.Pipelines.MSBuild.csproj", "{12899C3C-BACF-4A58-8FC0-7A5173E47755}"
@@ -27,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THNETII.AzureDevOps.Pipelin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0839D8B5-8317-43B9-BA64-F4AE917FA1DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "THNETII.AzureDevOps.Pipelines.Test", "test\THNETII.AzureDevOps.Pipelines.Test\THNETII.AzureDevOps.Pipelines.Test.csproj", "{FA44F4C0-FC76-4A7F-B7B4-B1E405C9ABD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THNETII.AzureDevOps.Pipelines.Test", "test\THNETII.AzureDevOps.Pipelines.Test\THNETII.AzureDevOps.Pipelines.Test.csproj", "{FA44F4C0-FC76-4A7F-B7B4-B1E405C9ABD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

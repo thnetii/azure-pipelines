@@ -10,31 +10,40 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
     {
         private static readonly Dictionary<string, VsoConsoleLogger> loggers =
             new Dictionary<string, VsoConsoleLogger>(StringComparer.OrdinalIgnoreCase);
-        private readonly VsoConsoleProcessor consoleProcessor;
+        private readonly VsoConsoleProcessor loggerProcessor;
+        private IExternalScopeProvider scopeProvider;
 
-        public VsoConsoleLoggerProvider(VsoConsoleProcessor consoleProcessor) : base()
+        public VsoConsoleLoggerProvider(VsoConsoleProcessor loggerProcessor) : base()
         {
-            this.consoleProcessor = consoleProcessor;
+            this.loggerProcessor = loggerProcessor;
         }
 
         public ILogger CreateLogger(string categoryName)
         {
+            VsoConsoleLogger logger;
             lock (loggers)
             {
-                if (loggers.TryGetValue(categoryName, out var logger))
+                if (loggers.TryGetValue(categoryName, out logger))
                     return logger;
-                else
-                    return loggers[categoryName] = new VsoConsoleLogger(categoryName, consoleProcessor);
+            }
+            logger = new VsoConsoleLogger(categoryName, loggerProcessor)
+            { ScopeProvider = scopeProvider };
+            lock (loggers)
+            {
+                if (loggers.TryGetValue(categoryName, out var existingLogger))
+                    return existingLogger;
+                return loggers[categoryName] = logger;
             }
         }
 
         public void Dispose()
         {
-            consoleProcessor.Dispose();
+            lock (loggers) { loggers.Clear(); }
         }
 
         public void SetScopeProvider(IExternalScopeProvider scopeProvider)
         {
+            this.scopeProvider = scopeProvider;
             lock (loggers)
             {
                 foreach (var logger in loggers.Values)
