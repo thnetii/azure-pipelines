@@ -1,6 +1,6 @@
 parameters:
   # defaultPool:                null
-  defaultArguments:             -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netstandard2.0/THNETII.AzureDevOps.Pipelines.MSBuild.dll"
+  defaultArguments:             -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netcoreapp2.1/THNETII.AzureDevOps.Pipelines.MSBuild.dll"
 
   # common:                     null
   #overrideCommon:              {}
