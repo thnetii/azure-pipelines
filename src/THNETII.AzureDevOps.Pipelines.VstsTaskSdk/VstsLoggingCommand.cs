@@ -253,7 +253,11 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
 
             foreach (var (token, replacement) in replaceMappings)
             {
-                data = data.Replace(token, replacement);
+                data = data.Replace(token, replacement
+                #if NETCOREAPP
+                    , StringComparison.Ordinal
+                #endif // NETCOREAPP
+                    );
             }
 
             return data;
