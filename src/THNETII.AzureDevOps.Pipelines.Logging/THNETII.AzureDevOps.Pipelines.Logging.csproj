@@ -4,6 +4,11 @@
   <PropertyGroup>
     <LangVersion>8</LangVersion>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Extension library for logging messages in the Azure Pipelines logging format.
+
+    Uses the Microsoft.Extensions.Logging interfaces for standard DI-based logging.
+
+    Azure DevOps log messages are prefixed with ##vso. Azure Pipelines recognizes warning and error messages and will display them as appropriate in the Web UI.</Description>
   </PropertyGroup>
 
   <ItemGroup>
