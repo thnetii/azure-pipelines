@@ -11,21 +11,21 @@ parameters:
   
 - name:     defaultPool
   type:     object
-  # default keys:
+  default: {}
   # vmImage:  windows-2019
   
 - name:     job
   type:     object
-  # default keys:
+  default: {}
 - name:     configuration
   type:     object
-  # default keys:
+  default: {}
   # id:           ''
   # displayName:  ''
   # condition:    ''
 - name:     runtime
   type:     object
-  # default keys:
+  default: {}
   # id:           ''
   # displayName:  ''
   # condition:    ''
@@ -33,7 +33,7 @@ parameters:
   
 - name:     restore
   type:     object
-  # default keys:
+  default: {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -41,7 +41,7 @@ parameters:
   # arguments:          ''
 - name:     build
   type:     object
-  # default keys:
+  default: {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -49,7 +49,7 @@ parameters:
   # arguments:          ''
 - name:     test
   type:     object
-  # default keys:
+  default: {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -57,7 +57,7 @@ parameters:
   # arguments:          ''
 - name:     pack
   type:     object
-  # default keys:
+  default: {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -65,7 +65,7 @@ parameters:
   # arguments:          ''
 - name:     publish
   type:     object
-  # default keys:
+  default: {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
