@@ -19,7 +19,7 @@ parameters:
   default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netcoreapp2.1/THNETII.AzureDevOps.Pipelines.MSBuild.dll"
 - name:     common
   type:     object
-  # default keys:
+  default: {}
   # allProjects:  '' # '*.sln'
   # srcProjects:  '' # '[Ss]rc/*/*.csproj'
   # testProjects: '' # '[Tt]est/*/*.csproj'
