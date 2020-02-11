@@ -126,19 +126,19 @@ jobs:
     defaultPool:  ${{ parameters.defaultPool }}
     common:
       # allProjects
-      ${{ if not(containsValue('allProjects', parameters.common)) }}:
+      ${{ if eq(variables.null, parameters.common.allProjects) }}:
         allProjects:  '*.sln'
-      ${{ if containsValue('allProjects', parameters.common) }}:
+      ${{ if ne(variables.null, parameters.common.allProjects) }}:
         allProjects:  ${{ parameters.common.allProjects }}
       # srcProjects
-      ${{ if not(containsValue('srcProjects', parameters.common)) }}:
+      ${{ if eq(variables.null, parameters.common.srcProjects) }}:
         srcProjects:  '[Ss]rc/*/*.csproj'
-      ${{ if containsValue('srcProjects', parameters.common) }}:
+      ${{ if ne(variables.null, parameters.common.srcProjects) }}:
         srcProjects:  ${{ parameters.common.srcProjects }}
       # testProjects
-      ${{ if not(containsValue('testProjects', parameters.common)) }}:
+      ${{ if eq(variables.null, parameters.common.testProjects) }}:
         testProjects:  '[Tt]est/*/*.csproj'
-      ${{ if containsValue('testProjects', parameters.common) }}:
+      ${{ if ne(variables.null, parameters.common.testProjects) }}:
         testProjects:  ${{ parameters.common.testProjects }}
       # arguments:
       ${{ if not(parameters.common.arguments) }}:
