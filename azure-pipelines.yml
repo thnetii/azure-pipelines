@@ -19,6 +19,11 @@ jobs:
     checkout:
     - checkout:   self
       submodules: true
+    presteps:
+    - task: UseDotNet@2
+      displayName:  Use .NET Core SDK version 3.x
+      inputs:
+        version:    3.x
     independantRuntime:
       pool:
         vmImage:    windows-latest
