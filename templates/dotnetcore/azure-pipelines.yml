@@ -367,7 +367,7 @@ jobs:
         ${{ if eq(variables.null, parameters.macRuntime.arguments) }}:
           arguments:    '-p:NoNetFramework=true'
         # forwards rest of object
-        ${{ each pair in parameters.linuxRuntime }}:
+        ${{ each pair in parameters.macRuntime }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
     - ${{ each item in parameters.runtimes }}:
