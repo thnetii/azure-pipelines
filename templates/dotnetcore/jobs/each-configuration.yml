@@ -156,7 +156,7 @@ jobs:
         
         # forward rest of object
         ${{ each pair in parameters.build }}:
-          ${{ if eq(variables.null, c.build[pair.key])) }}:
+          ${{ if eq(variables.null, c.build[pair.key]) }}:
             ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       test:

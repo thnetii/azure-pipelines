@@ -107,5 +107,5 @@ jobs:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName') }}:
+        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
           ${{ pair.key }}: ${{ pair.value }}
