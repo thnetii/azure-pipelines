@@ -93,7 +93,7 @@ parameters:
     id:           osx
     condition:    ne(variables['SkipMacOSRuntime'], 'true')
     argValue:     osx-x64
-    displayName:  macOs, 64-bit
+    displayName:  macOS, 64-bit
     pool:
       vmImage:    macOs-latest
     pack:
