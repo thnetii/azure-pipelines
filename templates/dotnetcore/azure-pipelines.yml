@@ -374,6 +374,6 @@ jobs:
       - ${{ each pair in item }}:
           ${{ pair.key }}: ${{ pair.value }}
     ${{ each pair in parameters }}:
-      ${{ if notIn(pair.key, 'checkout', 'presteps', 'poststeps', 'defaultPool', 'common', 'restore', 'build', 'test', 'pack', 'publish', 'configurations', 'runtimes') }}:
+      ${{ if notIn(pair.key, 'checkout', 'presteps', 'poststeps', 'defaultPool', 'common', 'restore', 'build', 'test', 'pack', 'publish', 'configurations', 'runtimes', 'defaultArguments', 'debugConfiguration', 'releaseConfiguration', 'independantRuntime', 'windowsRuntime', 'linuxRuntime', 'macRuntime') }}:
         ${{ pair.key }}: ${{ pair.value }}
 
