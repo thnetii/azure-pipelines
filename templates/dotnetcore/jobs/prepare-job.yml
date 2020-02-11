@@ -1,4 +1,76 @@
-parameters: {}
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+  
+- name:     job
+  type:     object
+  default:  {}
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+- name:     runtime
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+  # pool:         null # defaultPool-like
+  
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
 
 jobs:
 - template: job.yml
@@ -6,10 +78,7 @@ jobs:
     job:
       # id
       ${{ if eq('', parameters.runtime.id) }}:
-        ${{ if ne('', parameters.configuration.id) }}:
-          id: ${{ parameters.configuration.id }}
-        ${{ if eq('', parameters.configuration.id) }}:
-          id: defaultJob
+        id: ${{ coalesce(parameters.configuration.id, 'defaultJob') }}
       ${{ if ne('', parameters.runtime.id ) }}:
         ${{ if ne('', parameters.configuration.id) }}:
           id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
@@ -33,11 +102,8 @@ jobs:
           condition: ${{ parameters.runtime.condition }}
 
       # pool
-      ${{ if parameters.runtime.pool }}:
-        pool: ${{ parameters.runtime.pool }}
-      ${{ if not(parameters.runtime.pool) }}:
-        pool: ${{ parameters.defaultPool }}
-
+      pool: ${{ coalesce(parameters.runtime.pool, parameters.defaultPool) }}
+      
       ${{ each pair in parameters.job }}:
         ${{ if notIn(pair.key, 'id', 'displayName', 'condition', 'pool') }}:
           ${{ pair.key }}: ${{ pair.value }}

@@ -1,0 +1,9 @@
+{
+    "yaml.schemas": {
+        "https://github.com/microsoft/azure-pipelines-vscode/raw/master/service-schema.json": [
+            "/templates/**/*.yml"
+        ]
+    },
+    "yaml.completion": true,
+    "yaml.format.enable": true
+}

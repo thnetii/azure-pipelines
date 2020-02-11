@@ -1,13 +1,84 @@
-parameters: {}
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+  # id:           default
+  # condition:    ''
+  # displayName:  ''
+  # pool:         null # defaultPool-like object
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:     ''
+- name:     runtime
+  type:     object
+  default:  {}
+  # id:     ''
+  
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
 
 jobs:
 - job:          ${{ coalesce(parameters.job.id, 'default') }}
   condition:    ${{ parameters.job.condition }}
   displayName:  ${{ parameters.job.displayName }}
-  ${{ if containsValue(parameters.job, 'pool') }}:
-    pool:       ${{ parameters.job.pool }}
-  ${{ if not(containsValue(parameters.job, 'pool')) }}:
-    pool:       ${{ parameters.defaultPool }}
+  pool:         ${{ coalesce(parameters.job.pool, parameters.defaultPool) }}
+  ${{ each pair in parameters.job }}:
+    ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'pool', 'steps') }}:
+      ${{ pair.key }}: ${{ pair.value }}
   steps:
   - template:   steps.yml
     parameters:
@@ -36,5 +107,5 @@ jobs:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
           ${{ pair.key }}: ${{ pair.value }}
