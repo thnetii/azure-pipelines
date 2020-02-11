@@ -1,6 +1,65 @@
-parameters: {}
+parameters: 
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     nugetArtifactName
+  type:     string
+  default:  $(System.TeamProject)-nuget
+- name:     publishArtifactName
+  type:     string
+  default:  $(System.TeamProject)-artifacts
+
+- name:     restore
+  type:     object
+  default:  null
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  null
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  null
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  null
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  null
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
 
 steps:
+- ${{ each step in parameters.checkout }}:
+  - ${{ step }}
 - ${{ each step in parameters.presteps }}:
   - ${{ step }}
 - template: ../../msbuildlogger/steps.yml
@@ -17,7 +76,7 @@ steps:
       projects:   ${{ parameters.restore.projects }}
       arguments:  ${{ parameters.restore.arguments }}
       ${{ each pair in parameters.restore }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.build.skip) }}:
   - task: DotNetCoreCLI@2
@@ -31,7 +90,7 @@ steps:
       projects:   ${{ parameters.build.projects }}
       arguments:  ${{ parameters.build.arguments }}
       ${{ each pair in parameters.build }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.test.skip) }}:
   - task: DotNetCoreCLI@2
@@ -44,7 +103,7 @@ steps:
       arguments:  ${{ parameters.test.arguments }}
       publishTestResults: true
       ${{ each pair in parameters.test }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'publishTestResults') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'publishTestResults', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.pack.skip) }}:
   - task: DotNetCoreCLI@2
@@ -57,7 +116,7 @@ steps:
       projects:   ${{ parameters.pack.projects }}
       arguments:  ${{ parameters.pack.arguments }}
       ${{ each pair in parameters.pack }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
     ${{ if ne('', parameters.pack.condition) }}:
@@ -77,7 +136,7 @@ steps:
       projects:   ${{ parameters.publish.projects }}
       arguments:  ${{ parameters.publish.arguments }}
       ${{ each pair in parameters.publish }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix') }}:
+        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
     ${{ if ne('', parameters.publish.condition) }}:

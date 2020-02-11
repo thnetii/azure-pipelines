@@ -16,12 +16,10 @@ resources:
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
   parameters:
-    presteps:
+    checkout:
     - checkout:   self
       submodules: true
-    disableNoRuntime:       true
-    addRuntimes:
-    # Override Default runtime to also include .NET Framework targets
-    - condition:    ne(variables['SkipNoRuntime'], 'true')
+    independantRuntime:
       pool:
         vmImage:    windows-latest
+      arguments:    ''
