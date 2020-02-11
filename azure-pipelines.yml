@@ -13,7 +13,7 @@ resources:
     type:       github
     name:       thnetii/azure-pipelines
     endpoint:   thnetii
-    ref:        ${{ resources.repositories.self.ref }}
+    ref:        refs/heads/update-templates
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
   parameters:
