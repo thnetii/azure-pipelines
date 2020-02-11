@@ -230,7 +230,9 @@ jobs:
         ${{ each pair in parameters.releaseConfiguration }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ insert }}: ${{ parameters.configurations }}
+    - ${{ each item in parameters.configurations }}:
+      - ${{ each pair in item }}:
+          ${{ pair.key }}: ${{ pair.value }}
     runtimes:
     - ${{ if ne(variables.null, parameters.independantRuntime) }}:
       - # condition
@@ -368,7 +370,9 @@ jobs:
         ${{ each pair in parameters.linuxRuntime }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ insert }}: ${{ parameters.runtimes }}
+    - ${{ each item in parameters.runtimes }}:
+      - ${{ each pair in item }}:
+          ${{ pair.key }}: ${{ pair.value }}
     ${{ each pair in parameters }}:
       ${{ if notIn(pair.key, 'checkout', 'presteps', 'poststeps', 'defaultPool', 'common', 'restore', 'build', 'test', 'pack', 'publish', 'configurations', 'runtimes') }}:
         ${{ pair.key }}: ${{ pair.value }}
