@@ -18,7 +18,7 @@ parameters:
 
 - name:     restore
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -26,7 +26,7 @@ parameters:
   # arguments:          ''
 - name:     build
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -34,7 +34,7 @@ parameters:
   # arguments:          ''
 - name:     test
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -42,7 +42,7 @@ parameters:
   # arguments:          ''
 - name:     pack
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -50,7 +50,7 @@ parameters:
   # arguments:          ''
 - name:     publish
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''

@@ -11,12 +11,12 @@ parameters:
   
 - name:     defaultPool
   type:     object
-  default: {}
+  default:  {}
   # vmImage:  windows-2019
 
 - name:     job
   type:     object
-  default: {}
+  default:  {}
 - name:     configurations
   type:     object
   default:  []
@@ -51,7 +51,7 @@ parameters:
   
 - name:     common
   type:     object
-  default: {}
+  default:  {}
   # allProjects:  ''
   # srcProjects:  ''
   # testProjects: ''
@@ -59,7 +59,7 @@ parameters:
 
 - name:     restore
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -67,7 +67,7 @@ parameters:
   # arguments:          ''
 - name:     build
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -75,7 +75,7 @@ parameters:
   # arguments:          ''
 - name:     test
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -83,7 +83,7 @@ parameters:
   # arguments:          ''
 - name:     pack
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -91,7 +91,7 @@ parameters:
   # arguments:          ''
 - name:     publish
   type:     object
-  default: {}
+  default:  {}
   # skip:               true
   # displayNameSuffix:  ''
   # condition:          ''
@@ -120,7 +120,7 @@ jobs:
         
         # forward rest of the object
         ${{ each pair in parameters.common }}:
-          ${{ if eq(Null, c.common[pair.key]) }}:
+          ${{ if eq(variables.null, c.common[pair.key]) }}:
             ${{ if notIn(pair.key, 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       restore:
@@ -130,7 +130,7 @@ jobs:
         
         # forward rest of the object
         ${{ each pair in parameters.restore }}:
-          ${{ if eq(Null, c.restore[pair.key]) }}:
+          ${{ if eq(variables.null, c.restore[pair.key]) }}:
             ${{ pair.key }}: ${{ pair.value }}
       build:
         # (displayNameSuffix, arguments): append c.argValue
@@ -156,7 +156,7 @@ jobs:
         
         # forward rest of object
         ${{ each pair in parameters.build }}:
-          ${{ if eq(Null, c.build[pair.key])) }}:
+          ${{ if eq(variables.null, c.build[pair.key])) }}:
             ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       test:
@@ -183,7 +183,7 @@ jobs:
         
         # forward rest of object
         ${{ each pair in parameters.test }}:
-          ${{ if eq(Null, c.test[pair.key]) }}:
+          ${{ if eq(variables.null, c.test[pair.key]) }}:
             ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       pack:
@@ -210,7 +210,7 @@ jobs:
         
         # forward rest of object
         ${{ each pair in parameters.pack }}:
-          ${{ if eq(Null, c.pack[pair.key]) }}:
+          ${{ if eq(variables.null, c.pack[pair.key]) }}:
             ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       publish:
@@ -237,7 +237,7 @@ jobs:
         
         # forward rest of object
         ${{ each pair in parameters.publish }}:
-          ${{ if eq(Null, c.publish[pair.key]) }}:
+          ${{ if eq(variables.null, c.publish[pair.key]) }}:
             ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
