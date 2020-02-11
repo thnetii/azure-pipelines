@@ -19,7 +19,7 @@ parameters:
   default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netcoreapp2.1/THNETII.AzureDevOps.Pipelines.MSBuild.dll"
 - name:     common
   type:     object
-  default:  null
+  # default keys:
   # allProjects:  '' # '*.sln'
   # srcProjects:  '' # '[Ss]rc/*/*.csproj'
   # testProjects: '' # '[Tt]est/*/*.csproj'
@@ -161,70 +161,70 @@ jobs:
       pack:     ${{ parameters.pack }}
     publish:
       # arguments
-      ${{ if ne(null, parameters.publish.arguments) }}:
+      ${{ if ne(Null, parameters.publish.arguments) }}:
         arguments:          ${{ parameters.publish.arguments }}
-      ${{ if eq(null, parameters.publish.arguments) }}:
+      ${{ if eq(Null, parameters.publish.arguments) }}:
         arguments:          -p:BuildDefaultTargetFramework=true
       # publishWebProjects
-      ${{ if ne(null, parameters.publish.publishWebProjects) }}:
+      ${{ if ne(Null, parameters.publish.publishWebProjects) }}:
         publishWebProjects: ${{ parameters.publish.publishWebProjects }}
-      ${{ if eq(null, parameters.publish.publishWebProjects) }}:
+      ${{ if eq(Null, parameters.publish.publishWebProjects) }}:
         publishWebProjects: false
       # zipAfterPublish
-      ${{ if ne(null, parameters.publish.zipAfterPublish) }}:
+      ${{ if ne(Null, parameters.publish.zipAfterPublish) }}:
         zipAfterPublish:    ${{ parameters.publish.zipAfterPublish }}
-      ${{ if eq(null, parameters.publish.zipAfterPublish) }}:
+      ${{ if eq(Null, parameters.publish.zipAfterPublish) }}:
         zipAfterPublish:    false
       # forward rest of object
       ${{ each pair in parameters.publish }}:
         ${{ if notIn(pair.key, 'arguments', 'publishWebProjects', 'zipAfterPublish') }}:
           ${{ pair.key }}: ${{ pair.value }}
     configurations:
-    - ${{ if ne(null, parameters.debugConfiguration) }}:
+    - ${{ if ne(Null, parameters.debugConfiguration) }}:
       - # id
-        ${{ if ne(null, parameters.debugConfiguration.id) }}:
+        ${{ if ne(Null, parameters.debugConfiguration.id) }}:
           id:           ${{ parameters.debugConfiguration.id }}
-        ${{ if eq(null, parameters.debugConfiguration.id) }}:
+        ${{ if eq(Null, parameters.debugConfiguration.id) }}:
           id:           debug
         # condition
-        ${{ if ne(null, parameters.debugConfiguration.condition) }}:
+        ${{ if ne(Null, parameters.debugConfiguration.condition) }}:
           condition:    ${{ parameters.debugConfiguration.condition }}
-        ${{ if eq(null, parameters.debugConfiguration.condition) }}:
+        ${{ if eq(Null, parameters.debugConfiguration.condition) }}:
           condition:    ne(variables['SkipConfigurationDebug'], 'true')
         # displayName
-        ${{ if ne(null, parameters.debugConfiguration.displayName) }}:
+        ${{ if ne(Null, parameters.debugConfiguration.displayName) }}:
           displayName:  ${{ parameters.debugConfiguration.displayName }}
-        ${{ if eq(null, parameters.debugConfiguration.displayName) }}:
+        ${{ if eq(Null, parameters.debugConfiguration.displayName) }}:
           displayName:  Debug
         # argValue
-        ${{ if ne(null, parameters.debugConfiguration.argValue) }}:
+        ${{ if ne(Null, parameters.debugConfiguration.argValue) }}:
           argValue:     ${{ parameters.debugConfiguration.argValue }}
-        ${{ if eq(null, parameters.debugConfiguration.argValue) }}:
+        ${{ if eq(Null, parameters.debugConfiguration.argValue) }}:
           argValue:     Debug
         # forwards rest of object
         ${{ each pair in parameters.debugConfiguration }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ if ne(null, parameters.releaseConfiguration) }}:
+    - ${{ if ne(Null, parameters.releaseConfiguration) }}:
       - # id
-        ${{ if ne(null, parameters.releaseConfiguration.id) }}:
+        ${{ if ne(Null, parameters.releaseConfiguration.id) }}:
           id:           ${{ parameters.releaseConfiguration.id }}
-        ${{ if eq(null, parameters.releaseConfiguration.id) }}:
+        ${{ if eq(Null, parameters.releaseConfiguration.id) }}:
           id:           release
         # condition
-        ${{ if ne(null, parameters.releaseConfiguration.condition) }}:
+        ${{ if ne(Null, parameters.releaseConfiguration.condition) }}:
           condition:    ${{ parameters.releaseConfiguration.condition }}
-        ${{ if eq(null, parameters.releaseConfiguration.condition) }}:
+        ${{ if eq(Null, parameters.releaseConfiguration.condition) }}:
           condition:    ne(variables['SkipConfigurationRelease'], 'true')
         # displayName
-        ${{ if ne(null, parameters.releaseConfiguration.displayName) }}:
+        ${{ if ne(Null, parameters.releaseConfiguration.displayName) }}:
           displayName:  ${{ parameters.releaseConfiguration.displayName }}
-        ${{ if eq(null, parameters.releaseConfiguration.displayName) }}:
+        ${{ if eq(Null, parameters.releaseConfiguration.displayName) }}:
           displayName:  Release
         # argValue
-        ${{ if ne(null, parameters.releaseConfiguration.argValue) }}:
+        ${{ if ne(Null, parameters.releaseConfiguration.argValue) }}:
           argValue:     ${{ parameters.releaseConfiguration.argValue }}
-        ${{ if eq(null, parameters.releaseConfiguration.argValue) }}:
+        ${{ if eq(Null, parameters.releaseConfiguration.argValue) }}:
           argValue:     Release
         # forwards rest of object
         ${{ each pair in parameters.releaseConfiguration }}:
@@ -232,137 +232,137 @@ jobs:
             ${{ pair.key }}: ${{ pair.value }}
     - ${{ insert }}: ${{ parameters.configurations }}
     runtimes:
-    - ${{ if ne(null, parameters.independantRuntime) }}:
+    - ${{ if ne(Null, parameters.independantRuntime) }}:
       - # condition
-        ${{ if ne(null, parameters.independantRuntime.condition) }}:
+        ${{ if ne(Null, parameters.independantRuntime.condition) }}:
           condition:    ${{ parameters.independantRuntime.condition }}
-        ${{ if eq(null, parameters.independantRuntime.condition) }}:
+        ${{ if eq(Null, parameters.independantRuntime.condition) }}:
           condition:    ne(variables['SkipNoRuntime'], 'true')
         # arguments
-        ${{ if ne(null, parameters.independantRuntime.arguments) }}:
+        ${{ if ne(Null, parameters.independantRuntime.arguments) }}:
           arguments:    ${{ parameters.independantRuntime.arguments }}
-        ${{ if eq(null, parameters.independantRuntime.arguments) }}:
+        ${{ if eq(Null, parameters.independantRuntime.arguments) }}:
           arguments:    '-p:NoNetFramework=true'
         # forwards rest of object
         ${{ each pair in parameters.independantRuntime }}:
           ${{ if notIn(pair.key, 'condition', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ if ne(null, parameters.windowsRuntime) }}:
+    - ${{ if ne(Null, parameters.windowsRuntime) }}:
       - # id
-        ${{ if ne(null, parameters.windowsRuntime.id) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.id) }}:
           id:           ${{ parameters.windowsRuntime.id }}
-        ${{ if eq(null, parameters.windowsRuntime.id) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.id) }}:
           id:           win
         # condition
-        ${{ if ne(null, parameters.windowsRuntime.condition) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.condition) }}:
           condition:    ${{ parameters.windowsRuntime.condition }}
-        ${{ if eq(null, parameters.windowsRuntime.condition) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.condition) }}:
           condition:    ne(variables['SkipWindowsRuntime'], 'true')
         # argValue
-        ${{ if ne(null, parameters.windowsRuntime.argValue) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.argValue) }}:
           argValue:     ${{ parameters.windowsRuntime.argValue }}
-        ${{ if eq(null, parameters.windowsRuntime.argValue) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.argValue) }}:
           argValue:     win10-x64
         # displayName
-        ${{ if ne(null, parameters.windowsRuntime.displayName) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.displayName) }}:
           displayName:  ${{ parameters.windowsRuntime.displayName }}
-        ${{ if eq(null, parameters.windowsRuntime.displayName) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.displayName) }}:
           displayName:  Windows, 64-bit
         # pool
-        ${{ if ne(null, parameters.windowsRuntime.pool) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.pool) }}:
           pool:         ${{ parameters.windowsRuntime.pool }}
-        ${{ if eq(null, parameters.windowsRuntime.pool) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.pool) }}:
           pool:
             vmImage:    windows-latest
         # pack
-        ${{ if ne(null, parameters.windowsRuntime.pack) }}:
+        ${{ if ne(Null, parameters.windowsRuntime.pack) }}:
           pack:         ${{ parameters.windowsRuntime.pack }}
-        ${{ if eq(null, parameters.windowsRuntime.pack) }}:
+        ${{ if eq(Null, parameters.windowsRuntime.pack) }}:
           pack:
             skip:       true
         # forwards rest of object
         ${{ each pair in parameters.windowsRuntime }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ if ne(null, parameters.linuxRuntime) }}:
+    - ${{ if ne(Null, parameters.linuxRuntime) }}:
       - # id
-        ${{ if ne(null, parameters.linuxRuntime.id) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.id) }}:
           id:           ${{ parameters.linuxRuntime.id }}
-        ${{ if eq(null, parameters.linuxRuntime.id) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.id) }}:
           id:           linux
         # condition
-        ${{ if ne(null, parameters.linuxRuntime.condition) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.condition) }}:
           condition:    ${{ parameters.linuxRuntime.condition }}
-        ${{ if eq(null, parameters.linuxRuntime.condition) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.condition) }}:
           condition:    ne(variables['SkipLinuxRuntime'], 'true')
         # argValue
-        ${{ if ne(null, parameters.linuxRuntime.argValue) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.argValue) }}:
           argValue:     ${{ parameters.linuxRuntime.argValue }}
-        ${{ if eq(null, parameters.linuxRuntime.argValue) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.argValue) }}:
           argValue:     linux-x64
         # displayName
-        ${{ if ne(null, parameters.linuxRuntime.displayName) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.displayName) }}:
           displayName:  ${{ parameters.linuxRuntime.displayName }}
-        ${{ if eq(null, parameters.linuxRuntime.displayName) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.displayName) }}:
           displayName:  Linux, 64-bit
         # pool
-        ${{ if ne(null, parameters.linuxRuntime.pool) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.pool) }}:
           pool:         ${{ parameters.linuxRuntime.pool }}
-        ${{ if eq(null, parameters.linuxRuntime.pool) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.pool) }}:
           pool:
             vmImage:    ubuntu-latest
         # pack
-        ${{ if ne(null, parameters.linuxRuntime.pack) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.pack) }}:
           pack:         ${{ parameters.linuxRuntime.pack }}
-        ${{ if eq(null, parameters.linuxRuntime.pack) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.pack) }}:
           pack:
             skip:       true
         # arguments
-        ${{ if ne(null, parameters.linuxRuntime.arguments) }}:
+        ${{ if ne(Null, parameters.linuxRuntime.arguments) }}:
           arguments:    ${{ parameters.linuxRuntime.arguments }}
-        ${{ if eq(null, parameters.linuxRuntime.arguments) }}:
+        ${{ if eq(Null, parameters.linuxRuntime.arguments) }}:
           arguments:    '-p:NoNetFramework=true'
         # forwards rest of object
         ${{ each pair in parameters.linuxRuntime }}:
           ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack', 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
-    - ${{ if ne(null, parameters.macRuntime) }}:
+    - ${{ if ne(Null, parameters.macRuntime) }}:
       - # id
-        ${{ if ne(null, parameters.macRuntime.id) }}:
+        ${{ if ne(Null, parameters.macRuntime.id) }}:
           id:           ${{ parameters.macRuntime.id }}
-        ${{ if eq(null, parameters.macRuntime.id) }}:
+        ${{ if eq(Null, parameters.macRuntime.id) }}:
           id:           osx
         # condition
-        ${{ if ne(null, parameters.macRuntime.condition) }}:
+        ${{ if ne(Null, parameters.macRuntime.condition) }}:
           condition:    ${{ parameters.macRuntime.condition }}
-        ${{ if eq(null, parameters.macRuntime.condition) }}:
+        ${{ if eq(Null, parameters.macRuntime.condition) }}:
           condition:    ne(variables['SkipMacOSRuntime'], 'true')
         # argValue
-        ${{ if ne(null, parameters.macRuntime.argValue) }}:
+        ${{ if ne(Null, parameters.macRuntime.argValue) }}:
           argValue:     ${{ parameters.macRuntime.argValue }}
-        ${{ if eq(null, parameters.macRuntime.argValue) }}:
+        ${{ if eq(Null, parameters.macRuntime.argValue) }}:
           argValue:     osx-x64
         # displayName
-        ${{ if ne(null, parameters.macRuntime.displayName) }}:
+        ${{ if ne(Null, parameters.macRuntime.displayName) }}:
           displayName:  ${{ parameters.macRuntime.displayName }}
-        ${{ if eq(null, parameters.macRuntime.displayName) }}:
+        ${{ if eq(Null, parameters.macRuntime.displayName) }}:
           displayName:  macOS, 64-bit
         # pool
-        ${{ if ne(null, parameters.macRuntime.pool) }}:
+        ${{ if ne(Null, parameters.macRuntime.pool) }}:
           pool:         ${{ parameters.macRuntime.pool }}
-        ${{ if eq(null, parameters.macRuntime.pool) }}:
+        ${{ if eq(Null, parameters.macRuntime.pool) }}:
           pool:
             vmImage:    macOS-latest
         # pack
-        ${{ if ne(null, parameters.macRuntime.pack) }}:
+        ${{ if ne(Null, parameters.macRuntime.pack) }}:
           pack:         ${{ parameters.macRuntime.pack }}
-        ${{ if eq(null, parameters.macRuntime.pack) }}:
+        ${{ if eq(Null, parameters.macRuntime.pack) }}:
           pack:
             skip:       true
         # arguments
-        ${{ if ne(null, parameters.macRuntime.arguments) }}:
+        ${{ if ne(Null, parameters.macRuntime.arguments) }}:
           arguments:    ${{ parameters.macRuntime.arguments }}
-        ${{ if eq(null, parameters.macRuntime.arguments) }}:
+        ${{ if eq(Null, parameters.macRuntime.arguments) }}:
           arguments:    '-p:NoNetFramework=true'
         # forwards rest of object
         ${{ each pair in parameters.linuxRuntime }}:
