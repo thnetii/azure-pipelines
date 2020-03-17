@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "devDependencies": {
-    "@types/node": "^12.0.10",
+    "@types/node": "^13.9.1",
     "semver": "^6.2.0",
     "tfx-cli": "^0.7.6",
     "lodash": ">=4.17.13"
