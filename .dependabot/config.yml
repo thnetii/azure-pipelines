@@ -16,3 +16,11 @@ update_configs:
   automerged_updates:
   - match:
       update_type: "all"
+- package_manager: "javascript"
+  directory: /
+  update_schedule: live
+  default_assignees:
+  - couven92
+  automerged_updates:
+  - match:
+      update_type: "all"
