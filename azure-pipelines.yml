@@ -13,6 +13,7 @@ resources:
     type:       github
     name:       thnetii/azure-pipelines
     endpoint:   thnetii
+    ref:        refs/heads/march-fix
 jobs:
 - template: templates/dotnetcore/azure-pipelines.yml@templates
   parameters:
