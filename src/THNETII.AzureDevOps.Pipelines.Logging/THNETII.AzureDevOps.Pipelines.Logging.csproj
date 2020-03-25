@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.2">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="THNETII.TypeConverter" Version="0.0.1-build7797" />
+    <PackageReference Include="THNETII.TypeConverter" Version="0.0.1-build8180" />
   </ItemGroup>
 
   <ItemGroup>
