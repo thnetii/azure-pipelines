@@ -9,28 +9,14 @@ trigger:
     include:
     - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
 jobs:
-- job:          GitHubTokenTaskLibrary_job
-  displayName:  Create GitHubTokenTaskLibrary
+- job:          GitHubTaskLibrary_job
+  displayName:  Create GitHubTaskLibrary
   pool:
     vmImage:    ubuntu-latest
   steps:
-  - task:         NodeTool@0
-    displayName:  Install node.js version 12.x
-    inputs:
-      versionSpec:  12.x
-  - task:             Npm@1
-    displayName:      npm run-script initdev
-    inputs:
-      command:        custom
-      customCommand:  run-script initdev
-      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
-  - task:             Npm@1
-    displayName:      npm run-script compile
-    inputs:
-      command:        custom
-      customCommand:  run-script compile
-      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - script: |
+      npm run-script initdev
+      npm run-script compile
       npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
     workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
