@@ -3,6 +3,9 @@ import tl = require("azure-pipelines-task-lib/task");
 async function run(): Promise<void> {
   try {
     const githubEndpointId = tl.getInput("gitHubConnection", true);
+    if (!githubEndpointId) {
+      throw new Error("Invalid github connection id.");
+    }
     const githubEndpointObject = tl.getEndpointAuthorization(githubEndpointId, false);
     let githubEndpointToken: string | undefined;
 
