@@ -6,7 +6,6 @@ trigger:
     - '*'
   paths:
     include:
-    - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/*
     - templates/githubaccesstoken/*
 pr: none
 steps:
