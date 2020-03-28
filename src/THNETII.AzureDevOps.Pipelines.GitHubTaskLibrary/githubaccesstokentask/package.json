@@ -1,6 +1,6 @@
 {
   "name": "thnetii.azuredevops.pipelines.githubtasklibrary.githubaccesstokentask",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "GitHub Access Token task for Azure DevOps Pipelines",
   "main": "index.js",
   "repository": {

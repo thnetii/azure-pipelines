@@ -1,6 +1,6 @@
 {
   "name": "thnetii.azuredevops.pipelines.githubtasklibrary",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "GitHub ServiceConnection Tasks Library",
   "scripts": {
     "build": "pushd githubaccesstokentask && npm run build && popd && tfx extension create --manifests vss-extension.json --output-path ../../bin --rev-version"

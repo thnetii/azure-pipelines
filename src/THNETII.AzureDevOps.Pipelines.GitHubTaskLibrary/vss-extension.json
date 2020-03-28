@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "thnetii-azuredevops-pipelines-githubtasklibrary",
   "name": "GitHub ServiceConnection Tasks Library",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "publisher": "thnetii",
   "targets": [
     {
