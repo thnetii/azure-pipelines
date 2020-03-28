@@ -8,18 +8,21 @@ trigger:
   paths:
     include:
     - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+variables:
+  scriptTasks:
+  - npm run-script initdev
+  - npm run-script compile
+  - npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
 jobs:
 - job:          GitHubTaskLibrary_job
   displayName:  Create GitHubTaskLibrary
   pool:
     vmImage:    ubuntu-latest
   steps:
-  - script: |
-      npm run-script initdev
-      npm run-script compile
-      npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
-    displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
-    workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+  - ${{ each c in variables.scriptTasks }}:
+    - script: ${{ c }}
+      displayName: ${{ c }}
+      workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - task:     PublishBuildArtifacts@1
     displayName: Publish Publish build artifacts
     inputs:
