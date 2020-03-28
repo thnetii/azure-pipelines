@@ -1,0 +1,34 @@
+name: $(Date:yyyy-MM-dd)-rev$(Rev:r)
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - rel/*
+  paths:
+    include:
+    - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+jobs:
+- job:          GitHubTokenTaskLibrary_job
+  displayName:  Create GitHubTokenTaskLibrary
+  pool:
+    vmImage:    ubuntu-latest
+  steps:
+  - task:         NodeTool@0
+    displayName:  Install node.js version 12.x
+    inputs:
+      versionSpec:  12.x
+  - task:         Npm@1
+    displayName:  npm install
+    inputs:
+      command:    install
+      workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+  - script: |
+      npx tfx extension create --output-path '$(Build.ArtifactStagingDirectory)' --manifest-globs vss-extension.json
+    displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+    workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+  - task:     PublishBuildArtifacts@1
+    displayName: Publish Publish build artifacts
+    inputs:
+      pathtoPublish:  $(Build.ArtifactStagingDirectory)
+      artifactName:   $(System.TeamProject)-tfx-extensions
