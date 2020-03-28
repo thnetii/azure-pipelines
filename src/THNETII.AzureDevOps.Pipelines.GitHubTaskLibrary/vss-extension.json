@@ -1,16 +1,19 @@
 {
   "manifestVersion": 1,
-  "id": "thnetii-azuredevops-pipelines-githubtasklibrary",
+  "id": "azuredevops-githubtasklibrary",
   "name": "GitHub ServiceConnection Tasks Library",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "publisher": "thnetii",
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"
     }
   ],
-  "description": "",
+  "description": "Azure Pipelines tasks for extracting the GitHub Access token from a Azure DevOps service connection.",
   "categories": [
+    "Extension",
+    "Marketplace",
+    "GitHub",
     "Azure Pipelines"
   ],
   "icons": {
@@ -21,6 +24,10 @@
       "path": "githubaccesstokentask"
     }
   ],
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/thnetii/azure-pipelines"
+  },
   "contributions": [
     {
       "id": "githubaccesstokentask",

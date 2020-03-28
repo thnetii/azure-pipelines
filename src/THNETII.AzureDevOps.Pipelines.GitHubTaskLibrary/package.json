@@ -1,9 +1,16 @@
 {
   "name": "thnetii.azuredevops.pipelines.githubtasklibrary",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "GitHub ServiceConnection Tasks Library",
   "scripts": {
-    "build": "pushd githubaccesstokentask && npm run build && popd && tfx extension create --manifests vss-extension.json --output-path ../../bin --rev-version"
+    "initdev": "npm run-script initdev:npm",
+    "initdev:npm": "npm run-script initdev:npm:base & npm run-script initdev:npm:tasks",
+    "initdev:npm:base": "npm install",
+    "initdev:npm:tasks": "glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script initdev\"",
+    "compile": "npm run-script compile:tasks",
+    "compile:tasks": "glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script compile",
+    "package": "npm run-script compile && npm run-script package:tfx",
+    "package:tfx": "npx tfx extension create --root . --output-path ../../bin --manifest-globs vss-extension.json"
   },
   "repository": {
     "type": "git",
@@ -19,6 +26,7 @@
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "devDependencies": {
+    "glob-exec": "^0.1.1",
     "tfx-cli": "^0.7.11"
   },
   "dependencies": {

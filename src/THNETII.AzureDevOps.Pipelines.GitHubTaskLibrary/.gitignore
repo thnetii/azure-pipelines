@@ -1,4 +1,2 @@
 *.vsix
 yarn.lock
-
-semverInc.js

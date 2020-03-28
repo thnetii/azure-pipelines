@@ -4,7 +4,7 @@ trigger:
   branches:
     include:
     - master
-    - rel/*
+    - rel-tfx/*
   paths:
     include:
     - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
@@ -18,22 +18,18 @@ jobs:
     displayName:  Install node.js version 12.x
     inputs:
       versionSpec:  12.x
-  - task:         Npm@1
-    displayName:  npm install src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
-    inputs:
-      command:    install
-      workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
   - task:             Npm@1
-    displayName:      npm run-script build src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
+    displayName:      npm run-script initdev
     inputs:
       command:        custom
-      customCommand:  run-script build
-      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
-  - task:         Npm@1
-    displayName:  npm install
+      customCommand:  run-script initdev
+      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+  - task:             Npm@1
+    displayName:      npm run-script compile
     inputs:
-      command:    install
-      workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+      command:        custom
+      customCommand:  run-script compile
+      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - script: |
       npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
