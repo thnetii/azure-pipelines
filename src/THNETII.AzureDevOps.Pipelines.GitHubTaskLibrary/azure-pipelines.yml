@@ -19,12 +19,23 @@ jobs:
     inputs:
       versionSpec:  12.x
   - task:         Npm@1
+    displayName:  npm install src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
+    inputs:
+      command:    install
+      workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
+  - task:             Npm@1
+    displayName:      npm run-script build src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
+    inputs:
+      command:        custom
+      customCommand:  run-script build
+      workingDir:     src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
+  - task:         Npm@1
     displayName:  npm install
     inputs:
       command:    install
       workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - script: |
-      npx tfx extension create --output-path '$(Build.ArtifactStagingDirectory)' --manifest-globs vss-extension.json
+      npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
     workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - task:     PublishBuildArtifacts@1
