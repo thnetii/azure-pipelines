@@ -6,9 +6,9 @@
     "initdev": "npm run-script initdev:npm",
     "initdev:npm": "npm run-script initdev:npm:base & npm run-script initdev:npm:tasks",
     "initdev:npm:base": "npm install",
-    "initdev:npm:tasks": "glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script initdev\"",
+    "initdev:npm:tasks": "npx glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script initdev\"",
     "compile": "npm run-script compile:tasks",
-    "compile:tasks": "glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script compile",
+    "compile:tasks": "npx glob-exec --foreach \"*/task.json\" -- \"cd {{file.dir}} && npm run-script compile\"",
     "package": "npm run-script compile && npm run-script package:tfx",
     "package:tfx": "npx tfx extension create --root . --output-path ../../bin --manifest-globs vss-extension.json"
   },
