@@ -10,7 +10,7 @@ trigger:
 pr: none
 steps:
 - checkout:   none
-- task: thnetii.thnetii-azuredevops-pipelines-githubtasklibrary.githubaccesstokentask.githubaccesstokentask@0
+- task: thnetii.azuredevops-githubtasklibrary.githubaccesstokentask.githubaccesstokentask@0
   displayName: 'Get GitHub Access Token'
   inputs:
     gitHubConnection: thnetii
