@@ -20,6 +20,7 @@ jobs:
       & npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
     workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
+    failOnStderr: true
   - task:     PublishBuildArtifacts@1
     displayName: Publish Publish build artifacts
     inputs:
