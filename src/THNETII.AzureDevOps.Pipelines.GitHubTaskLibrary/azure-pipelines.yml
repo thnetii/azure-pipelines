@@ -15,12 +15,28 @@ jobs:
     vmImage:    ubuntu-latest
   steps:
   - pwsh: |
-      & npm run-script initdev
-      & npm run-script compile
+      [string]$rootDir = Get-Location
+      Write-Host "${rootDir}: finding tasks in relative subdirectories ..."
+      Get-ChildItem -File -Filter task.json -Path . -Recurse | ForEach-Object {
+        Push-Location $_.Directory.FullName
+        $relPath = [System.IO.Path]::GetRelativePath($rootDir, $(Get-Location))
+        Write-Host "`t${relPath}: npm install"
+        & npm install
+        Pop-Location
+      }
+      Write-Host "${rootDir}: npm install"
+      & npm install
+      Get-ChildItem -File -Filter task.json -Path . -Recurse | ForEach-Object {
+        Push-Location $_.Directory.FullName
+        $relPath = [System.IO.Path]::GetRelativePath($rootDir, $(Get-Location))
+        Write-Host "`t${relPath}: npm run-script compile"
+        & npm run-script compile
+        Pop-Location
+      }
+      Write-Host "${rootDir}: tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json"
       & npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
     workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
-    failOnStderr: true
   - task:     PublishBuildArtifacts@1
     displayName: Publish Publish build artifacts
     inputs:
