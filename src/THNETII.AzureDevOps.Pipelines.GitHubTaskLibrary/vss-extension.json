@@ -11,9 +11,6 @@
   ],
   "description": "Azure Pipelines tasks for extracting the GitHub Access token from a Azure DevOps service connection.",
   "categories": [
-    "Extension",
-    "Marketplace",
-    "GitHub",
     "Azure Pipelines"
   ],
   "icons": {
