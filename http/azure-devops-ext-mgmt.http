@@ -1,0 +1,11 @@
+@accessToken = {{$dotenv AZUREDEVOPS_EXTMGT_TOKEN}}
+
+@organization = thnetii
+@publisherName = thnetii
+@extensionName = azuredevops-githubtasklibrary
+
+
+###
+# @name GetExtensionGithubTaskLibrary
+GET https://extmgmt.dev.azure.com/{{organization}}/_apis/extensionmanagement/installedextensionsbyname/{{publisherName}}/{{extensionName}}?api-version=5.1-preview.1
+Authorization: Basic pat {{accessToken}}

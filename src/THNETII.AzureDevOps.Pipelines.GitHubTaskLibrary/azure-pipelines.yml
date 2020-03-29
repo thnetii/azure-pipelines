@@ -4,27 +4,37 @@ trigger:
   branches:
     include:
     - master
-    - rel/*
+    - rel-tfx/*
   paths:
     include:
     - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
 jobs:
-- job:          GitHubTokenTaskLibrary_job
-  displayName:  Create GitHubTokenTaskLibrary
+- job:          GitHubTaskLibrary_job
+  displayName:  Create GitHubTaskLibrary
   pool:
     vmImage:    ubuntu-latest
   steps:
-  - task:         NodeTool@0
-    displayName:  Install node.js version 12.x
-    inputs:
-      versionSpec:  12.x
-  - task:         Npm@1
-    displayName:  npm install
-    inputs:
-      command:    install
-      workingDir: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
-  - script: |
-      npx tfx extension create --output-path '$(Build.ArtifactStagingDirectory)' --manifest-globs vss-extension.json
+  - pwsh: |
+      [string]$rootDir = Get-Location
+      Write-Host "${rootDir}: finding tasks in relative subdirectories ..."
+      Get-ChildItem -File -Filter task.json -Path . -Recurse | ForEach-Object {
+        Push-Location $_.Directory.FullName
+        $relPath = [System.IO.Path]::GetRelativePath($rootDir, $(Get-Location))
+        Write-Host "`t${relPath}: npm install"
+        & npm install
+        Pop-Location
+      }
+      Write-Host "${rootDir}: npm install"
+      & npm install
+      Get-ChildItem -File -Filter task.json -Path . -Recurse | ForEach-Object {
+        Push-Location $_.Directory.FullName
+        $relPath = [System.IO.Path]::GetRelativePath($rootDir, $(Get-Location))
+        Write-Host "`t${relPath}: npm run-script compile"
+        & npm run-script compile
+        Pop-Location
+      }
+      Write-Host "${rootDir}: tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json"
+      & npx tfx extension create --output-path "$(Build.ArtifactStagingDirectory)" --manifest-globs vss-extension.json
     displayName: tfx extension create src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
     workingDirectory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
   - task:     PublishBuildArtifacts@1
