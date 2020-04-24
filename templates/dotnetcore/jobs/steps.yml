@@ -62,7 +62,6 @@ steps:
   - ${{ step }}
 - ${{ each step in parameters.presteps }}:
   - ${{ step }}
-- template: ../../msbuildlogger/steps.yml
 - ${{ if not(parameters.restore.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
