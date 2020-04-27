@@ -8,12 +8,12 @@ parameters:
 - name:     poststeps
   type:     stepList
   default:  []
-  
+
 - name:     defaultPool
   type:     object
   default:  {}
   # vmImage:  windows-2019
-  
+
 - name:     job
   type:     object
   default:  {}
@@ -23,14 +23,14 @@ parameters:
   # id:           ''
   # displayName:  ''
   # condition:    ''
-- name:     runtime
+- name:     platform
   type:     object
   default:  {}
   # id:           ''
   # displayName:  ''
   # condition:    ''
   # pool:         null # defaultPool-like
-  
+
 - name:     restore
   type:     object
   default:  {}
@@ -77,38 +77,38 @@ jobs:
   parameters:
     job:
       # id
-      ${{ if eq('', parameters.runtime.id) }}:
+      ${{ if eq('', parameters.platform.id) }}:
         id: ${{ coalesce(parameters.configuration.id, 'defaultJob') }}
-      ${{ if ne('', parameters.runtime.id ) }}:
+      ${{ if ne('', parameters.platform.id ) }}:
         ${{ if ne('', parameters.configuration.id) }}:
-          id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
+          id: ${{ parameters.configuration.id }}_${{ parameters.platform.id }}
         ${{ if eq('', parameters.configuration.id) }}:
-          id: ${{ parameters.runtime.id }}
+          id: ${{ parameters.platform.id }}
 
       # displayName
-      ${{ if eq('', parameters.runtime.displayName) }}:
+      ${{ if eq('', parameters.platform.displayName) }}:
         displayName: ${{ parameters.configuration.displayName }}
-      ${{ if ne('', parameters.runtime.displayName) }}:
-        displayName: ${{ parameters.configuration.displayName }} (${{ parameters.runtime.displayName }})
+      ${{ if ne('', parameters.platform.displayName) }}:
+        displayName: ${{ parameters.configuration.displayName }} (${{ parameters.platform.displayName }})
 
       # condition
       ${{ if ne('', parameters.configuration.condition) }}:
-        ${{ if ne('', parameters.runtime.condition) }}:
-          condition: and(${{ parameters.configuration.condition }}, ${{ parameters.runtime.condition }})
-        ${{ if eq('', parameters.runtime.condition) }}:
+        ${{ if ne('', parameters.platform.condition) }}:
+          condition: and(${{ parameters.configuration.condition }}, ${{ parameters.platform.condition }})
+        ${{ if eq('', parameters.platform.condition) }}:
           condition: ${{ parameters.configuration.condition }}
       ${{ if eq('', parameters.configuration.condition) }}:
-        ${{ if ne('', parameters.runtime.condition) }}:
-          condition: ${{ parameters.runtime.condition }}
+        ${{ if ne('', parameters.platform.condition) }}:
+          condition: ${{ parameters.platform.condition }}
 
       # pool
-      pool: ${{ coalesce(parameters.runtime.pool, parameters.defaultPool) }}
-      
+      pool: ${{ coalesce(parameters.platform.pool, parameters.defaultPool) }}
+
       ${{ each pair in parameters.job }}:
         ${{ if notIn(pair.key, 'id', 'displayName', 'condition', 'pool') }}:
           ${{ pair.key }}: ${{ pair.value }}
     configuration:  ${{ parameters.configuration }}
-    runtime:        ${{ parameters.runtime }}
+    platform:       ${{ parameters.platform }}
     ${{ each pair in parameters }}:
-      ${{ if notIn(pair.key, 'job', 'configuration', 'runtime') }}:
+      ${{ if notIn(pair.key, 'job', 'configuration', 'platform') }}:
         ${{ pair.key }}: ${{ pair.value }}

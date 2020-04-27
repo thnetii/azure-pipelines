@@ -8,7 +8,7 @@ parameters:
 - name:     poststeps
   type:     stepList
   default:  []
-  
+
 - name:     defaultPool
   type:     object
   default:  {}
@@ -25,11 +25,11 @@ parameters:
   type:     object
   default:  {}
   # id:     ''
-- name:     runtime
+- name:     platform
   type:     object
   default:  {}
   # id:     ''
-  
+
 - name:     restore
   type:     object
   default:  {}
@@ -72,7 +72,7 @@ parameters:
   # arguments:          ''
 
 jobs:
-- job:          ${{ coalesce(parameters.job.id, 'default') }}
+- job:          ${{ coalesce(parameters.job.id, 'default') }}MSBuild
   condition:    ${{ parameters.job.condition }}
   displayName:  ${{ parameters.job.displayName }}
   pool:         ${{ coalesce(parameters.job.pool, parameters.defaultPool) }}
@@ -83,29 +83,19 @@ jobs:
   - template:   steps.yml
     parameters:
       ${{ if eq('', parameters.configuration.id) }}:
-        ${{ if eq('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget
-          publishArtifactName:  $(System.TeamProject)-artifacts-default
-        ${{ if ne('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.runtime.id }}
-          publishArtifactName:  $(System.TeamProject)-artifacts-standalone-${{ parameters.runtime.id }}
+        ${{ if eq('', parameters.platform.id) }}:
+          packArtifactName:     $(System.TeamProject)-msbuild-pack
+          publishArtifactName:  $(System.TeamProject)-msbuild-artifacts
+        ${{ if ne('', parameters.platform.id) }}:
+          packArtifactName:     $(System.TeamProject)-msbuild-pack-${{ parameters.platform.id }}
+          publishArtifactName:  $(System.TeamProject)-msbuild-artifacts-${{ parameters.platform.id }}
       ${{ if ne('', parameters.configuration.id) }}:
-        ${{ if eq('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}
-          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-default
-        ${{ if ne('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}-${{ parameters.runtime.id }}
-          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-standalone-${{ parameters.runtime.id }}
-      pack:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget" ${{ parameters.pack.arguments }}'
-        ${{ each pair in parameters.pack }}:
-          ${{ if notIn(pair.key, 'arguments') }}:
-            ${{ pair.key }}: ${{ pair.value }}
-      publish:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.publish.arguments }}'
-        ${{ each pair in parameters.publish }}:
-          ${{ if notIn(pair.key, 'arguments') }}:
-            ${{ pair.key }}: ${{ pair.value }}
+        ${{ if eq('', parameters.platform.id) }}:
+          packArtifactName:     $(System.TeamProject)-msbuild-pack-${{ parameters.configuration.id }}
+          publishArtifactName:  $(System.TeamProject)-msbuild-artifacts-${{ parameters.configuration.id }}
+        ${{ if ne('', parameters.platform.id) }}:
+          packArtifactName:     $(System.TeamProject)-msbuild-pack-${{ parameters.configuration.id }}-${{ parameters.platform.id }}
+          publishArtifactName:  $(System.TeamProject)-msbuild-artifacts-${{ parameters.configuration.id }}-${{ parameters.platform.id }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
+        ${{ if notIn(pair.key, 'packArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'platform') }}:
           ${{ pair.key }}: ${{ pair.value }}

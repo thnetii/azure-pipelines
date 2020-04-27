@@ -17,21 +17,12 @@ parameters:
 - name:     job
   type:     object
   default:  {}
-- name:     configurations
+- name:     configuration
   type:     object
-  default:  []
-  # each entry:
-  #   id:           ''
-  #   argValue:     ''
-  #   displayName:  ''
-  #   condition:    ''
-  #   arguments:    ''
-  #   common:       {} # common-like object
-  #   restore:      {} # restore-like object
-  #   build:        {} # build-like object
-  #   test:         {} # test-like object
-  #   pack:         {} # pack-like object
-  #   publish:      {} # publish-like object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
 - name:     platforms
   type:     object
   default:  []
@@ -99,140 +90,143 @@ parameters:
   # arguments:          ''
 
 jobs:
-- ${{ each c in parameters.configurations }}:
-  - template: each-platform.yml
+- ${{ each p in parameters.platforms }}:
+  - template: expand-common.yml
     parameters:
-      configuration: ${{ c }}
+      platform: ${{ p }}
       common:
-        # arguments: append c.arguments
-        ${{ if c.arguments }}:
+        # arguments: append p.arguments
+        ${{ if p.arguments }}:
           ${{ if parameters.common.arguments }}:
-            arguments:  ${{ parameters.common.arguments }} ${{ c.arguments }}
+            arguments:  ${{ parameters.common.arguments }} ${{ p.arguments }}
           ${{ if not(parameters.common.arguments) }}:
-            arguments:  ${{ c.arguments }}
-        ${{ if not(c.arguments) }}:
+            arguments:  ${{ p.arguments }}
+        ${{ if not(p.arguments) }}:
           arguments:    ${{ parameters.common.arguments }}
 
-        # forward rest of c.common
-        ${{ each pair in c.common }}:
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
+
+        # forward rest of p.common
+        ${{ each pair in p.common }}:
           ${{ if notIn(pair.key, 'arguments') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of the object
         ${{ each pair in parameters.common }}:
-          ${{ if eq(variables.null, c.common[pair.key]) }}:
+          ${{ if eq(variables.null, p.common[pair.key]) }}:
             ${{ if notIn(pair.key, 'arguments') }}:
               ${{ pair.key }}: ${{ pair.value }}
       restore:
-        # (displayNameSuffix, arguments): append c.argValue
-        ${{ if ne('', c.argValue) }}:
-          configuration:  ${{ c.argValue }}
+        # (displayNameSuffix, arguments): append p.argValue
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
           # displayNameSuffix
           ${{ if ne('', parameters.restore.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.restore.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+            displayNameSuffix: ${{ parameters.restore.displayNameSuffix }} -p:Platform=${{ p.argValue }}
           ${{ if eq('', parameters.restore.displayNameSuffix) }}:
-              displayNameSuffix: -p:Configuration=${{ c.argValue }}
-        ${{ if eq('', c.argValue) }}:
+              displayNameSuffix: -p:Platform=${{ p.argValue }}
+        ${{ if eq('', p.argValue) }}:
           displayNameSuffix:  ${{ parameters.restore.displayNameSuffix }}
 
-        # forward c.restore
-        ${{ each pair in c.restore }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+        # forward p.restore
+        ${{ each pair in p.restore }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of object
         ${{ each pair in parameters.restore }}:
-          ${{ if eq(variables.null, c.restore[pair.key]) }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+          ${{ if eq(variables.null, p.restore[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
               ${{ pair.key }}: ${{ pair.value }}
       build:
-        # (displayNameSuffix, arguments): append c.argValue
-        ${{ if ne('', c.argValue) }}:
-          configuration:  ${{ c.argValue }}
+        # (displayNameSuffix, arguments): append p.argValue
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
           # displayNameSuffix
           ${{ if ne('', parameters.build.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} -p:Platform=${{ p.argValue }}
           ${{ if eq('', parameters.build.displayNameSuffix) }}:
-              displayNameSuffix: -p:Configuration=${{ c.argValue }}
-        ${{ if eq('', c.argValue) }}:
+              displayNameSuffix: -p:Platform=${{ p.argValue }}
+        ${{ if eq('', p.argValue) }}:
           displayNameSuffix:  ${{ parameters.build.displayNameSuffix }}
 
-        # forward c.build
-        ${{ each pair in c.build }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+        # forward p.build
+        ${{ each pair in p.build }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of object
         ${{ each pair in parameters.build }}:
-          ${{ if eq(variables.null, c.build[pair.key]) }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+          ${{ if eq(variables.null, p.build[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
               ${{ pair.key }}: ${{ pair.value }}
       test:
-        # (displayNameSuffix, arguments): append c.argValue
-        ${{ if ne('', c.argValue) }}:
-          configuration:  ${{ c.argValue }}
+        # (displayNameSuffix, arguments): append p.argValue
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
           # displayNameSuffix
           ${{ if ne('', parameters.test.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.test.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+            displayNameSuffix: ${{ parameters.test.displayNameSuffix }} -p:Platform=${{ p.argValue }}
           ${{ if eq('', parameters.test.displayNameSuffix) }}:
-              displayNameSuffix: -p:Configuration=${{ c.argValue }}
-        ${{ if eq('', c.argValue) }}:
+              displayNameSuffix: -p:Platform=${{ p.argValue }}
+        ${{ if eq('', p.argValue) }}:
           displayNameSuffix:  ${{ parameters.test.displayNameSuffix }}
 
-        # forward c.test
-        ${{ each pair in c.test }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+        # forward p.test
+        ${{ each pair in p.test }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of object
         ${{ each pair in parameters.test }}:
-          ${{ if eq(variables.null, c.test[pair.key]) }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+          ${{ if eq(variables.null, p.test[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
               ${{ pair.key }}: ${{ pair.value }}
       pack:
-        # (displayNameSuffix, arguments): append c.argValue
-        ${{ if ne('', c.argValue) }}:
-          configuration:  ${{ c.argValue }}
+        # (displayNameSuffix, arguments): append p.argValue
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
           # displayNameSuffix
           ${{ if ne('', parameters.pack.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} -p:Platform=${{ p.argValue }}
           ${{ if eq('', parameters.pack.displayNameSuffix) }}:
-              displayNameSuffix: -p:Configuration=${{ c.argValue }}
-        ${{ if eq('', c.argValue) }}:
+              displayNameSuffix: -p:Platform=${{ p.argValue }}
+        ${{ if eq('', p.argValue) }}:
           displayNameSuffix:  ${{ parameters.pack.displayNameSuffix }}
 
-        # forward c.pack
-        ${{ each pair in c.pack }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+        # forward p.pack
+        ${{ each pair in p.pack }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of object
         ${{ each pair in parameters.pack }}:
-          ${{ if eq(variables.null, c.pack[pair.key]) }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+          ${{ if eq(variables.null, p.pack[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
               ${{ pair.key }}: ${{ pair.value }}
       publish:
-        # (displayNameSuffix, arguments): append c.argValue
-        ${{ if ne('', c.argValue) }}:
-          configuration:  ${{ c.argValue }}
+        # (displayNameSuffix, arguments): append p.argValue
+        ${{ if ne('', p.argValue) }}:
+          platform:     ${{ p.argValue }}
           # displayNameSuffix
           ${{ if ne('', parameters.publish.displayNameSuffix) }}:
-            displayNameSuffix: ${{ parameters.publish.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+            displayNameSuffix: ${{ parameters.publish.displayNameSuffix }} -p:Platform=${{ p.argValue }}
           ${{ if eq('', parameters.publish.displayNameSuffix) }}:
-              displayNameSuffix: -p:Configuration=${{ c.argValue }}
-        ${{ if eq('', c.argValue) }}:
+              displayNameSuffix: -p:Platform=${{ p.argValue }}
+        ${{ if eq('', p.argValue) }}:
           displayNameSuffix:  ${{ parameters.publish.displayNameSuffix }}
 
-        # forward c.publish
-        ${{ each pair in c.publish }}:
-          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+        # forward p.publish
+        ${{ each pair in p.publish }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
         # forward rest of object
         ${{ each pair in parameters.publish }}:
-          ${{ if eq(variables.null, c.publish[pair.key]) }}:
-            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+          ${{ if eq(variables.null, p.publish[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'platform') }}:
               ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'configurations', 'configuration', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ if notIn(pair.key, 'platforms', 'platform', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
           ${{ pair.key }}: ${{ pair.value }}
