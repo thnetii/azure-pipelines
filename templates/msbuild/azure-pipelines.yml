@@ -1,0 +1,420 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     defaultPool
+  type:     object
+  default:
+    vmImage: windows-2019
+
+- name:     defaultArguments
+  type:     string
+  default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -nodeReuse:false
+- name:     common
+  type:     object
+  default:  {}
+  # allProjects:  '' # '*.sln'
+  # srcProjects:  '' # '[Ss]rc/*/*.csproj'
+  # testProjects: '' # '[Tt]est/*/*.csproj'
+  # arguments:    ''
+  # addArguments: ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+- name:     debugConfiguration
+  type:     object
+  default:  # specify null to disable
+    id:           debug
+    condition:    ne(variables['SkipConfigurationDebug'], 'true')
+    displayName:  Debug
+    argValue:     Debug
+    # passed object is merged with default values listed above
+- name:     releaseConfiguration
+  type:     object
+  default:  # specify null to disable
+    id:           release
+    condition:    ne(variables['SkipConfigurationRelease'], 'true')
+    displayName:  Release
+    argValue:     Release
+    # passed object is merged with default values listed above
+- name:     configurations
+  type:     object
+  default:  []
+  # additional configurations appended after those listed above
+  # each entry:
+  #   id:           ''
+  #   argValue:     ''
+  #   displayName:  ''
+  #   condition:    ''
+  #   arguments:    ''
+  #   common:       {} # common-like object
+  #   restore:      {} # restore-like object
+  #   build:        {} # build-like object
+  #   test:         {} # test-like object
+  #   pack:         {} # pack-like object
+  #   publish:      {} # publish-like object
+
+- name:     independantRuntime
+  type:     object
+  default:  # specify null to disable
+    condition:    ne(variables['SkipNoRuntime'], 'true')
+    arguments:    '-p:NoNetFramework=true'
+- name:     windowsRuntime
+  type:     object
+  default:  # specify null to disable
+    id:           win
+    condition:    ne(variables['SkipWindowsRuntime'], 'true')
+    argValue:     win10-x64
+    displayName:  Windows, 64-bit
+    pool:
+      vmImage:    windows-latest
+    pack:
+      skip:       true
+- name:     linuxRuntime
+  type:     object
+  default:  # specify null to disable
+    id:           linux
+    condition:    ne(variables['SkipLinuxRuntime'], 'true')
+    argValue:     linux-x64
+    displayName:  Linux, 64-bit
+    pool:
+      vmImage:    ubuntu-latest
+    pack:
+      skip:       true
+    arguments:    '-p:NoNetFramework=true'
+- name:     macRuntime
+  type:     object
+  default:  # specify null to disable
+    id:           osx
+    condition:    ne(variables['SkipMacOSRuntime'], 'true')
+    argValue:     osx-x64
+    displayName:  macOS, 64-bit
+    pool:
+      vmImage:    macOs-latest
+    pack:
+      skip:       true
+    arguments:    '-p:NoNetFramework=true'
+- name:     runtimes
+  type:     object
+  default:  []
+  # additional runtimes appended after those listed above
+  # each entry:
+  #   id:           ''
+  #   argValue:     ''
+  #   displayName:  ''
+  #   condition:    ''
+  #   pool:         null
+  #   arguments:    ''
+  #   common:       {} # common-like object
+  #   restore:      {} # restore-like object
+  #   build:        {} # build-like object
+  #   test:         {} # test-like object
+  #   pack:         {} # pack-like object
+  #   publish:      {} # publish-like object
+
+jobs:
+- template: jobs/each-configuration.yml
+  parameters:
+    checkout:     ${{ parameters.checkout }}
+    presteps:     ${{ parameters.presteps }}
+    poststeps:    ${{ parameters.poststeps }}
+    defaultPool:  ${{ parameters.defaultPool }}
+    common:
+      # allProjects
+      ${{ if eq(variables.null, parameters.common.allProjects) }}:
+        allProjects:  '*.sln'
+      ${{ if ne(variables.null, parameters.common.allProjects) }}:
+        allProjects:  ${{ parameters.common.allProjects }}
+      # srcProjects
+      ${{ if eq(variables.null, parameters.common.srcProjects) }}:
+        srcProjects:  '[Ss]rc/*/*.csproj'
+      ${{ if ne(variables.null, parameters.common.srcProjects) }}:
+        srcProjects:  ${{ parameters.common.srcProjects }}
+      # testProjects
+      ${{ if eq(variables.null, parameters.common.testProjects) }}:
+        testProjects:  '[Tt]est/*/*.csproj'
+      ${{ if ne(variables.null, parameters.common.testProjects) }}:
+        testProjects:  ${{ parameters.common.testProjects }}
+      # arguments:
+      ${{ if not(parameters.common.arguments) }}:
+        ${{ if not(parameters.common.addArguments) }}:
+          arguments:  ${{ parameters.defaultArguments }}
+        ${{ if parameters.common.addArguments }}:
+          arguments:  ${{ parameters.defaultArguments }} ${{ parameters.common.addArguments }}
+      ${{ if parameters.common.arguments }}:
+        ${{ if not(parameters.common.addArguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+        ${{ if parameters.common.addArguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.common.addArguments }}
+    ${{ if parameters.restore }}:
+      restore:  ${{ parameters.restore }}
+    ${{ if parameters.build }}:
+      build:    ${{ parameters.build }}
+    ${{ if parameters.test }}:
+      test:     ${{ parameters.test }}
+    ${{ if parameters.pack }}:
+      pack:     ${{ parameters.pack }}
+    publish:
+      # arguments
+      ${{ if ne(variables.null, parameters.publish.arguments) }}:
+        arguments:          ${{ parameters.publish.arguments }}
+      ${{ if eq(variables.null, parameters.publish.arguments) }}:
+        arguments:          -p:BuildDefaultTargetFramework=true
+      # publishWebProjects
+      ${{ if ne(variables.null, parameters.publish.publishWebProjects) }}:
+        publishWebProjects: ${{ parameters.publish.publishWebProjects }}
+      ${{ if eq(variables.null, parameters.publish.publishWebProjects) }}:
+        publishWebProjects: false
+      # zipAfterPublish
+      ${{ if ne(variables.null, parameters.publish.zipAfterPublish) }}:
+        zipAfterPublish:    ${{ parameters.publish.zipAfterPublish }}
+      ${{ if eq(variables.null, parameters.publish.zipAfterPublish) }}:
+        zipAfterPublish:    false
+      # forward rest of object
+      ${{ each pair in parameters.publish }}:
+        ${{ if notIn(pair.key, 'arguments', 'publishWebProjects', 'zipAfterPublish') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    configurations:
+    - ${{ if ne(variables.null, parameters.debugConfiguration) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.debugConfiguration.id) }}:
+          id:           ${{ parameters.debugConfiguration.id }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.id) }}:
+          id:           debug
+        # condition
+        ${{ if ne(variables.null, parameters.debugConfiguration.condition) }}:
+          condition:    ${{ parameters.debugConfiguration.condition }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.condition) }}:
+          condition:    ne(variables['SkipConfigurationDebug'], 'true')
+        # displayName
+        ${{ if ne(variables.null, parameters.debugConfiguration.displayName) }}:
+          displayName:  ${{ parameters.debugConfiguration.displayName }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.displayName) }}:
+          displayName:  Debug
+        # argValue
+        ${{ if ne(variables.null, parameters.debugConfiguration.argValue) }}:
+          argValue:     ${{ parameters.debugConfiguration.argValue }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.argValue) }}:
+          argValue:     Debug
+        # forwards rest of object
+        ${{ each pair in parameters.debugConfiguration }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ if ne(variables.null, parameters.releaseConfiguration) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.releaseConfiguration.id) }}:
+          id:           ${{ parameters.releaseConfiguration.id }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.id) }}:
+          id:           release
+        # condition
+        ${{ if ne(variables.null, parameters.releaseConfiguration.condition) }}:
+          condition:    ${{ parameters.releaseConfiguration.condition }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.condition) }}:
+          condition:    ne(variables['SkipConfigurationRelease'], 'true')
+        # displayName
+        ${{ if ne(variables.null, parameters.releaseConfiguration.displayName) }}:
+          displayName:  ${{ parameters.releaseConfiguration.displayName }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.displayName) }}:
+          displayName:  Release
+        # argValue
+        ${{ if ne(variables.null, parameters.releaseConfiguration.argValue) }}:
+          argValue:     ${{ parameters.releaseConfiguration.argValue }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.argValue) }}:
+          argValue:     Release
+        # forwards rest of object
+        ${{ each pair in parameters.releaseConfiguration }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ each item in parameters.configurations }}:
+      - ${{ each pair in item }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    runtimes:
+    - ${{ if ne(variables.null, parameters.independantRuntime) }}:
+      - # condition
+        ${{ if ne(variables.null, parameters.independantRuntime.condition) }}:
+          condition:    ${{ parameters.independantRuntime.condition }}
+        ${{ if eq(variables.null, parameters.independantRuntime.condition) }}:
+          condition:    ne(variables['SkipNoRuntime'], 'true')
+        # arguments
+        ${{ if ne(variables.null, parameters.independantRuntime.arguments) }}:
+          arguments:    ${{ parameters.independantRuntime.arguments }}
+        ${{ if eq(variables.null, parameters.independantRuntime.arguments) }}:
+          arguments:    '-p:NoNetFramework=true'
+        # forwards rest of object
+        ${{ each pair in parameters.independantRuntime }}:
+          ${{ if notIn(pair.key, 'condition', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ if ne(variables.null, parameters.windowsRuntime) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.windowsRuntime.id) }}:
+          id:           ${{ parameters.windowsRuntime.id }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.id) }}:
+          id:           win
+        # condition
+        ${{ if ne(variables.null, parameters.windowsRuntime.condition) }}:
+          condition:    ${{ parameters.windowsRuntime.condition }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.condition) }}:
+          condition:    ne(variables['SkipWindowsRuntime'], 'true')
+        # argValue
+        ${{ if ne(variables.null, parameters.windowsRuntime.argValue) }}:
+          argValue:     ${{ parameters.windowsRuntime.argValue }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.argValue) }}:
+          argValue:     win10-x64
+        # displayName
+        ${{ if ne(variables.null, parameters.windowsRuntime.displayName) }}:
+          displayName:  ${{ parameters.windowsRuntime.displayName }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.displayName) }}:
+          displayName:  Windows, 64-bit
+        # pool
+        ${{ if ne(variables.null, parameters.windowsRuntime.pool) }}:
+          pool:         ${{ parameters.windowsRuntime.pool }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.pool) }}:
+          pool:
+            vmImage:    windows-latest
+        # pack
+        ${{ if ne(variables.null, parameters.windowsRuntime.pack) }}:
+          pack:         ${{ parameters.windowsRuntime.pack }}
+        ${{ if eq(variables.null, parameters.windowsRuntime.pack) }}:
+          pack:
+            skip:       true
+        # forwards rest of object
+        ${{ each pair in parameters.windowsRuntime }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ if ne(variables.null, parameters.linuxRuntime) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.linuxRuntime.id) }}:
+          id:           ${{ parameters.linuxRuntime.id }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.id) }}:
+          id:           linux
+        # condition
+        ${{ if ne(variables.null, parameters.linuxRuntime.condition) }}:
+          condition:    ${{ parameters.linuxRuntime.condition }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.condition) }}:
+          condition:    ne(variables['SkipLinuxRuntime'], 'true')
+        # argValue
+        ${{ if ne(variables.null, parameters.linuxRuntime.argValue) }}:
+          argValue:     ${{ parameters.linuxRuntime.argValue }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.argValue) }}:
+          argValue:     linux-x64
+        # displayName
+        ${{ if ne(variables.null, parameters.linuxRuntime.displayName) }}:
+          displayName:  ${{ parameters.linuxRuntime.displayName }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.displayName) }}:
+          displayName:  Linux, 64-bit
+        # pool
+        ${{ if ne(variables.null, parameters.linuxRuntime.pool) }}:
+          pool:         ${{ parameters.linuxRuntime.pool }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.pool) }}:
+          pool:
+            vmImage:    ubuntu-latest
+        # pack
+        ${{ if ne(variables.null, parameters.linuxRuntime.pack) }}:
+          pack:         ${{ parameters.linuxRuntime.pack }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.pack) }}:
+          pack:
+            skip:       true
+        # arguments
+        ${{ if ne(variables.null, parameters.linuxRuntime.arguments) }}:
+          arguments:    ${{ parameters.linuxRuntime.arguments }}
+        ${{ if eq(variables.null, parameters.linuxRuntime.arguments) }}:
+          arguments:    '-p:NoNetFramework=true'
+        # forwards rest of object
+        ${{ each pair in parameters.linuxRuntime }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ if ne(variables.null, parameters.macRuntime) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.macRuntime.id) }}:
+          id:           ${{ parameters.macRuntime.id }}
+        ${{ if eq(variables.null, parameters.macRuntime.id) }}:
+          id:           osx
+        # condition
+        ${{ if ne(variables.null, parameters.macRuntime.condition) }}:
+          condition:    ${{ parameters.macRuntime.condition }}
+        ${{ if eq(variables.null, parameters.macRuntime.condition) }}:
+          condition:    ne(variables['SkipMacOSRuntime'], 'true')
+        # argValue
+        ${{ if ne(variables.null, parameters.macRuntime.argValue) }}:
+          argValue:     ${{ parameters.macRuntime.argValue }}
+        ${{ if eq(variables.null, parameters.macRuntime.argValue) }}:
+          argValue:     osx-x64
+        # displayName
+        ${{ if ne(variables.null, parameters.macRuntime.displayName) }}:
+          displayName:  ${{ parameters.macRuntime.displayName }}
+        ${{ if eq(variables.null, parameters.macRuntime.displayName) }}:
+          displayName:  macOS, 64-bit
+        # pool
+        ${{ if ne(variables.null, parameters.macRuntime.pool) }}:
+          pool:         ${{ parameters.macRuntime.pool }}
+        ${{ if eq(variables.null, parameters.macRuntime.pool) }}:
+          pool:
+            vmImage:    macOS-latest
+        # pack
+        ${{ if ne(variables.null, parameters.macRuntime.pack) }}:
+          pack:         ${{ parameters.macRuntime.pack }}
+        ${{ if eq(variables.null, parameters.macRuntime.pack) }}:
+          pack:
+            skip:       true
+        # arguments
+        ${{ if ne(variables.null, parameters.macRuntime.arguments) }}:
+          arguments:    ${{ parameters.macRuntime.arguments }}
+        ${{ if eq(variables.null, parameters.macRuntime.arguments) }}:
+          arguments:    '-p:NoNetFramework=true'
+        # forwards rest of object
+        ${{ each pair in parameters.macRuntime }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'argValue', 'displayName', 'pool', 'pack', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ each item in parameters.runtimes }}:
+      - ${{ each pair in item }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'checkout', 'presteps', 'poststeps', 'defaultPool', 'common', 'restore', 'build', 'test', 'pack', 'publish', 'configurations', 'runtimes', 'defaultArguments', 'debugConfiguration', 'releaseConfiguration', 'independantRuntime', 'windowsRuntime', 'linuxRuntime', 'macRuntime') }}:
+        ${{ pair.key }}: ${{ pair.value }}
+
