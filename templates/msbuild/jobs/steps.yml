@@ -9,7 +9,7 @@ parameters:
   type:     stepList
   default:  []
 
-- name:     nugetArtifactName
+- name:     packArtifactName
   type:     string
   default:  $(System.TeamProject)-nuget
 - name:     publishArtifactName
@@ -63,86 +63,68 @@ steps:
 - ${{ each step in parameters.presteps }}:
   - ${{ step }}
 - ${{ if not(parameters.restore.skip) }}:
-  - task: DotNetCoreCLI@2
-    displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
+  - task: MSBuild@1
+    displayName:  msbuild -t:Restore ${{ parameters.restore.displayNameSuffix }}
     ${{ if ne('', parameters.restore.condition) }}:
       condition:    and(ne(variables['SkipBuildTasks'], 'true'), ${{ parameters.restore.condition }})
     ${{ if eq('', parameters.restore.condition) }}:
       condition:    ne(variables['SkipBuildTasks'], 'true')
     inputs:
-      command:    custom
-      custom:     restore
-      projects:   ${{ parameters.restore.projects }}
-      arguments:  ${{ parameters.restore.arguments }}
+      solution:   ${{ parameters.restore.projects }}
+      msbuildArguments:   -t:Restore ${{ parameters.restore.arguments }}
       ${{ each pair in parameters.restore }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
+        ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
 - ${{ if not(parameters.build.skip) }}:
-  - task: DotNetCoreCLI@2
-    displayName:  dotnet build ${{ parameters.build.displayNameSuffix }}
+  - task: MSBuild@1
+    displayName:  msbuild -t:Build ${{ parameters.build.displayNameSuffix }}
     ${{ if ne('', parameters.build.condition) }}:
       condition:    and(ne(variables['SkipBuildTasks'], 'true'), ${{ parameters.build.condition }})
     ${{ if eq('', parameters.build.condition) }}:
       condition:    ne(variables['SkipBuildTasks'], 'true')
     inputs:
-      command:    build
-      projects:   ${{ parameters.build.projects }}
-      arguments:  ${{ parameters.build.arguments }}
+      solution:   ${{ parameters.build.projects }}
+      msbuildArguments:   -t:Build ${{ parameters.build.arguments }}
       ${{ each pair in parameters.build }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
+        ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
-- ${{ if not(parameters.test.skip) }}:
-  - task: DotNetCoreCLI@2
-    displayName:  dotnet test ${{ parameters.test.displayNameSuffix }}
-    ${{ if ne('', parameters.test.condition) }}:
-      condition:  ${{ parameters.test.condition }}
-    inputs:
-      command:    test
-      projects:   ${{ parameters.test.projects }}
-      arguments:  ${{ parameters.test.arguments }}
-      publishTestResults: true
-      ${{ each pair in parameters.test }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'publishTestResults', 'condition', 'skip') }}:
-          ${{ pair.key }}: ${{ pair.value }}
+#- ${{ if not(parameters.test.skip) }}:
 - ${{ if not(parameters.pack.skip) }}:
-  - task: DotNetCoreCLI@2
-    displayName:  dotnet pack ${{ parameters.pack.displayNameSuffix }}
+  - task: MSBuild@1
+    displayName:  msbuild -t:Pack ${{ parameters.pack.displayNameSuffix }}
     ${{ if ne('', parameters.pack.condition) }}:
       condition:  ${{ parameters.pack.condition }}
     inputs:
-      command:    custom
-      custom:     pack
-      projects:   ${{ parameters.pack.projects }}
-      arguments:  ${{ parameters.pack.arguments }}
+      solution:   ${{ parameters.pack.projects }}
+      msbuildArguments:   -t:Pack "-p:PackageOutputPath=$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}" ${{ parameters.pack.arguments }}
       ${{ each pair in parameters.pack }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
+        ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
     ${{ if ne('', parameters.pack.condition) }}:
       condition:      ${{ parameters.pack.condition }}
     displayName:      Upload NuGet artifacts
     inputs:
-      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/nuget'
-      artifactName:   ${{ coalesce(parameters.nugetArtifactName, '$(System.TeamProject)-nuget') }}
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}'
+      artifactName:   ${{ coalesce(parameters.packArtifactName, '$(System.TeamProject)-nuget') }}
     continueOnError:  true
 - ${{ if not(parameters.publish.skip) }}:
-  - task: DotNetCoreCLI@2
-    displayName:  dotnet publish ${{ parameters.publish.displayNameSuffix }}
+  - task: MSBuild@1
+    displayName:  msbuild -t:Publish ${{ parameters.publish.displayNameSuffix }}
     ${{ if ne('', parameters.publish.condition) }}:
       condition:  ${{ parameters.publish.condition }}
     inputs:
-      command:    publish
-      projects:   ${{ parameters.publish.projects }}
-      arguments:  ${{ parameters.publish.arguments }}
+      solution:   ${{ parameters.publish.projects }}
+      msbuildArguments:   -t:Publish "-p:PublishDir=$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}" ${{ parameters.publish.arguments }}
       ${{ each pair in parameters.publish }}:
-        ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
+        ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
   - task: PublishBuildArtifacts@1
     ${{ if ne('', parameters.publish.condition) }}:
       condition:      ${{ parameters.publish.condition }}
     displayName:      Upload Binary artifacts
     inputs:
-      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}'
       artifactName:   ${{ coalesce(parameters.publishArtifactName, '$(System.TeamProject)-artifacts') }}
     continueOnError:  true
 - ${{ each step in parameters.poststeps }}:

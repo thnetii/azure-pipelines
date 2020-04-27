@@ -1,4 +1,4 @@
-parameters: 
+parameters:
 - name:     checkout
   type:     stepList
   default:  []
@@ -9,7 +9,7 @@ parameters:
   type:     stepList
   default:  []
 
-- name:     nugetArtifactName
+- name:     packArtifactName
   type:     string
   default:  $(System.TeamProject)-nuget
 - name:     publishArtifactName
@@ -113,7 +113,7 @@ steps:
       command:    custom
       custom:     pack
       projects:   ${{ parameters.pack.projects }}
-      arguments:  ${{ parameters.pack.arguments }}
+      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}" ${{ parameters.pack.arguments }}
       ${{ each pair in parameters.pack }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
@@ -122,8 +122,8 @@ steps:
       condition:      ${{ parameters.pack.condition }}
     displayName:      Upload NuGet artifacts
     inputs:
-      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/nuget'
-      artifactName:   ${{ coalesce(parameters.nugetArtifactName, '$(System.TeamProject)-nuget') }}
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}'
+      artifactName:   ${{ coalesce(parameters.packArtifactName, '$(System.TeamProject)-nuget') }}
     continueOnError:  true
 - ${{ if not(parameters.publish.skip) }}:
   - task: DotNetCoreCLI@2
@@ -133,7 +133,7 @@ steps:
     inputs:
       command:    publish
       projects:   ${{ parameters.publish.projects }}
-      arguments:  ${{ parameters.publish.arguments }}
+      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}" ${{ parameters.publish.arguments }}
       ${{ each pair in parameters.publish }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
@@ -142,7 +142,7 @@ steps:
       condition:      ${{ parameters.publish.condition }}
     displayName:      Upload Binary artifacts
     inputs:
-      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/artifacts'
+      pathtoPublish:  '$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}'
       artifactName:   ${{ coalesce(parameters.publishArtifactName, '$(System.TeamProject)-artifacts') }}
     continueOnError:  true
 - ${{ each step in parameters.poststeps }}:

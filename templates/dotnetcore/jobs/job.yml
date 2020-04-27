@@ -8,7 +8,7 @@ parameters:
 - name:     poststeps
   type:     stepList
   default:  []
-  
+
 - name:     defaultPool
   type:     object
   default:  {}
@@ -29,7 +29,7 @@ parameters:
   type:     object
   default:  {}
   # id:     ''
-  
+
 - name:     restore
   type:     object
   default:  {}
@@ -84,28 +84,18 @@ jobs:
     parameters:
       ${{ if eq('', parameters.configuration.id) }}:
         ${{ if eq('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget
+          packArtifactName:     $(System.TeamProject)-nuget
           publishArtifactName:  $(System.TeamProject)-artifacts-default
         ${{ if ne('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.runtime.id }}
+          packArtifactName:     $(System.TeamProject)-nuget-${{ parameters.runtime.id }}
           publishArtifactName:  $(System.TeamProject)-artifacts-standalone-${{ parameters.runtime.id }}
       ${{ if ne('', parameters.configuration.id) }}:
         ${{ if eq('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}
+          packArtifactName:     $(System.TeamProject)-nuget-${{ parameters.configuration.id }}
           publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-default
         ${{ if ne('', parameters.runtime.id) }}:
-          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}-${{ parameters.runtime.id }}
+          packArtifactName:     $(System.TeamProject)-nuget-${{ parameters.configuration.id }}-${{ parameters.runtime.id }}
           publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-standalone-${{ parameters.runtime.id }}
-      pack:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget" ${{ parameters.pack.arguments }}'
-        ${{ each pair in parameters.pack }}:
-          ${{ if notIn(pair.key, 'arguments') }}:
-            ${{ pair.key }}: ${{ pair.value }}
-      publish:
-        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.publish.arguments }}'
-        ${{ each pair in parameters.publish }}:
-          ${{ if notIn(pair.key, 'arguments') }}:
-            ${{ pair.key }}: ${{ pair.value }}
       ${{ each pair in parameters }}:
-        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
+        ${{ if notIn(pair.key, 'packArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
           ${{ pair.key }}: ${{ pair.value }}

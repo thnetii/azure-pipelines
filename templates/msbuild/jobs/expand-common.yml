@@ -8,7 +8,7 @@ parameters:
 - name:     poststeps
   type:     stepList
   default:  []
-  
+
 - name:     defaultPool
   type:     object
   default:  {}
@@ -23,14 +23,14 @@ parameters:
   # id:           ''
   # displayName:  ''
   # condition:    ''
-- name:     runtime
+- name:     platform
   type:     object
   default:  {}
   # id:           ''
   # displayName:  ''
   # condition:    ''
   # pool:         null # defaultPool-like
-  
+
 - name:     common
   type:     object
   default:  {}
@@ -110,7 +110,7 @@ jobs:
           arguments:  ${{ parameters.common.arguments }}
       ${{ if not(parameters.common.arguments) }}:
         arguments:    ${{ parameters.build.arguments }}
-      
+
       # forward rest of the object
       ${{ each pair in parameters.build }}:
         ${{ if notIn(pair.key, 'projects', 'arguments') }}:
@@ -126,7 +126,7 @@ jobs:
           arguments:  ${{ parameters.common.arguments }}
       ${{ if not(parameters.common.arguments) }}:
         arguments:    ${{ parameters.test.arguments }}
-      
+
       # forward rest of the object
       ${{ each pair in parameters.test }}:
         ${{ if notIn(pair.key, 'projects', 'arguments') }}:
@@ -142,7 +142,7 @@ jobs:
           arguments:  ${{ parameters.common.arguments }}
       ${{ if not(parameters.common.arguments) }}:
         arguments:    ${{ parameters.pack.arguments }}
-      
+
       # forward rest of the object
       ${{ each pair in parameters.pack }}:
         ${{ if notIn(pair.key, 'projects', 'arguments') }}:
@@ -158,7 +158,7 @@ jobs:
           arguments:  ${{ parameters.common.arguments }}
       ${{ if not(parameters.common.arguments) }}:
         arguments:    ${{ parameters.publish.arguments }}
-      
+
       # forward rest of the object
       ${{ each pair in parameters.publish }}:
         ${{ if notIn(pair.key, 'projects', 'arguments') }}:
