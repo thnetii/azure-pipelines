@@ -1,0 +1,254 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+- name:     runtimes
+  type:     object
+  default:  []
+  # each entry:
+  #   id:           ''
+  #   argValue:     ''
+  #   displayName:  ''
+  #   condition:    ''
+  #   pool:         null
+  #   arguments:    ''
+  #   common:       {} # common-like object
+  #   restore:      {} # restore-like object
+  #   build:        {} # build-like object
+  #   test:         {} # test-like object
+  #   pack:         {} # pack-like object
+  #   publish:      {} # publish-like object
+  
+- name:     common
+  type:     object
+  default:  {}
+  # allProjects:  ''
+  # srcProjects:  ''
+  # testProjects: ''
+  # arguments:    ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- ${{ each r in parameters.runtimes }}:
+  - template: expand-common.yml
+    parameters:
+      runtime: ${{ r }}
+      common:
+        # arguments: append r.arguments
+        ${{ if r.arguments }}:
+          ${{ if parameters.common.arguments }}:
+            arguments:  ${{ parameters.common.arguments }} ${{ r.arguments }}
+          ${{ if not(parameters.common.arguments) }}:
+            arguments:  ${{ r.arguments }}
+        ${{ if not(r.arguments) }}:
+          arguments:    ${{ parameters.common.arguments }}
+        
+        # forward rest of r.common
+        ${{ each pair in r.common }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of the object
+        ${{ each pair in parameters.common }}:
+          ${{ if eq(variables.null, r.common[pair.key]) }}:
+            ${{ if notIn(pair.key, 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      restore:
+        # (displayNameSuffix, arguments): append r.argValue
+        ${{ if ne('', r.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.restore.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.restore.displayNameSuffix }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.restore.displayNameSuffix) }}:
+              displayNameSuffix: --runtime ${{ r.argValue }}
+          # arguments
+          ${{ if ne('', parameters.restore.arguments) }}:
+            arguments: ${{ parameters.restore.arguments }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.restore.arguments) }}:
+            arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.restore.displayNameSuffix }}
+          arguments:          ${{ parameters.restore.arguments }}
+        
+        # forward r.restore
+        ${{ each pair in r.restore }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of object
+        ${{ each pair in parameters.restore }}:
+          ${{ if eq(variables.null, r.restore[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      build:
+        # (displayNameSuffix, arguments): append r.argValue
+        ${{ if ne('', r.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.build.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.build.displayNameSuffix) }}:
+              displayNameSuffix: --runtime ${{ r.argValue }}
+          # arguments
+          ${{ if ne('', parameters.build.arguments) }}:
+            arguments: ${{ parameters.build.arguments }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.build.arguments) }}:
+            arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.build.displayNameSuffix }}
+          arguments:          ${{ parameters.build.arguments }}
+        
+        # forward r.build
+        ${{ each pair in r.build }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of object
+        ${{ each pair in parameters.build }}:
+          ${{ if eq(variables.null, r.build[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      test:
+        # (displayNameSuffix, arguments): append r.argValue
+        ${{ if ne('', r.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.test.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.test.displayNameSuffix }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.test.displayNameSuffix) }}:
+              displayNameSuffix: --runtime ${{ r.argValue }}
+          # arguments
+          ${{ if ne('', parameters.test.arguments) }}:
+            arguments: ${{ parameters.test.arguments }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.test.arguments) }}:
+            arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.test.displayNameSuffix }}
+          arguments:          ${{ parameters.test.arguments }}
+        
+        # forward r.test
+        ${{ each pair in r.test }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of object
+        ${{ each pair in parameters.test }}:
+          ${{ if eq(variables.null, r.test[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      pack:
+        # (displayNameSuffix, arguments): append r.argValue
+        ${{ if ne('', r.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.pack.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.pack.displayNameSuffix) }}:
+              displayNameSuffix: --runtime ${{ r.argValue }}
+          # arguments
+          ${{ if ne('', parameters.pack.arguments) }}:
+            arguments: ${{ parameters.pack.arguments }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.pack.arguments) }}:
+            arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.pack.displayNameSuffix }}
+          arguments:          ${{ parameters.pack.arguments }}
+        
+        # forward r.pack
+        ${{ each pair in r.pack }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of object
+        ${{ each pair in parameters.pack }}:
+          ${{ if eq(variables.null, r.pack[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      publish:
+        # (displayNameSuffix, arguments): append r.argValue
+        ${{ if ne('', r.argValue) }}:
+          # displayNameSuffix
+          ${{ if ne('', parameters.publish.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.publish.displayNameSuffix }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.publish.displayNameSuffix) }}:
+              displayNameSuffix: --runtime ${{ r.argValue }}
+          # arguments
+          ${{ if ne('', parameters.publish.arguments) }}:
+            arguments: ${{ parameters.publish.arguments }} --runtime ${{ r.argValue }}
+          ${{ if eq('', parameters.publish.arguments) }}:
+            arguments: --runtime ${{ r.argValue }}
+        ${{ if eq('', r.argValue) }}:
+          displayNameSuffix:  ${{ parameters.publish.displayNameSuffix }}
+          arguments:          ${{ parameters.publish.arguments }}
+        
+        # forward r.publish
+        ${{ each pair in r.publish }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+        
+        # forward rest of object
+        ${{ each pair in parameters.publish }}:
+          ${{ if eq(variables.null, r.publish[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'runtimes', 'runtime', 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
+          ${{ pair.key }}: ${{ pair.value }}

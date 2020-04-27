@@ -1,0 +1,111 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+  # id:           default
+  # condition:    ''
+  # displayName:  ''
+  # pool:         null # defaultPool-like object
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:     ''
+- name:     runtime
+  type:     object
+  default:  {}
+  # id:     ''
+  
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- job:          ${{ coalesce(parameters.job.id, 'default') }}
+  condition:    ${{ parameters.job.condition }}
+  displayName:  ${{ parameters.job.displayName }}
+  pool:         ${{ coalesce(parameters.job.pool, parameters.defaultPool) }}
+  ${{ each pair in parameters.job }}:
+    ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'pool', 'steps') }}:
+      ${{ pair.key }}: ${{ pair.value }}
+  steps:
+  - template:   steps.yml
+    parameters:
+      ${{ if eq('', parameters.configuration.id) }}:
+        ${{ if eq('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget
+          publishArtifactName:  $(System.TeamProject)-artifacts-default
+        ${{ if ne('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.runtime.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-standalone-${{ parameters.runtime.id }}
+      ${{ if ne('', parameters.configuration.id) }}:
+        ${{ if eq('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-default
+        ${{ if ne('', parameters.runtime.id) }}:
+          nugetArtifactName:    $(System.TeamProject)-nuget-${{ parameters.configuration.id }}-${{ parameters.runtime.id }}
+          publishArtifactName:  $(System.TeamProject)-artifacts-${{ parameters.configuration.id }}-standalone-${{ parameters.runtime.id }}
+      pack:
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/nuget" ${{ parameters.pack.arguments }}'
+        ${{ each pair in parameters.pack }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      publish:
+        arguments: '--output "$(Build.ArtifactStagingDirectory)/artifacts" ${{ parameters.publish.arguments }}'
+        ${{ each pair in parameters.publish }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'pack', 'publish', 'nugetArtifactName', 'publishArtifactName', 'defaultPool', 'job', 'configuration', 'runtime') }}:
+          ${{ pair.key }}: ${{ pair.value }}

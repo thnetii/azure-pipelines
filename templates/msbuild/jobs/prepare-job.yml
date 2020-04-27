@@ -1,0 +1,114 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+  
+- name:     job
+  type:     object
+  default:  {}
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+- name:     runtime
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+  # pool:         null # defaultPool-like
+  
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- template: job.yml
+  parameters:
+    job:
+      # id
+      ${{ if eq('', parameters.runtime.id) }}:
+        id: ${{ coalesce(parameters.configuration.id, 'defaultJob') }}
+      ${{ if ne('', parameters.runtime.id ) }}:
+        ${{ if ne('', parameters.configuration.id) }}:
+          id: ${{ parameters.configuration.id }}_${{ parameters.runtime.id }}
+        ${{ if eq('', parameters.configuration.id) }}:
+          id: ${{ parameters.runtime.id }}
+
+      # displayName
+      ${{ if eq('', parameters.runtime.displayName) }}:
+        displayName: ${{ parameters.configuration.displayName }}
+      ${{ if ne('', parameters.runtime.displayName) }}:
+        displayName: ${{ parameters.configuration.displayName }} (${{ parameters.runtime.displayName }})
+
+      # condition
+      ${{ if ne('', parameters.configuration.condition) }}:
+        ${{ if ne('', parameters.runtime.condition) }}:
+          condition: and(${{ parameters.configuration.condition }}, ${{ parameters.runtime.condition }})
+        ${{ if eq('', parameters.runtime.condition) }}:
+          condition: ${{ parameters.configuration.condition }}
+      ${{ if eq('', parameters.configuration.condition) }}:
+        ${{ if ne('', parameters.runtime.condition) }}:
+          condition: ${{ parameters.runtime.condition }}
+
+      # pool
+      pool: ${{ coalesce(parameters.runtime.pool, parameters.defaultPool) }}
+      
+      ${{ each pair in parameters.job }}:
+        ${{ if notIn(pair.key, 'id', 'displayName', 'condition', 'pool') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    configuration:  ${{ parameters.configuration }}
+    runtime:        ${{ parameters.runtime }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'job', 'configuration', 'runtime') }}:
+        ${{ pair.key }}: ${{ pair.value }}

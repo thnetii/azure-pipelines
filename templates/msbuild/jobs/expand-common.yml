@@ -1,0 +1,168 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+  
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+- name:     runtime
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+  # pool:         null # defaultPool-like
+  
+- name:     common
+  type:     object
+  default:  {}
+  # allProjects:  ''
+  # srcProjects:  ''
+  # testProjects: ''
+  # arguments:    ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     test
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     publish
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- template: prepare-job.yml
+  parameters:
+    restore:
+      # projects
+      projects:   ${{ coalesce(parameters.restore.projects, parameters.common.allProjects) }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.restore.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.restore.arguments }}
+        ${{ if not(parameters.restore.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.restore.arguments }}
+
+      # forward rest of the object
+      ${{ each pair in parameters.restore }}:
+        ${{ if notIn(pair.key, 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    build:
+      # projects
+      projects:   ${{ coalesce(parameters.build.projects, parameters.common.allProjects) }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.build.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.build.arguments }}
+        ${{ if not(parameters.build.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.build.arguments }}
+      
+      # forward rest of the object
+      ${{ each pair in parameters.build }}:
+        ${{ if notIn(pair.key, 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    test:
+      # projects
+      projects:   ${{ coalesce(parameters.test.projects, parameters.common.testProjects) }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.test.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.test.arguments }}
+        ${{ if not(parameters.test.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.test.arguments }}
+      
+      # forward rest of the object
+      ${{ each pair in parameters.test }}:
+        ${{ if notIn(pair.key, 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    pack:
+      # projects
+      projects:   ${{ coalesce(parameters.pack.projects, parameters.common.srcProjects) }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.pack.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.pack.arguments }}
+        ${{ if not(parameters.pack.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.pack.arguments }}
+      
+      # forward rest of the object
+      ${{ each pair in parameters.pack }}:
+        ${{ if notIn(pair.key, 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    publish:
+      # projects
+      projects:   ${{ coalesce(parameters.publish.projects, parameters.common.srcProjects) }}
+      # arguments
+      ${{ if parameters.common.arguments }}:
+        ${{ if parameters.publish.arguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.publish.arguments }}
+        ${{ if not(parameters.publish.arguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+      ${{ if not(parameters.common.arguments) }}:
+        arguments:    ${{ parameters.publish.arguments }}
+      
+      # forward rest of the object
+      ${{ each pair in parameters.publish }}:
+        ${{ if notIn(pair.key, 'projects', 'arguments') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'common', 'restore', 'build', 'test', 'pack', 'publish') }}:
+        ${{ pair.key }}: ${{ pair.value }}
