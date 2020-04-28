@@ -1,0 +1,50 @@
+parameters:
+- name:     skip
+  type:     boolean
+  default:  false
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+- name:     task
+  type:     string
+  default:  ''
+- name:     displayName
+  type:     string
+  default:  ''
+- name:     control
+  type:     object
+  default:  {}
+- name:     inputs
+  type:     object
+  default:  {}
+
+steps:
+- ${{ if not(parameters.skip) }}:
+  - ${{ each step in parameters.presteps }}:
+    - ${{ step }}
+
+  - ${{ if parameters.task }}:
+    - task: ${{ parameters.task }}
+      ${{ if ne(variables.null, parameters.displayName) }}:
+        displayName:      ${{ parameters.displayName }}
+
+      ${{ if ne(variables.null, parameters.control.condition) }}:
+        condition:        ${{ parameters.control.condition }}
+      ${{ if ne(variables.null, parameters.control.continueOnError) }}:
+        continueOnError:  ${{ parameters.control.continueOnError }}
+      ${{ if ne(variables.null, parameters.control.enabled) }}:
+        enabled:          ${{ parameters.control.enabled }}
+      ${{ if ne(variables.null, parameters.control.timeoutInMinutes) }}:
+        timeoutInMinutes: ${{ parameters.control.timeoutInMinutes }}
+      ${{ if ne(variables.null, parameters.control.target) }}:
+        target:           ${{ parameters.control.target }}
+
+      inputs:
+        ${{ each pair in parameters.inputs }}:
+          ${{ pair.key }}: ${{ pair.value }}
+
+  - ${{ each step in parameters.poststeps }}:
+    - ${{ step }}

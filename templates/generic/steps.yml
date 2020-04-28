@@ -1,0 +1,26 @@
+parameters:
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+- name:     stepDefs
+  type:     object
+  default:  []
+
+steps:
+- ${{ each step in parameters.presteps }}:
+  - ${{ step }}
+- ${{ each stepDef in parameters.stepDefs }}:
+  - template: single-step.yml
+    parameters:
+      skip:         ${{ stepDef.skip }}
+      presteps:     ${{ stepDef.presteps }}
+      poststeps:    ${{ stepDef.poststeps }}
+      task:         ${{ stepDef.task }}
+      displayName:  ${{ stepDef.displayName }}
+      control:      ${{ stepDef.control }}
+      inputs:       ${{ stepDef.inputs }}
+- ${{ each step in parameters.poststeps }}:
+  - ${{ step }}
