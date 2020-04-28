@@ -1,0 +1,71 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+  # id:           default
+  # condition:    ''
+  # displayName:  ''
+  # pool:         null # defaultPool-like object
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:     ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- job:          ${{ coalesce(parameters.job.id, 'default') }}XamarinAndroid
+  condition:    ${{ parameters.job.condition }}
+  displayName:  ${{ parameters.job.displayName }}
+  pool:         ${{ coalesce(parameters.job.pool, parameters.defaultPool) }}
+  ${{ each pair in parameters.job }}:
+    ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'pool', 'steps') }}:
+      ${{ pair.key }}: ${{ pair.value }}
+  steps:
+  - template:   steps.yml
+    parameters:
+      ${{ if eq('', parameters.configuration.id) }}:
+        packArtifactName:     $(System.TeamProject)-xamarin-android-pack
+      ${{ if ne('', parameters.configuration.id) }}:
+        packArtifactName:     $(System.TeamProject)-xamarin-android-pack-${{ parameters.configuration.id }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'packArtifactName', 'defaultPool', 'job', 'configuration') }}:
+          ${{ pair.key }}: ${{ pair.value }}

@@ -1,0 +1,72 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+- name:     configuration
+  type:     object
+  default:  {}
+  # id:           ''
+  # displayName:  ''
+  # condition:    ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- template: job.yml
+  parameters:
+    job:
+      # id
+      id: ${{ coalesce(parameters.configuration.id, 'defaultJob') }}
+      # displayName
+      displayName: ${{ parameters.configuration.displayName }}
+      # condition
+      ${{ if ne('', parameters.configuration.condition) }}:
+        condition: ${{ parameters.configuration.condition }}
+      # pool
+      pool: ${{ parameters.defaultPool }}
+
+      ${{ each pair in parameters.job }}:
+        ${{ if notIn(pair.key, 'id', 'displayName', 'condition', 'pool') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    configuration:  ${{ parameters.configuration }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'job', 'configuration') }}:
+        ${{ pair.key }}: ${{ pair.value }}
