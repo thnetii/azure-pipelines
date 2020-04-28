@@ -1,0 +1,176 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     defaultPool
+  type:     object
+  default:
+    vmImage: windows-2019
+
+- name:     defaultArguments
+  type:     string
+  default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -nodeReuse:false
+- name:     common
+  type:     object
+  default:  {}
+  # allProjects:  '' # '*.sln'
+  # srcProjects:  '' # 'src/*/*.csproj'
+  # arguments:    ''
+  # addArguments: ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+- name:     debugConfiguration
+  type:     object
+  default:  # specify null to disable
+    id:           debug
+    condition:    ne(variables['SkipConfigurationDebug'], 'true')
+    displayName:  Debug
+    argValue:     Debug
+    # passed object is merged with default values listed above
+- name:     releaseConfiguration
+  type:     object
+  default:  # specify null to disable
+    id:           release
+    condition:    ne(variables['SkipConfigurationRelease'], 'true')
+    displayName:  Release
+    argValue:     Release
+    # passed object is merged with default values listed above
+- name:     configurations
+  type:     object
+  default:  []
+  # additional configurations appended after those listed above
+  # each entry:
+  #   id:           ''
+  #   argValue:     ''
+  #   displayName:  ''
+  #   condition:    ''
+  #   arguments:    ''
+  #   common:       {} # common-like object
+  #   restore:      {} # restore-like object
+  #   build:        {} # build-like object
+  #   pack:         {} # pack-like object
+
+jobs:
+- template: jobs/each-configuration.yml
+  parameters:
+    checkout:     ${{ parameters.checkout }}
+    presteps:     ${{ parameters.presteps }}
+    poststeps:    ${{ parameters.poststeps }}
+    defaultPool:  ${{ parameters.defaultPool }}
+    common:
+      # allProjects
+      ${{ if eq(variables.null, parameters.common.allProjects) }}:
+        allProjects:  '*.sln'
+      ${{ if ne(variables.null, parameters.common.allProjects) }}:
+        allProjects:  ${{ parameters.common.allProjects }}
+      # srcProjects
+      ${{ if eq(variables.null, parameters.common.srcProjects) }}:
+        srcProjects:  'src/*/*.csproj'
+      ${{ if ne(variables.null, parameters.common.srcProjects) }}:
+        srcProjects:  ${{ parameters.common.srcProjects }}
+      # arguments:
+      ${{ if not(parameters.common.arguments) }}:
+        ${{ if not(parameters.common.addArguments) }}:
+          arguments:  ${{ parameters.defaultArguments }}
+        ${{ if parameters.common.addArguments }}:
+          arguments:  ${{ parameters.defaultArguments }} ${{ parameters.common.addArguments }}
+      ${{ if parameters.common.arguments }}:
+        ${{ if not(parameters.common.addArguments) }}:
+          arguments:  ${{ parameters.common.arguments }}
+        ${{ if parameters.common.addArguments }}:
+          arguments:  ${{ parameters.common.arguments }} ${{ parameters.common.addArguments }}
+    ${{ if parameters.restore }}:
+      restore:  ${{ parameters.restore }}
+    ${{ if parameters.build }}:
+      build:    ${{ parameters.build }}
+    ${{ if parameters.pack }}:
+      pack:     ${{ parameters.pack }}
+    configurations:
+    - ${{ if ne(variables.null, parameters.debugConfiguration) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.debugConfiguration.id) }}:
+          id:           ${{ parameters.debugConfiguration.id }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.id) }}:
+          id:           debug
+        # condition
+        ${{ if ne(variables.null, parameters.debugConfiguration.condition) }}:
+          condition:    ${{ parameters.debugConfiguration.condition }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.condition) }}:
+          condition:    ne(variables['SkipConfigurationDebug'], 'true')
+        # displayName
+        ${{ if ne(variables.null, parameters.debugConfiguration.displayName) }}:
+          displayName:  ${{ parameters.debugConfiguration.displayName }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.displayName) }}:
+          displayName:  Debug
+        # argValue
+        ${{ if ne(variables.null, parameters.debugConfiguration.argValue) }}:
+          argValue:     ${{ parameters.debugConfiguration.argValue }}
+        ${{ if eq(variables.null, parameters.debugConfiguration.argValue) }}:
+          argValue:     Debug
+        # forwards rest of object
+        ${{ each pair in parameters.debugConfiguration }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ if ne(variables.null, parameters.releaseConfiguration) }}:
+      - # id
+        ${{ if ne(variables.null, parameters.releaseConfiguration.id) }}:
+          id:           ${{ parameters.releaseConfiguration.id }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.id) }}:
+          id:           release
+        # condition
+        ${{ if ne(variables.null, parameters.releaseConfiguration.condition) }}:
+          condition:    ${{ parameters.releaseConfiguration.condition }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.condition) }}:
+          condition:    ne(variables['SkipConfigurationRelease'], 'true')
+        # displayName
+        ${{ if ne(variables.null, parameters.releaseConfiguration.displayName) }}:
+          displayName:  ${{ parameters.releaseConfiguration.displayName }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.displayName) }}:
+          displayName:  Release
+        # argValue
+        ${{ if ne(variables.null, parameters.releaseConfiguration.argValue) }}:
+          argValue:     ${{ parameters.releaseConfiguration.argValue }}
+        ${{ if eq(variables.null, parameters.releaseConfiguration.argValue) }}:
+          argValue:     Release
+        # forwards rest of object
+        ${{ each pair in parameters.releaseConfiguration }}:
+          ${{ if notIn(pair.key, 'id', 'condition', 'displayName', 'argValue') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+    - ${{ each item in parameters.configurations }}:
+      - ${{ each pair in item }}:
+          ${{ pair.key }}: ${{ pair.value }}
+    ${{ each pair in parameters }}:
+      ${{ if notIn(pair.key, 'checkout', 'presteps', 'poststeps', 'defaultPool', 'common', 'restore', 'build', 'pack', 'configurations', 'defaultArguments', 'debugConfiguration', 'releaseConfiguration') }}:
+        ${{ pair.key }}: ${{ pair.value }}
+

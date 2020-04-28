@@ -1,0 +1,159 @@
+parameters:
+- name:     checkout
+  type:     stepList
+  default:  []
+- name:     presteps
+  type:     stepList
+  default:  []
+- name:     poststeps
+  type:     stepList
+  default:  []
+
+- name:     defaultPool
+  type:     object
+  default:  {}
+  # vmImage:  windows-2019
+
+- name:     job
+  type:     object
+  default:  {}
+- name:     configurations
+  type:     object
+  default:  []
+  # each entry:
+  #   id:           ''
+  #   argValue:     ''
+  #   displayName:  ''
+  #   condition:    ''
+  #   arguments:    ''
+  #   common:       {} # common-like object
+  #   restore:      {} # restore-like object
+  #   build:        {} # build-like object
+  #   pack:         {} # pack-like object
+
+- name:     common
+  type:     object
+  default:  {}
+  # allProjects:  ''
+  # srcProjects:  ''
+  # arguments:    ''
+
+- name:     restore
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     build
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+- name:     pack
+  type:     object
+  default:  {}
+  # skip:               true
+  # displayNameSuffix:  ''
+  # condition:          ''
+  # projects:           ''
+  # arguments:          ''
+
+jobs:
+- ${{ each c in parameters.configurations }}:
+  - template: expand-common.yml
+    parameters:
+      configuration: ${{ c }}
+      common:
+        # arguments: append c.arguments
+        ${{ if c.arguments }}:
+          ${{ if parameters.common.arguments }}:
+            arguments:  ${{ parameters.common.arguments }} ${{ c.arguments }}
+          ${{ if not(parameters.common.arguments) }}:
+            arguments:  ${{ c.arguments }}
+        ${{ if not(c.arguments) }}:
+          arguments:    ${{ parameters.common.arguments }}
+
+        # forward rest of c.common
+        ${{ each pair in c.common }}:
+          ${{ if notIn(pair.key, 'arguments') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+
+        # forward rest of the object
+        ${{ each pair in parameters.common }}:
+          ${{ if eq(variables.null, c.common[pair.key]) }}:
+            ${{ if notIn(pair.key, 'arguments') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      restore:
+        # (displayNameSuffix, arguments): append c.argValue
+        ${{ if ne('', c.argValue) }}:
+          configuration:  ${{ c.argValue }}
+          # displayNameSuffix
+          ${{ if ne('', parameters.restore.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.restore.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+          ${{ if eq('', parameters.restore.displayNameSuffix) }}:
+              displayNameSuffix: -p:Configuration=${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.restore.displayNameSuffix }}
+
+        # forward c.restore
+        ${{ each pair in c.restore }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+
+        # forward rest of object
+        ${{ each pair in parameters.restore }}:
+          ${{ if eq(variables.null, c.restore[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      build:
+        # (displayNameSuffix, arguments): append c.argValue
+        ${{ if ne('', c.argValue) }}:
+          configuration:  ${{ c.argValue }}
+          # displayNameSuffix
+          ${{ if ne('', parameters.build.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.build.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+          ${{ if eq('', parameters.build.displayNameSuffix) }}:
+              displayNameSuffix: -p:Configuration=${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.build.displayNameSuffix }}
+
+        # forward c.build
+        ${{ each pair in c.build }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+
+        # forward rest of object
+        ${{ each pair in parameters.build }}:
+          ${{ if eq(variables.null, c.build[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      pack:
+        # (displayNameSuffix, arguments): append c.argValue
+        ${{ if ne('', c.argValue) }}:
+          configuration:  ${{ c.argValue }}
+          # displayNameSuffix
+          ${{ if ne('', parameters.pack.displayNameSuffix) }}:
+            displayNameSuffix: ${{ parameters.pack.displayNameSuffix }} -p:Configuration=${{ c.argValue }}
+          ${{ if eq('', parameters.pack.displayNameSuffix) }}:
+              displayNameSuffix: -p:Configuration=${{ c.argValue }}
+        ${{ if eq('', c.argValue) }}:
+          displayNameSuffix:  ${{ parameters.pack.displayNameSuffix }}
+
+        # forward c.pack
+        ${{ each pair in c.pack }}:
+          ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+            ${{ pair.key }}: ${{ pair.value }}
+
+        # forward rest of object
+        ${{ each pair in parameters.pack }}:
+          ${{ if eq(variables.null, c.pack[pair.key]) }}:
+            ${{ if notIn(pair.key, 'displayNameSuffix', 'configuration') }}:
+              ${{ pair.key }}: ${{ pair.value }}
+      ${{ each pair in parameters }}:
+        ${{ if notIn(pair.key, 'configurations', 'configuration', 'common', 'restore', 'build', 'pack') }}:
+          ${{ pair.key }}: ${{ pair.value }}
