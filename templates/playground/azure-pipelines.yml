@@ -1,0 +1,26 @@
+name:     $(Date:yyyy-MM-dd)-rev$(Rev:r)
+
+trigger:  none
+pr:       none
+
+pool:
+  vmImage:      ubuntu-latest
+
+steps:
+  - template:   ../generic/merge-step-parameters.yml
+    parameters:
+      sources:
+        - item:
+            text: first
+        - item:
+            text: second
+        - item:
+            text: third
+      property:   item
+      transforms:
+        text:
+          type:       join
+          separator:  ' '
+      invoke:
+        template:     ../playground/template.yml
+        parameters:   {}

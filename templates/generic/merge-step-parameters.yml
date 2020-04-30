@@ -1,0 +1,22 @@
+parameters:
+  - name:     invoke
+    type:     object
+    # object:
+    #   template: 'template.yml'
+    #   parameters: {}
+  - name:     sources
+    type:     object
+    default:  []
+  - name:     property
+    type:     string
+  - name:     transforms
+    type:     object
+    default:  {}
+
+steps:
+  - template: ${{ parameters.invoke.template }}
+    parameters:
+      ${{ parameters.property }}:
+        ${{ each trfrm in parameters.transforms }}:
+          ${{ if eq('join', trfrm.value.type) }}:
+            ${{ trfrm.key }}: ${{ trfrm.value.prefix }}${{ join(trfrm.value.separator, parameters.sources.*[parameters.property][trfrm.key]) }}${{ trfrm.value.suffix }}

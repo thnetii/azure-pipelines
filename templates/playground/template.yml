@@ -1,0 +1,6 @@
+parameters:
+  - name:     item
+    type:     object
+
+steps:
+  - pwsh: 'Write-Host ${{ parameters.item.text }}'
