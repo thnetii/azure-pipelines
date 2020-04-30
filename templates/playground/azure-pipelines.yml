@@ -13,14 +13,14 @@ steps:
         - item:
             text: first
         - item:
-            text: second
+            nonText: second
         - item:
             text: third
       property:   item
       transforms:
         text:
           type:       join
-          separator:  ' '
+          separator:  '-'
       invoke:
         template:     ../playground/template.yml
         parameters:   {}
