@@ -1,0 +1,8 @@
+parameters:
+  - name:     array
+    type:     object
+    default:  []
+
+steps:
+  - ${{ each v in parameters.array.*['value'] }}:
+    - pwsh: 'Write-Host ${{ v }}'
