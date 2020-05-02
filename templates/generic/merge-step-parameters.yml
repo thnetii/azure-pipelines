@@ -4,7 +4,7 @@ parameters:
     # object:
     #   template: 'template.yml'
     #   parameters: {}
-  - name:     sources
+  - name:     source
     type:     object
     default:  []
   - name:     property
@@ -19,4 +19,79 @@ steps:
       ${{ parameters.property }}:
         ${{ each trfrm in parameters.transforms }}:
           ${{ if eq('join', trfrm.value.type) }}:
-            ${{ trfrm.key }}: ${{ trfrm.value.prefix }}${{ join(trfrm.value.separator, parameters.sources.*[parameters.property][trfrm.key]) }}${{ trfrm.value.suffix }}
+            ${{ if eq(variables.null, parameters.invoke.parameters[parameters.property][trfrm.key]) }}:
+              ${{ trfrm.key }}: |
+                ${{
+                  format('{0}{1}{2}',
+                    trfrm.value.prefix,
+                    parameters.source[parameters.property][trfrm.key],
+                    trfrm.value.suffix
+                  )
+                }}
+            ${{ if ne(variables.null, parameters.invoke.parameters[parameters.property][trfrm.key]) }}:
+              ${{ if     parameters.source[parameters.property][trfrm.key]  }}:
+                ${{ if eq('before', coalesce(trfrm.value.handleExisting, 'before')) }}:
+                  ${{ trfrm.key }}: |
+                    ${{
+                      format('{0}{1}{2}{3}{4}',
+                        trfrm.value.prefix,
+                        parameters.invoke.parameters[parameters.property][trfrm.key],
+                        trfrm.value.separator,
+                        parameters.source[parameters.property][trfrm.key],
+                        trfrm.value.suffix
+                      )
+                    }}
+                ${{ if eq('after',  coalesce(trfrm.value.handleExisting, 'before')) }}:
+                  ${{ trfrm.key }}: |
+                    ${{
+                      format('{0}{1}{2}{3}{4}',
+                        trfrm.value.prefix,
+                        parameters.source[parameters.property][trfrm.key],
+                        trfrm.value.separator,
+                        parameters.invoke.parameters[parameters.property][trfrm.key],
+                        trfrm.value.suffix
+                      )
+                    }}
+              ${{ if not(parameters.source[parameters.property][trfrm.key]) }}:
+                ${{ trfrm.key }}: |
+                  ${{
+                    format('{0}{1}{2}',
+                      trfrm.value.prefix,
+                      parameters.invoke.parameters[parameters.property][trfrm.key],
+                      trfrm.value.suffix
+                    )
+                  }}
+          ${{ if or(eq('coalesce', trfrm.value.type), notIn(trfrm.value.type, 'join', 'coalesce')) }}:
+            ${{ if eq('before', coalesce(trfrm.value.handleExisting, 'before')) }}:
+              ${{ trfrm.key }}: |
+                ${{
+                  coalesce(
+                    parameters.invoke.parameters[parameters.property][trfrm.key],
+                    parameters.source[parameters.property][trfrm.key]
+                  )
+                }}
+            ${{ if eq('after',  coalesce(trfrm.value.handleExisting, 'before')) }}:
+              ${{ trfrm.key }}: |
+                ${{
+                  coalesce(
+                    parameters.source[parameters.property][trfrm.key],
+                    parameters.invoke.parameters[parameters.property][trfrm.key]
+                  )
+                }}
+        # Handle unlisted transform, but present property in source as
+        # a default coalesce-type transform.
+        ${{ each prop in parameters.source[parameters.property] }}:
+          ${{ if eq(variables.null, parameters.transforms[prop.key]) }}:
+            ${{ prop.key }}: |
+              ${{
+                coalesce(
+                  parameters.invoke.parameters[prop.key],
+                  prop.value
+                )
+              }}
+        ${{ each prop in parameters.invoke.parameters[parameters.property] }}:
+          ${{ if and(eq(variables.null, parameters.transforms[prop.key]), eq(variables.null, parameters.source[parameters.property][prop.key])) }}:
+            ${{ prop.key }}: ${{ prop.value }}
+      ${{ each prop in parameters.invoke.parameters }}:
+        ${{ if ne(parameters.property, prop.key) }}:
+          ${{ prop.key }}: ${{ prop.value }}

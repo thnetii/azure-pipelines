@@ -9,18 +9,22 @@ pool:
 steps:
   - template:   ../generic/merge-step-parameters.yml
     parameters:
-      sources:
-        - item:
-            text: first
-        - item:
-            nonText: second
-        - item:
-            text: third
+      source:
+        item:
+          text:     source
+          value:    merge
       property:   item
       transforms:
-        text:
+        value:
           type:       join
           separator:  '-'
+          prefix:     'This is the merged value: '
+          suffix:     '.'
+          handleExisting: after
       invoke:
         template:     ../playground/template.yml
-        parameters:   {}
+        parameters:
+          item:
+            value:    'original'
+          other:
+            text:     Other Text

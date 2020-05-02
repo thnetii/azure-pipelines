@@ -1,6 +1,18 @@
 parameters:
   - name:     item
     type:     object
+  - name:     other
+    type:     object
+    default:  {}
 
 steps:
-  - pwsh: 'Write-Host ${{ parameters.item.text }}'
+  - ${{ each obj in parameters }}:
+    - ${{ each prop in parameters[obj.key] }}:
+      - ${{ if ne('', prop.value) }}:
+        - task: PowerShell@2
+          inputs:
+            targetType: inline
+            script: |
+              Write-Host "${{ obj.key }}.${{ prop.key }}: |"
+              Write-Host "`t${{ prop.value }}"
+            pwsh: true
