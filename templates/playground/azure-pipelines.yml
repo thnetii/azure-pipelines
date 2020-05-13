@@ -6,25 +6,41 @@ pr:       none
 pool:
   vmImage:      ubuntu-latest
 
+parameters:
+- name:     common
+  type:     object
+  default:
+    arguments:  -p:TestProperty=Test
+- name:     configurations
+  type:     object
+  default:
+  - id:     debug
+    common:
+      arguments:  --configuration Debug
+  - id:     release
+    common:
+      arguments:  --configuration Release
+
 steps:
-  - template:   ../generic/merge-step-parameters.yml
+- ${{ each c in parameters.configurations }}:
+  - template:   '../invoke/steps-merge-parameters.yml'
     parameters:
-      source:
-        item:
-          text:     source
-          value:    merge
-      property:   item
+      source:       ${{ c }}
+      targetTiers:  2
+      target:
+        invoke: parameters
       transforms:
-        value:
-          type:       join
-          separator:  '-'
-          prefix:     'This is the merged value: '
-          suffix:     '.'
-          handleExisting: after
+        common:
+          arguments:
+            type:       'prepend'
+            separator:  ' '
       invoke:
-        template:     ../playground/template.yml
+        template: '../playground/template.yml'
         parameters:
-          item:
-            value:    'original'
-          other:
-            text:     Other Text
+          presteps:
+          - pwsh: 'Write-Host "This is the start of the template invocation for configruation ${{ c.id }}"'
+          poststeps:
+          - pwsh: 'Write-Host "This is the end of the template invocation for configruation ${{ c.id }}"'
+          common: ${{ parameters.common }}
+
+

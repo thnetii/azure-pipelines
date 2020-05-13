@@ -1,0 +1,24 @@
+parameters:
+- name:     source
+  type:     object
+- name:     targetTiers
+  type:     number
+  values:
+  - 0
+  - 1
+  - 2
+- name:     target
+  type:     object
+  default:  ''
+- name:     transforms
+  type:     object
+  default:  {}
+- name:     invoke
+  type:     object
+
+steps:
+- ${{ if parameters.invoke.template }}:
+  - template: ${{ parameters.invoke.template }}
+    parameters:
+      ${{ each prop in parameters.invoke.parameters }}:
+        ${{ prop.key }}: ${{ prop.value }}
