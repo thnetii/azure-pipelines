@@ -1,8 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'!='true'">$(TargetFrameworks);net472</TargetFrameworks>
     <TargetFramework Condition="'$(BuildDefaultTargetFramework)'!=''">netcoreapp2.1</TargetFramework>
@@ -29,6 +30,10 @@ E.g. the Azure DevOps MSBuild logger that logs MSBuild output in a format that i
 
   <ItemGroup>
     <Compile Include="..\THNETII.AzureDevOps.Pipelines.VstsTaskSdk\**\*.cs" />
+    <Compile Include="..\..\dotnet-common\src\THNETII.Common\CommonExtensions.cs" />
+    <Compile Include="..\..\dotnet-common\src\THNETII.Common\Collections.Generic\KeyValuePairExtensions.cs" />
+    <Compile Include="..\..\dotnet-common\src\THNETII.TypeConverter\**\*.cs" />
+    <Compile Include="..\..\dotnet-common\src\THNETII.TypeConverter.Serialization\EnumMemberStringConverter.cs" />
   </ItemGroup>
 
 </Project>

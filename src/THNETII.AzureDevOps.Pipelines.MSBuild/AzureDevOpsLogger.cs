@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 
 using Microsoft.Build.Framework;
 
 using THNETII.AzureDevOps.Pipelines.VstsTaskSdk;
-using THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal;
+using THNETII.Common;
+using THNETII.TypeConverter;
 
 using MSBuildLogger = Microsoft.Build.Utilities.Logger;
 
