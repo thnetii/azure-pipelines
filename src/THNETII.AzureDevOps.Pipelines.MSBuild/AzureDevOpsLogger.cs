@@ -58,25 +58,12 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
 
         private static bool IsEnvSystemDebug()
         {
-            string varSystemDebugEnv = Environment.GetEnvironmentVariable("SYSTEM_DEBUG");
-            bool isSystemDebugEnv;
-            if (string.IsNullOrWhiteSpace(varSystemDebugEnv))
-                isSystemDebugEnv = false;
-            else
+            return Environment.GetEnvironmentVariable("SYSTEM_DEBUG") switch
             {
-                switch (BooleanStringConverter.ParseOrNull(varSystemDebugEnv))
-                {
-                    case false:
-                        isSystemDebugEnv = false;
-                        break;
-                    case null:
-                    default:
-                        isSystemDebugEnv = true;
-                        break;
-                }
-            }
-
-            return isSystemDebugEnv;
+                string envVar when !string.IsNullOrWhiteSpace(envVar) =>
+                    BooleanStringConverter.ParseOrNull(envVar) ?? true,
+                _ => false
+            };
         }
 
         protected virtual void OnMessageRaised(object sender, BuildMessageEventArgs e)
