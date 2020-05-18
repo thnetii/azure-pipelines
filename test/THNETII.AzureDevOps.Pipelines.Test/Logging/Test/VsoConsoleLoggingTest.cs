@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 using Xunit;
 
@@ -63,7 +63,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                 logger.Log(logLevel, nameof(Write_task_log_issue_warning_message_if_log_level_above_warning));
             });
 
-            Assert.StartsWith("##vso[task.logissue type=Error]", output, StringComparison.Ordinal);
+            Assert.StartsWith("##vso[task.logissue type=error]", output, StringComparison.Ordinal);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                 logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
             });
 
-            Assert.Equal("##vso[task.logissue type=Warning;code=TEST]Message\n", output,
+            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message\n", output,
                 ignoreLineEndingDifferences: true);
         }
 
@@ -107,7 +107,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                 logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
             });
 
-            Assert.Equal("##vso[task.logissue type=Warning;code=TEST]Message\n", output,
+            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message\n", output,
                 ignoreLineEndingDifferences: true);
         }
 
@@ -119,7 +119,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                 logger.LogWarning("Message: {code}", "TEST");
             });
 
-            Assert.Equal("##vso[task.logissue type=Warning;code=TEST]Message: TEST\n", output,
+            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message: TEST\n", output,
                 ignoreLineEndingDifferences: true);
         }
     }
