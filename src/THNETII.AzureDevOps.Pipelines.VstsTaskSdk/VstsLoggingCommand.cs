@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 
 using THNETII.AzureDevOps.Pipelines.VstsTaskSdk.Internal;
+using THNETII.Common;
+using THNETII.Common.Collections.Generic;
+using THNETII.TypeConverter.Serialization;
 
 namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
 {
@@ -92,7 +95,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
                 ? new Dictionary<string, string>(propsDict, StringComparer.OrdinalIgnoreCase)
                 : properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
             p["artifactname"] = name;
-            p["artifacttype"] = type.ToEnumMemberString();
+            p["artifacttype"] = EnumMemberStringConverter.ToString(type);
             return FormatLoggingCommand(area: "artifact", @event: "associate",
                 path, p);
         }

@@ -6,9 +6,9 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
     {
         [EnumMember(Value = "")]
         Unspecified = default,
-        Unknown = -1,
         Initialized,
         InProgress,
         Completed,
+        Unknown = -1,
     }
 }
