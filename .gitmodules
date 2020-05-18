@@ -1,0 +1,3 @@
+[submodule "azure-pipelines-task-lib"]
+	path = azure-pipelines-task-lib
+	url = https://github.com/microsoft/azure-pipelines-task-lib.git
