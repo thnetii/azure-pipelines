@@ -3,7 +3,8 @@
 
   <PropertyGroup>
     <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
+    <Nullable Condition="  '$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' &gt;= '3.0' ">enable</Nullable>
+    <Nullable Condition="!('$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' &gt;= '3.0')">annotations</Nullable>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(NoNetFramework)'!='true'">$(TargetFrameworks);net472</TargetFrameworks>
     <TargetFramework Condition="'$(BuildDefaultTargetFramework)'!=''">netcoreapp2.1</TargetFramework>

@@ -35,10 +35,10 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// <param name="path" />
         public static string FormatTaskAddAttachment(string type, string name,
             string path) =>
-            FormatLoggingCommand(area: "task", @event: "addattachment", path, new[]
+            FormatLoggingCommand(area: "task", @event: "addattachment", path, new []
                 {
-                    ("type", type).AsKeyValuePair(),
-                    ("name", name).AsKeyValuePair()
+                    ("type", type).AsKeyValuePair<string, string?>(),
+                    ("name", name).AsKeyValuePair<string, string?>()
                 });
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             string key, string value) =>
             FormatLoggingCommand(area: "task", @event: "setendpoint", value, new[]
             {
-                ("id", id).AsKeyValuePair(),
-                ("field", field).AsKeyValuePair(),
-                ("key", key).AsKeyValuePair()
+                ("id", id).AsKeyValuePair<string, string?>(),
+                ("field", field).AsKeyValuePair<string, string?>(),
+                ("key", key).AsKeyValuePair<string, string?>()
             });
 
         /// <summary>
@@ -86,13 +86,13 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// <returns></returns>
         public static string FormatArtifactAssociate(string name, string path,
             VstsArtifactType type,
-            IEnumerable<KeyValuePair<string, string>> properties = default)
+            IEnumerable<KeyValuePair<string, string?>>? properties = default)
         {
-            Dictionary<string, string> p =
+            Dictionary<string, string?> p =
                 properties is null
-                ? new Dictionary<string, string>(2, StringComparer.OrdinalIgnoreCase)
-                : properties is IDictionary<string, string> propsDict
-                ? new Dictionary<string, string>(propsDict, StringComparer.OrdinalIgnoreCase)
+                ? new Dictionary<string, string?>(2, StringComparer.OrdinalIgnoreCase)
+                : properties is IDictionary<string, string?> propsDict
+                ? new Dictionary<string, string?>(propsDict, StringComparer.OrdinalIgnoreCase)
                 : properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
             p["artifactname"] = name;
             p["artifacttype"] = EnumMemberStringConverter.ToString(type);
@@ -130,13 +130,13 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// </para>
         /// </remarks>
         public static string FormatTaskLogDetail(Guid id, Guid? parentId = null,
-            string type = null, string name = null, int? order = null,
+            string? type = null, string? name = null, int? order = null,
             DateTime? startTime = null, DateTime? finishTime = null,
             int? progress = null, VstsTaskState state = VstsTaskState.Unspecified,
-            VstsTaskResult result = VstsTaskResult.Unspecified, string message = null) =>
+            VstsTaskResult result = VstsTaskResult.Unspecified, string? message = null) =>
             FormatLoggingCommand(area: "task", @event: "logdetail", message, new[]
             {
-                ("id", id.ToString(format: default, CultureInfo.InvariantCulture)).AsKeyValuePair(),
+                ("id", id.ToString(format: default, CultureInfo.InvariantCulture)).AsKeyValuePair<string, string?>(),
                 ("parentid", parentId?.ToString(format: default, CultureInfo.InvariantCulture)).AsKeyValuePair(),
                 ("type", type).AsKeyValuePair(),
                 ("name", name).AsKeyValuePair(),
@@ -144,8 +144,8 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
                 ("starttime", startTime?.ToString("O", CultureInfo.InvariantCulture)).AsKeyValuePair(),
                 ("finishtime", finishTime?.ToString("O", CultureInfo.InvariantCulture)).AsKeyValuePair(),
                 ("progress", progress?.ToString(CultureInfo.InvariantCulture)).AsKeyValuePair(),
-                ("state", state.ToEnumMemberString()).AsKeyValuePair(),
-                ("result", result.ToEnumMemberString()).AsKeyValuePair()
+                ("state", state.ToEnumMemberString()).AsKeyValuePair<string, string?>(),
+                ("result", result.ToEnumMemberString()).AsKeyValuePair<string, string?>()
             });
 
 
@@ -156,7 +156,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// <param name="currentOperation" />
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="percent"/> is less than <c>0</c> (zero) or greater than <c>100</c>.</exception>
         [SuppressMessage("Globalization", "CA1303: Do not pass literals as localized parameters")]
-        public static string FormatTaskSetProgress(int percent, string currentOperation = null)
+        public static string FormatTaskSetProgress(int percent, string? currentOperation = null)
         {
             if (percent < 0 || percent > 100)
                 throw new ArgumentOutOfRangeException(nameof(percent), percent,
@@ -164,7 +164,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             return FormatLoggingCommand(area: "task", @event: "setprogress",
                 currentOperation, new[]
                 {
-                    ("value", percent.ToString(CultureInfo.InvariantCulture)).AsKeyValuePair()
+                    ("value", percent.ToString(CultureInfo.InvariantCulture)).AsKeyValuePair<string, string?>()
                 });
         }
 
@@ -175,10 +175,10 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// <param name="result"/>
         /// <param name="message"/>
         public static string FormatTaskSetResult(VstsTaskResult result,
-            string message = null) =>
+            string? message = null) =>
             FormatLoggingCommand(area: "task", @event: "complete", message, new[]
             {
-                ("result", result.ToEnumMemberString()).AsKeyValuePair()
+                ("result", result.ToEnumMemberString()).AsKeyValuePair<string, string?>()
             });
 
         /// <summary />
@@ -194,11 +194,11 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// secret and masked out from log. Secret variables are not passed into
         /// tasks as environment variables and must be passed as inputs.
         /// </summary>
-        public static string FormatTaskSetVariable(string name, string value = null,
+        public static string FormatTaskSetVariable(string name, string? value = null,
             bool isSecret = false) =>
             FormatLoggingCommand(area: "task", @event: "setvariable", value, new[]
             {
-                ("variable", name).AsKeyValuePair(),
+                ("variable", name).AsKeyValuePair<string, string?>(),
                 ("issecret", isSecret ? bool.TrueString : null).AsKeyValuePair()
             });
 
@@ -235,8 +235,8 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             string name, string path) =>
             FormatLoggingCommand(area: "artifact", @event: "upload", path, new[]
             {
-                ("containerfolder", containerFolder).AsKeyValuePair(),
-                ("artifactname", name).AsKeyValuePair()
+                ("containerfolder", containerFolder).AsKeyValuePair<string, string?>(),
+                ("artifactname", name).AsKeyValuePair<string, string?>()
             });
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         public static string FormatBuildUploadLog(string path) =>
             FormatLoggingCommand(area: "build", @event: "uploadlog", path);
 
-        private static string FormatLoggingCommandData(string data, bool reverse = false)
+        private static string FormatLoggingCommandData(string? data, bool reverse = false)
         {
             if (string.IsNullOrEmpty(data))
                 return string.Empty;
@@ -273,8 +273,8 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             FormatLoggingCommand(area: "release", @event: "updatereleasename", name);
 
         private static string FormatLoggingCommand(string area,
-            string @event, string data = default,
-            IEnumerable<KeyValuePair<string, string>> properties = default)
+            string @event, string? data = default,
+            IEnumerable<KeyValuePair<string, string?>>? properties = default)
         {
             var builder = new StringBuilder();
             builder
@@ -287,7 +287,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             bool first = true;
             foreach (var kv in properties.EmptyIfNull())
             {
-                if (FormatLoggingCommandData(kv.Value).TryNotNullOrWhiteSpace(out string value))
+                if (FormatLoggingCommandData(kv.Value).TryNotNullOrWhiteSpace(out string? value))
                 {
                     if (first)
                     {
@@ -317,21 +317,21 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
         /// <param name="lineNumber">line number</param>
         /// <param name="columnNumber">column number</param>
         public static string FormatTaskLogIssue(VstsTaskLogIssueType type,
-            string message = null, string errCode = null,
-            string sourcePath = null, int lineNumber = -1,
+            string? message = null, string? errCode = null,
+            string? sourcePath = null, int lineNumber = -1,
             int columnNumber = -1)
         {
             var (lineString, columnString) = GetLineAndColumnNumber();
             return FormatLoggingCommand(area: "task", @event: "logissue", message, new[]
             {
-                ("type", type.ToEnumMemberString()).AsKeyValuePair(),
+                ("type", type.ToEnumMemberString()).AsKeyValuePair<string, string?>(),
                 ("code", errCode).AsKeyValuePair(),
                 ("sourcepath", sourcePath).AsKeyValuePair(),
                 ("linenumber", lineString).AsKeyValuePair(),
                 ("columnnumber", columnString).AsKeyValuePair()
             });
 
-            (string line, string column) GetLineAndColumnNumber()
+            (string? line, string? column) GetLineAndColumnNumber()
             {
                 if (lineNumber < 1)
                     return (null, null);
@@ -342,7 +342,7 @@ namespace THNETII.AzureDevOps.Pipelines.VstsTaskSdk
             }
         }
 
-        public static string FormatTaskDebug(string message) =>
+        public static string FormatTaskDebug(string? message) =>
             FormatLoggingCommand(area: "task", @event: "debug", message);
     }
 }
