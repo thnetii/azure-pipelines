@@ -27,7 +27,7 @@
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "devDependencies": {
     "glob-exec": "^0.1.1",
-    "tfx-cli": "^0.7.11"
+    "tfx-cli": "^0.8.1"
   },
   "dependencies": {
     "thnetii.azuredevops.pipelines.githubtasklibrary.githubaccesstokentask": "file:githubaccesstokentask"
