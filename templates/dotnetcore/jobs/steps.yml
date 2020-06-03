@@ -62,6 +62,12 @@ steps:
   - ${{ step }}
 - ${{ each step in parameters.presteps }}:
   - ${{ step }}
+- task: DotNetCoreCLI@2
+  displayName: dotnet msbuild /version
+  inputs:
+    command:      custom
+    custom:       msbuild
+    arguments:    -version
 - ${{ if not(parameters.restore.skip) }}:
   - task: DotNetCoreCLI@2
     displayName:  dotnet restore ${{ parameters.restore.displayNameSuffix }}
