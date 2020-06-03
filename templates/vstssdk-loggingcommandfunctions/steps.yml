@@ -9,5 +9,5 @@ steps:
     Invoke-WebRequest -Uri $dlUri -OutFile $fileName
     $filePath = Join-Path . $fileName
     . $filePath
-    Write-Host (Write-SetResult -Result Succeeded -Message "LoggingCommandFunctions stored to $filePath" -AsOutput)
+    Write-SetResult -Result Succeeded -Message "LoggingCommandFunctions stored to $filePath"
   displayName: Download PowerShell LoggingCommandFunctions from azure-pipelines-task-lib
