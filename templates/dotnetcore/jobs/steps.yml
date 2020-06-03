@@ -62,6 +62,7 @@ steps:
   - ${{ step }}
 - ${{ each step in parameters.presteps }}:
   - ${{ step }}
+- template: ../../msbuildlogger/steps.yml
 - script: dotnet --info && dotnet msbuild -version
   displayName: .NET Core Version information
 - ${{ if not(parameters.restore.skip) }}:

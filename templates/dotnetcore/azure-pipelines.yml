@@ -16,7 +16,7 @@ parameters:
 
 - name:     defaultArguments
   type:     string
-  default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -nodeReuse:false
+  default:  -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -logger:THNETII.AzureDevOps.Pipelines.MSBuild.AzureDevOpsLogger,"$(Build.SourcesDirectory)/bld/THNETII.AzureDevOps.Pipelines.MSBuild/lib/netcoreapp2.1/THNETII.AzureDevOps.Pipelines.MSBuild.dll" -nodeReuse:false
 - name:     common
   type:     object
   default:  {}
