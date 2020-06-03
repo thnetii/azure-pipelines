@@ -81,14 +81,14 @@ namespace THNETII.AzureDevOps.Pipelines.MSBuild
 
         protected virtual void OnWarningRaised(object sender, BuildWarningEventArgs e)
         {
-            if (e is null)
+            if (e is null || e.LineNumber > 0 || e.EndLineNumber > 0)
                 return;
             writer.WriteLine(FormatWarningEvent(e));
         }
 
         protected virtual void OnErrorRaised(object sender, BuildErrorEventArgs e)
         {
-            if (e is null)
+            if (e is null || e.LineNumber > 0 || e.EndLineNumber > 0)
                 return;
             writer.WriteLine(FormatErrorEvent(e));
         }
