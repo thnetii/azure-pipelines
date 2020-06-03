@@ -10,3 +10,4 @@ steps:
     $filePath = Join-Path . $fileName
     . $filePath
     Write-Host (Write-SetResult -Result Succeeded -Message "LoggingCommandFunctions stored to $filePath" -AsOutput)
+  displayName: Download PowerShell LoggingCommandFunctions from azure-pipelines-task-lib
