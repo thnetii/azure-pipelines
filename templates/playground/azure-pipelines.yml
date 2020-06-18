@@ -6,10 +6,34 @@ pr:       none
 pool:
   vmImage:      ubuntu-latest
 
+parameters:
+  - name: preItems
+    type: object
+    default:
+      - paramPreItem1
+      - paramPreItem2
+  - name: items
+    type: object
+    default:
+      - paramItem1
+      - paramItem2
+
 steps:
-  - template:   template.yml
+  - template:   ../generic/invoke-merge.yml
     parameters:
-      array:
-        - value:  15
-        - value:  42
-        - value:  10
+      merge:      ${{ parameters }}
+      sequences:
+        items:
+          operation:  append
+        preItems:
+          operation:  prepend
+      mappings:       ${{ variables.null }}
+      invoke:
+        template:     ../playground/template.yml
+        parameters:
+          preItems:
+            - staticPreItem1
+            - staticPreItem2
+          items:
+            - staticItem1
+            - staticItem2
