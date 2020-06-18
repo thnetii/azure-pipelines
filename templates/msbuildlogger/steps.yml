@@ -1,7 +1,14 @@
 parameters: {}
 steps:
-- task: NuGetCommand@2
-  displayName: Install MSBuild Logger
-  inputs:
-    command: custom
-    arguments: install -NonInteractive -OutputDirectory bld -ExcludeVersion -Prerelease -Source https://pkgs.dev.azure.com/thnetii/artifacts/_packaging/public/nuget/v3/index.json THNETII.AzureDevOps.Pipelines.MSBuild
+- template: ../vstssdk-loggingcommandfunctions/steps.yml
+- pwsh: |
+    . "$(PowerShell.LoggingCommandFunctions)"
+    $ProgressPreference = "SilentlyContinue"
+    [uri]$msbuildLoggerUri = "https://vstsagenttools.blob.core.windows.net/tools/msbuildlogger/3/msbuildlogger.zip"
+    $msbuildLoggerZip = Join-Path "$(Agent.TempDirectory)" ($msbuildLoggerUri.Segments | Select-Object -Last 1)
+    Invoke-WebRequest -Uri $msbuildLoggerUri -OutFile $msbuildLoggerZip -Verbose
+    $destDir = Join-Path "$(Build.SourcesDirectory)" (Join-Path "bld" "dotnet-build-helpers")
+    Expand-Archive -Path $msbuildLoggerZip -DestinationPath $destDir -Verbose
+    $loggerDll = (Get-ChildItem -Path $destDir -File -Filter "*Logger.dll" | Select-Object -First 1).FullName
+    Write-Host (Write-SetVariable -Name "Dotnet.MsBuildLoggerAssembly" -Value $loggerDll -AsOutput)
+    Write-Host (Write-SetVariable -Name "Dotnet.MsBuildLoggerArgument" -Value "-dl:CentralLogger,`"$loggerDll`"*ForwardingLogger,`"$loggerDll`"" -AsOutput)
