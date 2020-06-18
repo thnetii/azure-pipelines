@@ -1,0 +1,7 @@
+parameters:
+  - name:         invoke
+    displayName:  Invocation parameters
+    type:         object
+steps:
+  - template:   ${{ parameters.invoke.template }}
+    parameters: ${{ parameters.invoke.parameters }}

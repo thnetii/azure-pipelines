@@ -1,0 +1,50 @@
+parameters:
+  - name:         checkout
+    type:         stepList
+    default:      []
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute before the steps of the job
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute after the steps of the job
+    default:      []
+  - name:         job
+    type:         job
+    displayName:  The job specification
+  - name:         restore
+    type:         object
+    displayName:  Restore step details
+  - name:         build
+    type:         object
+    displayName:  Build step details
+  - name:         test
+    type:         object
+    displayName:  Test run step details
+  - name:         pack
+    type:         object
+    displayName:  Packaging step details
+  - name:         publish
+    type:         object
+    displayName:  Publish step details
+jobs:
+  - template:     ../../generic/jobs/single.yml
+    parameters:
+      checkout:   ${{ parameters.checkout }}
+      presteps:   ${{ parameters.presteps }}
+      poststeps:  ${{ parameters.poststeps }}
+      job:
+        ${{ each prop in parameters.job }}:
+          ${{ if ne('steps', prop.key) }}:
+            ${{ prop.key }}: ${{ prop.value }}
+          steps:
+            - ${{ each step in parameters.job.steps }}:
+              - ${{ step }}
+            - template:   ../steps/00-root.yml
+              parameters:
+                restore:  ${{ parameters.restore }}
+                build:    ${{ parameters.build }}
+                test:     ${{ parameters.test }}
+                pack:     ${{ parameters.pack }}
+                publish:  ${{ parameters.publish }}

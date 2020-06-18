@@ -1,0 +1,54 @@
+parameters:
+  - name:         checkout
+    type:         stepList
+    default:      []
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute before the steps of the job
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute after the steps of the job
+    default:      []
+  - name:         common
+    type:         object
+    default:      Common details
+  - name:         job
+    type:         object
+  - name:         restore
+    type:         object
+    displayName:  Restore step details
+  - name:         build
+    type:         object
+    displayName:  Build step details
+  - name:         test
+    type:         object
+    displayName:  Test run step details
+  - name:         pack
+    type:         object
+    displayName:  Packaging step details
+  - name:         publish
+    type:         object
+    displayName:  Publish step details
+  - name:         spread
+    type:         object
+    displayName:  Object to spread
+jobs:
+  - template:   ../../generic/jobs/invoke-spread.yml
+    parameters:
+      spread:             ${{ parameters.spread }}
+      invoke:
+        template:         ../../dotnetcore/jobs/01-merge-or-leaf.yml
+        parameters:
+          runtime:        ${{ variables.null }}
+          configuration:  ${{ variables.null }}
+          common:         ${{ variables.null }}
+          checkout:       ${{ parameters.checkout }}
+          presteps:       ${{ parameters.presteps }}
+          poststeps:      ${{ parameters.poststeps }}
+          job:            ${{ parameters.job }}
+          restore:        ${{ parameters.restore }}
+          build:          ${{ parameters.build }}
+          test:           ${{ parameters.test }}
+          pack:           ${{ parameters.pack }}
+          publish:        ${{ parameters.publish }}
