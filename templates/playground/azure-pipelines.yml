@@ -14,6 +14,14 @@ jobs:
           ConfigurationKey: debug
         configuration_release:
           ConfigurationKey: release
+        runtime_default:
+          RuntimeKey:       default
+        runtime_windows:
+          RuntimeKey:       windows
+        runtime_linux:
+          RuntimeKey:       linux
+        runtime_macos:
+          RuntimeKey:       macos
     variables:
       configuration_debug_displayName:    Debug
       configuration_release_displayName:  Release
@@ -21,4 +29,5 @@ jobs:
     steps:
       - pwsh: |
           Write-Host "ConfigurationKey:`t$(ConfigurationKey)"
-        displayName: pwsh test $(ConfigurationKey)
+          Write-Host "RuntimeKey:`t$(RuntimeKey)"
+        displayName: pwsh test $(ConfigurationKey) $(RuntimeKey)
