@@ -1,0 +1,67 @@
+parameters:
+  - name:         checkout
+    type:         stepList
+    default:      []
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute before the steps of the job
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute after the steps of the job
+    default:      []
+  - name:         configurations
+    type:         object
+    displayName:  List of configuration-specific arguments
+    default:      []
+  - name:         runtimes
+    type:         object
+    displayName:  List of Runtime specific arguments
+    default:      []
+  - name:         common
+    type:         object
+    displayName:  Common arguments
+    default:      {}
+  - name:         job
+    type:         job
+    displayName:  Job template object
+    default:      {}
+  - name:         restore
+    type:         object
+    displayName:  Restore step details
+    default:      {}
+  - name:         build
+    type:         object
+    displayName:  Build step details
+  - name:         test
+    type:         object
+    displayName:  Test run step details
+    default:      {}
+  - name:         pack
+    type:         object
+    displayName:  Packaging step details
+    default:      {}
+  - name:         publish
+    type:         object
+    displayName:  Publish step details
+    default:      {}
+jobs:
+  - ${{ each configuration in parameters.configurations }}:
+    - ${{ each runtime in parameters.runtimes }}:
+      - template:         01-merge-or-leaf.yml
+        parameters:
+          checkout:       ${{ parameters.checkout }}
+          presteps:       ${{ parameters.presteps }}
+          poststeps:      ${{ parameters.poststeps }}
+          configuration:  ${{ configuration }}
+          runtime:        ${{ runtime }}
+          common:         ${{ parameters.common }}
+          job:            ${{ parameters.job }}
+          restore:        ${{ parameters.restore }}
+          build:          ${{ parameters.build }}
+          test:           ${{ parameters.test }}
+          pack:           ${{ parameters.pack }}
+          publish:        ${{ parameters.publish }}
+
+
+

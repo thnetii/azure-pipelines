@@ -1,0 +1,100 @@
+parameters:
+  - name:         checkout
+    type:         stepList
+    default:      []
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute before the steps of the job
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute after the steps of the job
+    default:      []
+  - name:         configuration
+    type:         object
+  - name:         runtime
+    type:         object
+  - name:         common
+    type:         object
+    default:      Common details
+  - name:         job
+    type:         object
+  - name:         restore
+    type:         object
+    displayName:  Restore step details
+  - name:         build
+    type:         object
+    displayName:  Build step details
+  - name:         test
+    type:         object
+    displayName:  Test run step details
+  - name:         pack
+    type:         object
+    displayName:  Packaging step details
+  - name:         publish
+    type:         object
+    displayName:  Publish step details
+jobs:
+  - ${{ if ne(variables.null, parameters.configuration) }}:
+    - template:   02-merge.yml
+      parameters:
+        merge:          ${{ parameters.configuration }}
+        configuration:  ${{ variables.null }}
+        checkout:       ${{ parameters.checkout }}
+        presteps:       ${{ parameters.presteps }}
+        poststeps:      ${{ parameters.poststeps }}
+        runtime:        ${{ parameters.runtime }}
+        job:            ${{ parameters.job }}
+        common:         ${{ parameters.common }}
+        restore:        ${{ parameters.restore }}
+        build:          ${{ parameters.build }}
+        test:           ${{ parameters.test }}
+        pack:           ${{ parameters.pack }}
+        publish:        ${{ parameters.publish }}
+  - ${{ if eq(variables.null, parameters.configuration) }}:
+    - ${{ if ne(variables.null, parameters.runtime }}:
+      - template:   02-merge.yml
+        parameters:
+          merge:          ${{ parameters.runtime }}
+          configuration:  ${{ variables.null }}
+          runtime:        ${{ variables.null }}
+          checkout:       ${{ parameters.checkout }}
+          presteps:       ${{ parameters.presteps }}
+          poststeps:      ${{ parameters.poststeps }}
+          job:            ${{ parameters.job }}
+          common:         ${{ parameters.common }}
+          restore:        ${{ parameters.restore }}
+          build:          ${{ parameters.build }}
+          test:           ${{ parameters.test }}
+          pack:           ${{ parameters.pack }}
+          publish:        ${{ parameters.publish }}
+    - ${{ if eq(variables.null, parameters.runtime }}:
+      - ${{ if ne(variables.null, parameters.common) }}:
+        - template:         03-spread.yml
+          parameters:
+            spread:         ${{ parameters.common }}
+            common:         ${{ variables.null }}
+            checkout:       ${{ parameters.checkout }}
+            presteps:       ${{ parameters.presteps }}
+            poststeps:      ${{ parameters.poststeps }}
+            job:            ${{ parameters.job }}
+            restore:        ${{ parameters.restore }}
+            build:          ${{ parameters.build }}
+            test:           ${{ parameters.test }}
+            pack:           ${{ parameters.pack }}
+            publish:        ${{ parameters.publish }}
+      - ${{ if eq(variables.null, parameters.common) }}:
+        - template:         04-leaf.yml
+          parameters:
+            checkout:       ${{ parameters.checkout }}
+            presteps:       ${{ parameters.presteps }}
+            poststeps:      ${{ parameters.poststeps }}
+            job:            ${{ parameters.job }}
+            restore:        ${{ parameters.restore }}
+            build:          ${{ parameters.build }}
+            test:           ${{ parameters.test }}
+            pack:           ${{ parameters.pack }}
+            publish:        ${{ parameters.publish }}
+
+
+

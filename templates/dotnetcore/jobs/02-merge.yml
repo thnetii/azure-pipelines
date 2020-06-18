@@ -1,0 +1,199 @@
+parameters:
+  - name:         checkout
+    type:         stepList
+    default:      []
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute before the steps of the job
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute after the steps of the job
+    default:      []
+  - name:         configuration
+    type:         object
+  - name:         runtime
+    type:         object
+  - name:         common
+    type:         object
+    default:      Common details
+  - name:         job
+    type:         object
+  - name:         restore
+    type:         object
+    displayName:  Restore step details
+  - name:         build
+    type:         object
+    displayName:  Build step details
+  - name:         test
+    type:         object
+    displayName:  Test run step details
+  - name:         pack
+    type:         object
+    displayName:  Packaging step details
+  - name:         publish
+    type:         object
+    displayName:  Publish step details
+  - name:         merge
+    type:         object
+    displayName:  Object to merge
+jobs:
+  - template:   ../../generic/jobs/invoke-merge.yml
+    parameters:
+      merge:    ${{ parameters.merge }}
+      sequences:
+        checkout:
+          operation: append
+        presteps:
+          operation: append
+        poststeps:
+          operation: append
+      mappings:
+        job:
+          job:
+            operation:  append
+          displayName:
+            operation:  append
+            separator:  ' '
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          cancelTimeoutInMinutes:
+            operation:  max-expression
+        common:
+          arguments:
+            operation:  append
+            separator:  ' '
+          allProjects:
+            operation:  append
+            separator:  "\n"
+          buildProjects:
+            operation:  append
+            separator:  "\n"
+          testProjects:
+            operation:  append
+            separator:  "\n"
+          publishProjects:
+            operation:  append
+            separator:  "\n"
+        restore:
+          arguments:
+            operation:  append
+            separator:  ' '
+          skip:
+            operation:  or-expression
+          projects:
+            operation:  append
+            separator:  "\n"
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          enabled:
+            operation:  and-expression
+        build:
+          arguments:
+            operation:  append
+            separator:  ' '
+          skip:
+            operation:  or-expression
+          projects:
+            operation:  append
+            separator:  "\n"
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          enabled:
+            operation:  and-expression
+        test:
+          arguments:
+            operation:  append
+            separator:  ' '
+          skip:
+            operation:  or-expression
+          projects:
+            operation:  append
+            separator:  "\n"
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          enabled:
+            operation:  and-expression
+        pack:
+          arguments:
+            operation:  append
+            separator:  ' '
+          skip:
+            operation:  or-expression
+          projects:
+            operation:  append
+            separator:  "\n"
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          enabled:
+            operation:  and-expression
+        publish:
+          arguments:
+            operation:  append
+            separator:  ' '
+          skip:
+            operation:  or-expression
+          projects:
+            operation:  append
+            separator:  "\n"
+          condition:
+            operation:  append
+            separator:  ', '
+            prefix:     'and('
+            suffix:     ')'
+          continueOnError:
+            operation:  or-expression
+          timeoutInMinutes:
+            operation:  min-expression
+          enabled:
+            operation:  and-expression
+      invoke:
+        template:         ../../dotnetcore/jobs/01-merge-or-leaf.yml
+        parameters:
+          checkout:       ${{ parameters.checkout }}
+          presteps:       ${{ parameters.presteps }}
+          poststeps:      ${{ parameters.poststeps }}
+          configuration:  ${{ parameters.configuration }}
+          runtime:        ${{ parameters.runtime }}
+          common:         ${{ parameters.common }}
+          job:            ${{ parameters.job }}
+          restore:        ${{ parameters.restore }}
+          build:          ${{ parameters.build }}
+          test:           ${{ parameters.test }}
+          pack:           ${{ parameters.pack }}
+          publish:        ${{ parameters.publish }}

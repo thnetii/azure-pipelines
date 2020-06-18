@@ -1,0 +1,23 @@
+parameters:
+  - name:         presteps
+    type:         stepList
+    displayName:  List of steps to execute directly before this task
+    default:      []
+  - name:         poststeps
+    type:         stepList
+    displayName:  List of steps to execute directly after this task
+    default:      []
+  - name:         step
+    displayName:  The main step to run
+    type:         step
+  - name:         skip
+    type:         boolean
+    displayName:  Whether to skip the step and its pre- and post-steps.
+    default:      'false'
+steps:
+  - ${{ if not(parameters.skip) }}:
+    - ${{ each step in parameters.presteps }}:
+      - ${{ step }}
+    - ${{ parameters.step }}
+    - ${{ each step in parameters.poststeps }}:
+      - ${{ step }}

@@ -1,0 +1,13 @@
+parameters:
+  - name:         invoke
+    displayName:  Invocation parameters
+    type:         object
+  - name:         spread
+    displayName:  Object to spread
+    type:         object
+  - name:         sequences
+    displayName:  Sequence merge details
+    type:         object
+  - name:         mappings
+    displayName:  Mapping merge details
+    type:         object

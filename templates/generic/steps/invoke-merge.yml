@@ -1,0 +1,10 @@
+parameters:
+  - name:         invoke
+    displayName:  Invocation parameters
+    type:         object
+steps:
+  - template:   ${{ parameters.invoke.template }}
+    parameters:
+      ${{ each param in parameters.invoke.parameters }}:
+        ${{ if notIn(prop.value, 'invoke') }}:
+          ${{ prop.key }}: ${{ prop.value }}
