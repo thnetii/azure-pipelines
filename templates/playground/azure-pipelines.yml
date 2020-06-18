@@ -17,6 +17,13 @@ parameters:
     default:
       - paramItem1
       - paramItem2
+  - name: nonExistStatic
+    type: object
+    default:
+      append1:    nonExistStaticParamAppend1
+      append2:    nonExistStaticParamAppend2
+      replace1:   nonExistStaticParamReplace1
+      replace2:   nonExistStaticParamReplace2
 
 steps:
   - template:   ../generic/steps/invoke-merge.yml
@@ -27,7 +34,15 @@ steps:
           operation:  append
         preItems:
           operation:  prepend
-      mappings:       ${{ variables.null }}
+      mappings:
+        nonExistStatic:
+          prop1:
+            operation:  append
+          prop2:
+            operation:  append
+            separator:  ' '
+            prefix:     Prefix
+            suffix:     Suffix
       invoke:
         template:     ../../playground/template.yml
         parameters:

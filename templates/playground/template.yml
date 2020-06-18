@@ -5,9 +5,17 @@ parameters:
   - name:     items
     type:     object
     default:  []
+  - name:     nonExistStatic
+    type:     object
+    default:  {}
 
 steps:
   - ${{ each i in parameters.preItems }}:
     - pwsh: 'Write-Host ${{ i }}'
+      displayName: 'preItems[...]: ${{ i }}'
   - ${{ each i in parameters.items }}:
     - pwsh: 'Write-Host ${{ i }}'
+      displayName: 'items[...]: ${{ i }}'
+  - ${{ each prop in parameters.nonExistStatic }}:
+    - pwsh: 'Write-Host "${{ prop.key }}:`t${{ prop.value }}"'
+      displayName: 'nonExistStatic.${{ prop.key }}: ${{ prop.value }}'
