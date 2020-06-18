@@ -1,4 +1,4 @@
-parameters: {}
+parameters: []
 steps:
 - template: ../vstssdk-loggingcommandfunctions/steps.yml
 - pwsh: |
@@ -12,3 +12,4 @@ steps:
     $loggerDll = (Get-ChildItem -Path $destDir -File -Filter "*Logger.dll" | Select-Object -First 1).FullName
     Write-Host (Write-SetVariable -Name "Dotnet.MsBuildLoggerAssembly" -Value $loggerDll -AsOutput)
     Write-Host (Write-SetVariable -Name "Dotnet.MsBuildLoggerArgument" -Value "-dl:CentralLogger,`"$loggerDll`"*ForwardingLogger,`"$loggerDll`"" -AsOutput)
+  displayName: Download VSTS Agent Tools MSBuild Logger
