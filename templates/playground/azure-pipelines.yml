@@ -19,7 +19,7 @@ parameters:
       - paramItem2
 
 steps:
-  - template:   ../generic/invoke-merge.yml
+  - template:   ../generic/steps/invoke-merge.yml
     parameters:
       merge:      ${{ parameters }}
       sequences:
@@ -29,7 +29,7 @@ steps:
           operation:  prepend
       mappings:       ${{ variables.null }}
       invoke:
-        template:     ../playground/template.yml
+        template:     ../../playground/template.yml
         parameters:
           preItems:
             - staticPreItem1
