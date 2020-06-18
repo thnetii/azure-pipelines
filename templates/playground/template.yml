@@ -1,8 +1,13 @@
 parameters:
-  - name:     array
+  - name:     preItems
+    type:     object
+    default:  []
+  - name:     items
     type:     object
     default:  []
 
 steps:
-  - ${{ each v in parameters.array.*['value'] }}:
-    - pwsh: 'Write-Host ${{ v }}'
+  - ${{ each i in parameters.preItems }}:
+    - pwsh: 'Write-Host ${{ i }}'
+  - ${{ each i in parameters.items }}:
+    - pwsh: 'Write-Host ${{ i }}'
