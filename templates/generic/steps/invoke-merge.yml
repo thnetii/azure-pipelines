@@ -2,9 +2,138 @@ parameters:
   - name:         invoke
     displayName:  Invocation parameters
     type:         object
+  - name:         merge
+    displayName:  Object to merge
+    type:         object
+  - name:         sequences
+    displayName:  Sequence merge details
+    type:         object
+  - name:         mappings
+    displayName:  Mapping merge details
+    type:         object
 steps:
-  - template:   ${{ parameters.invoke.template }}
-    parameters:
-      ${{ each param in parameters.invoke.parameters }}:
-        ${{ if notIn(prop.value, 'invoke') }}:
-          ${{ prop.key }}: ${{ prop.value }}
+  - ${{ if ne(variables.null, parameters.sequences) }}:
+    - template:   invoke-merge.yml
+      parameters:
+        merge:      ${{ parameters.merge }}
+        sequences:  ${{ variables.null }}
+        mappings:   ${{ parameters.mappings }}
+        invoke:
+          template: ${{ parameters.invoke.template }}
+          parameters:
+            ${{ each prop in parameters.sequences }}:
+              ${{ if eq('append', prop.value.operation) }}:
+                ${{ if or(ne(variables.null, parameters.invoke.parameters[prop.key]), ne(variables.null, parameters.merge[prop.key])) }}:
+                  ${{ prop.key }}:
+                    - ${{ each item in parameters.invoke.parameters[prop.key] }}:
+                      - ${{ item }}
+                    - ${{ each item in parameters.merge[prop.key] }}:
+                      - ${{ item }}
+              ${{ if eq('prepend', prop.value.operation) }}:
+                ${{ if or(ne(variables.null, parameters.invoke.parameters[prop.key]), ne(variables.null, parameters.merge[prop.key])) }}:
+                  ${{ prop.key }}:
+                    - ${{ each item in parameters.merge[prop.key] }}:
+                      - ${{ item }}
+                    - ${{ each item in parameters.invoke.parameters[prop.key] }}:
+                      - ${{ item }}
+              ${{ if notIn(prop.value.operation, 'append', 'prepend')}}:
+                ${{ if ne(variables.null, parameters.merge[prop.key]) }}:
+                  ${{ prop.key }}: ${{ parameters.merge[prop.key] }}
+                ${{ if eq(variables.null, parameters.merge[prop.key]) }}:
+                  ${{ if ne(variables.null, parameters.invoke.parameters[prop.key]) }}:
+                    ${{ prop.key }}: ${{ parameters.invoke.parameters[prop.key] }}
+            ${{ each prop in parameters.invoke.parameters }}:
+              ${{ if eq(variables.null, parameters.sequences[prop.key]) }}:
+                ${{ prop.key }}: ${{ prop.value }}
+  - ${{ if eq(variables.null, parameters.sequences) }}:
+    - ${{ if ne(variables.null, parameters.mappings) }}:
+      - template:       invoke-merge.yml
+        parameters:
+          merge:        ${{ parameters.merge }}
+          sequences:    ${{ parameters.sequences }}
+          mappings:     ${{ variables.null }}
+          invoke:
+            template:   ${{ parameters.invoke.template}}
+            parameters:
+              ${{ each root in parameters.mappings }}:
+                ${{ root.key }}:
+                  ${{ each prop in root.value }}:
+                    ${{ if eq('append', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ prop.value.prefix }}${{ parameters.invoke.parameters[root.key][prop.key] }}${{ prop.value.separator }}${{ parameters.merge[root.key][prop.key] }}${{ prop.value.suffix }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ if eq('prepend', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ prop.value.prefix }}${{ parameters.merge[root.key][prop.key] }}${{ prop.value.separator }}${{ parameters.invoke.parameters[root.key][prop.key] }}${{ prop.value.suffix }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ if eq('or-expression', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ or(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ if eq('and-expression', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ and(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ if eq('min-expression', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ if lt(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}:
+                            ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                          ${{ if ge(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}:
+                            ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ if eq('max-expression', prop.value.operation) }}:
+                      ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ if ge(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}:
+                            ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                          ${{ if lt(parameters.invoke.parameters[root.key][prop.key], parameters.merge[root.key][prop.key]) }}:
+                            ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                        ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                      ${{ if eq('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                    ${{ notIn(prop.value.operation, 'append', 'prepend', 'or-expression', 'and-expression', 'min-expression', 'max-expression') }}:
+                      ${{ if ne('', parameters.merge[root.key][prop.key]) }}:
+                        ${{ prop.key }}: ${{ parameters.merge[root.key][prop.key] }}
+                      ${{ if eq('', parameters.merge[root.key][prop.key]) }}:
+                        ${{ if ne('', parameters.invoke.parameters[root.key][prop.key]) }}:
+                          ${{ prop.key }}: ${{ parameters.invoke.parameters[root.key][prop.key] }}
+                  ${{ each prop in parameters.merge[root.key] }}:
+                    ${{ if eq(variables.null, root.value[prop.key]) }}:
+                      ${{ prop.key }}: ${{ prop.value }}
+                  ${{ each prop in parameters.invoke.parameters[root.key] }}:
+                    ${{ if eq(variables.null, root.value[prop.key]) }}:
+                      ${{ if eq(variables.null, parameters.merge[root.key][prop.key]) }}:
+                        ${{ prop.key }}: ${{ prop.value }}
+              ${{ each root in parameters.invoke.parameters }}:
+                ${{ if eq(variables.null, parameters.mappings[root.key]) }}:
+                  ${{ root.key }}: ${{ root.value }}
+    - ${{ if eq(variables.null, parameters.mappings) }}:
+      - template:   ${{ parameters.invoke.template }}
+        parameters: ${{ parameters.invoke.parameters }}
