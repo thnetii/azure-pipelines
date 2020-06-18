@@ -6,10 +6,19 @@ pr:       none
 pool:
   vmImage:      ubuntu-latest
 
-steps:
-  - template:   template.yml
-    parameters:
-      array:
-        - value:  15
-        - value:  42
-        - value:  10
+jobs:
+  - job: playground1
+    strategy:
+      matrix:
+        configuration_debug:
+          ConfigurationKey: debug
+        configuration_release:
+          ConfigurationKey: release
+    variables:
+      configuration_debug_displayName:    Debug
+      configuration_release_displayName:  Release
+    displayName:  $(ConfigurationKey)
+    steps:
+      - pwsh: |
+          Write-Host "ConfigurationKey:`t$(ConfigurationKey)"
+        displayName: pwsh test $(ConfigurationKey)
