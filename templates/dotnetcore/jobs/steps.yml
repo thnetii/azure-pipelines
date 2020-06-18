@@ -76,7 +76,7 @@ steps:
       command:    custom
       custom:     restore
       projects:   ${{ parameters.restore.projects }}
-      arguments:  ${{ parameters.restore.arguments }}
+      arguments:  ${{ parameters.restore.arguments }} $(Dotnet.MsBuildLoggerArgument)
       ${{ each pair in parameters.restore }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
@@ -102,7 +102,7 @@ steps:
     inputs:
       command:    test
       projects:   ${{ parameters.test.projects }}
-      arguments:  ${{ parameters.test.arguments }}
+      arguments:  ${{ parameters.test.arguments }} $(Dotnet.MsBuildLoggerArgument)
       publishTestResults: true
       ${{ each pair in parameters.test }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'publishTestResults', 'condition', 'skip') }}:
@@ -116,7 +116,7 @@ steps:
       command:    custom
       custom:     pack
       projects:   ${{ parameters.pack.projects }}
-      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}" ${{ parameters.pack.arguments }}
+      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.packArtifactName }}" ${{ parameters.pack.arguments }} $(Dotnet.MsBuildLoggerArgument)
       ${{ each pair in parameters.pack }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
@@ -136,7 +136,7 @@ steps:
     inputs:
       command:    publish
       projects:   ${{ parameters.publish.projects }}
-      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}" ${{ parameters.publish.arguments }}
+      arguments:  --output "$(Build.ArtifactStagingDirectory)/${{ parameters.publishArtifactName }}" ${{ parameters.publish.arguments }} $(Dotnet.MsBuildLoggerArgument)
       ${{ each pair in parameters.publish }}:
         ${{ if notIn(pair.key, 'command', 'custom', 'projects', 'arguments', 'displayNameSuffix', 'condition', 'skip') }}:
           ${{ pair.key }}: ${{ pair.value }}
