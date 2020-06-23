@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "dependencies": {
-    "azure-pipelines-task-lib": "^2.9.5"
+    "azure-pipelines-task-lib": "^2.9.6"
   },
   "devDependencies": {
     "@types/node": "^14.0.13",
