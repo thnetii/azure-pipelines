@@ -6,12 +6,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging.Test
 {
-    public static class VsoConsoleLoggingTest
+    public class VsoConsoleLoggingTest
     {
-        private static string GetVsoConsoleOutput(Action<ILogger> loggingAction)
+        private readonly ITestOutputHelper outputHelper;
+
+        public VsoConsoleLoggingTest(ITestOutputHelper outputHelper)
+        {
+            this.outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
+        }
+
+        private string GetVsoConsoleOutput(Action<ILogger> loggingAction)
         {
             using var writer = new StringWriter();
             using (var serviceProvider = new ServiceCollection()
@@ -19,6 +27,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                 {
                     logging.SetMinimumLevel(LogLevel.Trace);
                     logging.AddVsoConsole();
+                    logging.AddXUnit(outputHelper);
                 })
                 .AddSingleton<VsoConsoleProcessor>(_ => new VsoStringBuilderLoggingProcessor(writer))
                 .BuildServiceProvider())
@@ -32,7 +41,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         }
 
         [Fact]
-        public static void Writes_nothing_if_nothing_logged()
+        public void Writes_nothing_if_nothing_logged()
         {
             string output = GetVsoConsoleOutput(logger => { });
 
@@ -43,7 +52,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Debug)]
         [InlineData(LogLevel.Information)]
-        public static void Write_task_debug_message_if_log_level_below_warning(LogLevel logLevel)
+        public void Write_task_debug_message_if_log_level_below_warning(LogLevel logLevel)
         {
             string output = GetVsoConsoleOutput(logger =>
             {
@@ -56,7 +65,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         [Theory]
         [InlineData(LogLevel.Error)]
         [InlineData(LogLevel.Critical)]
-        public static void Write_task_log_issue_warning_message_if_log_level_above_warning(LogLevel logLevel)
+        public void Write_task_log_issue_warning_message_if_log_level_above_warning(LogLevel logLevel)
         {
             string output = GetVsoConsoleOutput(logger =>
             {
@@ -67,7 +76,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         }
 
         [Fact]
-        public static void Writes_nothing_if_log_level_is_none()
+        public void Writes_nothing_if_log_level_is_none()
         {
             string output = GetVsoConsoleOutput(logger =>
             {
@@ -78,7 +87,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         }
 
         [Fact]
-        public static void Writes_log_issue_message_with_properties_from_string_dictionary_state()
+        public void Writes_log_issue_message_with_properties_from_string_dictionary_state()
         {
             string output = GetVsoConsoleOutput(logger =>
             {
@@ -95,7 +104,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         }
 
         [Fact]
-        public static void Writes_log_issue_message_with_properties_from_object_dictionary_state()
+        public void Writes_log_issue_message_with_properties_from_object_dictionary_state()
         {
             string output = GetVsoConsoleOutput(logger =>
             {
@@ -112,7 +121,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
         }
 
         [Fact]
-        public static void Writes_log_issue_message_with_properties_from_formatted_log_values()
+        public void Writes_log_issue_message_with_properties_from_formatted_log_values()
         {
             string output = GetVsoConsoleOutput(logger =>
             {

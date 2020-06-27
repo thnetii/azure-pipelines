@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <LangVersion>8</LangVersion>
     <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <Nullable Condition="  '$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' &gt;= '3.0' ">enable</Nullable>
-    <Nullable Condition="!('$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_TargetFrameworkVersionWithoutV)' &gt;= '3.0')">annotations</Nullable>
     <Description>Provides types and methods for writing formatted messages in an Azure DevOps Pipelines task.
 
     The output can be parsed by the pipeline agent and perform special operations during task execution.</Description>
