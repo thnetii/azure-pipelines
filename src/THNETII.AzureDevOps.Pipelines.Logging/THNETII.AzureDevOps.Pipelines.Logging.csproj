@@ -2,8 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <LangVersion>8</LangVersion>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <Description>Extension library for logging messages in the Azure Pipelines logging format.
 
     Uses the Microsoft.Extensions.Logging interfaces for standard DI-based logging.
