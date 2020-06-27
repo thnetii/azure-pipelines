@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29006.145
@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Version.props = Directory.Version.props
 		LICENSE = LICENSE
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THNETII.AzureDevOps.Pipelines.MSBuild", "src\THNETII.AzureDevOps.Pipelines.MSBuild\THNETII.AzureDevOps.Pipelines.MSBuild.csproj", "{12899C3C-BACF-4A58-8FC0-7A5173E47755}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THNETII.AzureDevOps.Pipelines.VstsTaskSdk", "src\THNETII.AzureDevOps.Pipelines.VstsTaskSdk\THNETII.AzureDevOps.Pipelines.VstsTaskSdk.csproj", "{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}"
 EndProject
@@ -49,18 +47,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|x64.Build.0 = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Debug|x86.Build.0 = Debug|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|Any CPU.Build.0 = Release|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x64.ActiveCfg = Release|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x64.Build.0 = Release|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x86.ActiveCfg = Release|Any CPU
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755}.Release|x86.Build.0 = Release|Any CPU
 		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -138,7 +124,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{12899C3C-BACF-4A58-8FC0-7A5173E47755} = {FB1E59F6-3502-4637-875B-4A22FE786735}
 		{4C3E2C3C-5C25-4A29-BDF7-7FC18852787E} = {FB1E59F6-3502-4637-875B-4A22FE786735}
 		{8E4AD90F-15BA-4966-83FE-6AAE4E42746C} = {FB1E59F6-3502-4637-875B-4A22FE786735}
 		{FA44F4C0-FC76-4A7F-B7B4-B1E405C9ABD7} = {0839D8B5-8317-43B9-BA64-F4AE917FA1DF}
