@@ -12,9 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.5">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
