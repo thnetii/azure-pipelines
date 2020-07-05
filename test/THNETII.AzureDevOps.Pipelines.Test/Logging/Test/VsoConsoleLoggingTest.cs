@@ -29,7 +29,6 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
                     logging.AddVsoConsole();
                     logging.AddXUnit(outputHelper);
                 })
-                .AddSingleton<VsoConsoleProcessor>(_ => new VsoStringBuilderLoggingProcessor(writer))
                 .BuildServiceProvider())
             {
                 var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

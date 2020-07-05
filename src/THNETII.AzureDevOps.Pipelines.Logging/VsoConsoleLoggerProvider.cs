@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 using System;
 using System.Collections.Generic;
@@ -10,24 +11,23 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
     {
         private static readonly Dictionary<string, VsoConsoleLogger> loggers =
             new Dictionary<string, VsoConsoleLogger>(StringComparer.OrdinalIgnoreCase);
-        private readonly VsoConsoleProcessor loggerProcessor;
-        private IExternalScopeProvider scopeProvider;
+        private readonly ConsoleLoggerProvider parentProvider;
 
-        public VsoConsoleLoggerProvider(VsoConsoleProcessor loggerProcessor) : base()
+        public VsoConsoleLoggerProvider(ConsoleLoggerProvider parentProvider) : base()
         {
-            this.loggerProcessor = loggerProcessor;
+            this.parentProvider = parentProvider;
         }
 
         public ILogger CreateLogger(string categoryName)
         {
-            VsoConsoleLogger logger;
+            VsoConsoleLogger? logger;
             lock (loggers)
             {
                 if (loggers.TryGetValue(categoryName, out logger))
                     return logger;
             }
-            logger = new VsoConsoleLogger(categoryName, loggerProcessor)
-            { ScopeProvider = scopeProvider };
+            var conLogger = parentProvider.CreateLogger(categoryName);
+            logger = new VsoConsoleLogger(categoryName, conLogger);
             lock (loggers)
             {
                 if (loggers.TryGetValue(categoryName, out var existingLogger))
@@ -43,12 +43,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
 
         public void SetScopeProvider(IExternalScopeProvider scopeProvider)
         {
-            this.scopeProvider = scopeProvider;
-            lock (loggers)
-            {
-                foreach (var logger in loggers.Values)
-                    logger.ScopeProvider = scopeProvider;
-            }
+            parentProvider.SetScopeProvider(scopeProvider);
         }
     }
 }

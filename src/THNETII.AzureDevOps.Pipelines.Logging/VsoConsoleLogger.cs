@@ -10,20 +10,20 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
 {
     internal class VsoConsoleLogger : ILogger
     {
-        public string Name { get; }
-        internal IExternalScopeProvider ScopeProvider { get; set; }
-        internal VsoConsoleProcessor LoggerProcessor { get; }
+        private readonly ILogger consoleLogger;
 
-        public VsoConsoleLogger(string name, VsoConsoleProcessor loggerProcessor)
+        public string Name { get; }
+
+        public VsoConsoleLogger(string name, ILogger consoleLogger)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            LoggerProcessor = loggerProcessor;
+            this.consoleLogger = consoleLogger;
         }
 
         public IDisposable BeginScope<TState>(TState state) =>
-            ScopeProvider?.Push(state) ?? VsoNullLoggingScope.Instance;
+            consoleLogger.BeginScope(state);
 
-        public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+        public bool IsEnabled(LogLevel logLevel) => consoleLogger.IsEnabled(logLevel);
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
             Exception exception, Func<TState, Exception, string> formatter)
@@ -53,8 +53,8 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                 object o => EnumStringConverter.ParseOrDefault(o.ToString(), ToVstsTaskLogIssueType(logLevel)),
                 _ => ToVstsTaskLogIssueType(logLevel)
             };
-            string errCode = stateLookup["code"].FirstOrDefault()?.ToString();
-            string sourcePath = stateLookup["sourcepath"].FirstOrDefault()?.ToString();
+            string? errCode = stateLookup["code"].FirstOrDefault()?.ToString();
+            string? sourcePath = stateLookup["sourcepath"].FirstOrDefault()?.ToString();
             int lineNumber = stateLookup["linenumber"].FirstOrDefault() switch
             {
                 int v => v,
@@ -75,7 +75,8 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                 : VstsLoggingCommand.FormatTaskLogIssue(logIssueType, message,
                     errCode, sourcePath, lineNumber, columnNumber);
             if (!string.IsNullOrEmpty(vsoOutput))
-                LoggerProcessor.EnqueueMessage(vsoOutput);
+                consoleLogger.Log(logLevel, eventId, state, exception,
+                    (state, except) => "VSO Console log output" + Environment.NewLine + vsoOutput);
         }
 
         private static VstsTaskLogIssueType ToVstsTaskLogIssueType(LogLevel logLevel)
