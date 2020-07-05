@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
 {
