@@ -1,8 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
 {
@@ -11,11 +13,24 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
     {
         private static readonly Dictionary<string, VsoConsoleLogger> loggers =
             new Dictionary<string, VsoConsoleLogger>(StringComparer.OrdinalIgnoreCase);
-        private readonly ConsoleLoggerProvider parentProvider;
+        private readonly IServiceProvider serviceProvider;
+        private readonly Lazy<ConsoleLoggerProvider> parentProvider;
 
-        public VsoConsoleLoggerProvider(ConsoleLoggerProvider parentProvider) : base()
+        private ConsoleLoggerProvider ParentProvider =>
+            parentProvider.Value;
+
+        public VsoConsoleLoggerProvider(IServiceProvider serviceProvider) : base()
         {
-            this.parentProvider = parentProvider;
+            this.serviceProvider = serviceProvider;
+            parentProvider = new Lazy<ConsoleLoggerProvider>(InitializeParentProvider);
+        }
+
+        private ConsoleLoggerProvider InitializeParentProvider()
+        {
+            return (serviceProvider?.GetServices<ILoggerProvider>()?
+                .FirstOrDefault(p => p is ConsoleLoggerProvider)
+                as ConsoleLoggerProvider) ?? ActivatorUtilities
+                .CreateInstance<ConsoleLoggerProvider>(serviceProvider);
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -26,7 +41,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                 if (loggers.TryGetValue(categoryName, out logger))
                     return logger;
             }
-            var conLogger = parentProvider.CreateLogger(categoryName);
+            var conLogger = ParentProvider.CreateLogger(categoryName);
             logger = new VsoConsoleLogger(categoryName, conLogger);
             lock (loggers)
             {
@@ -43,7 +58,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
 
         public void SetScopeProvider(IExternalScopeProvider scopeProvider)
         {
-            parentProvider.SetScopeProvider(scopeProvider);
+            ParentProvider.SetScopeProvider(scopeProvider);
         }
     }
 }

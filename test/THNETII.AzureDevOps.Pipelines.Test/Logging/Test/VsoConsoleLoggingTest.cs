@@ -1,134 +1,123 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging.Test
 {
-    public class VsoConsoleLoggingTest
+    public static class VsoConsoleLoggingTest
     {
-        private readonly ITestOutputHelper outputHelper;
-
-        public VsoConsoleLoggingTest(ITestOutputHelper outputHelper)
+        [Fact]
+        public static void GetServicesReturnsVsoConsoleLoggerProviderWhenConsoleAdded()
         {
-            this.outputHelper = outputHelper ?? throw new ArgumentNullException(nameof(outputHelper));
-        }
-
-        private string GetVsoConsoleOutput(Action<ILogger> loggingAction)
-        {
-            using var writer = new StringWriter();
-            using (var serviceProvider = new ServiceCollection()
+            using var services = new ServiceCollection()
                 .AddLogging(logging =>
                 {
-                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.AddConsole();
                     logging.AddVsoConsole();
-                    logging.AddXUnit(outputHelper);
                 })
-                .BuildServiceProvider())
-            {
-                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
+                .BuildServiceProvider();
 
-                loggingAction(logger);
-            }
-            return writer.ToString();
+            var loggingProviders = services.GetServices<ILoggerProvider>()
+                .ToDictionary(i => i.GetType());
+            Assert.Contains(typeof(VsoConsoleLoggerProvider), loggingProviders.Keys);
+            Assert.NotNull(loggingProviders[typeof(VsoConsoleLoggerProvider)]);
         }
 
         [Fact]
-        public void Writes_nothing_if_nothing_logged()
+        public static void GetServicesReturnsVsoConsoleLoggerProviderWhenConsoleNotAdded()
         {
-            string output = GetVsoConsoleOutput(logger => { });
+            using var services = new ServiceCollection()
+                .AddLogging(logging =>
+                {
+                    logging.AddVsoConsole();
+                })
+                .BuildServiceProvider();
 
-            Assert.Empty(output);
+            var loggingProviders = services.GetServices<ILoggerProvider>()
+                .ToDictionary(i => i.GetType());
+            Assert.Contains(typeof(VsoConsoleLoggerProvider), loggingProviders.Keys);
+            Assert.NotNull(loggingProviders[typeof(VsoConsoleLoggerProvider)]);
         }
 
         [Theory]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Debug)]
         [InlineData(LogLevel.Information)]
-        public void Write_task_debug_message_if_log_level_below_warning(LogLevel logLevel)
+        public static void LogsLogLevelBelowWarning(LogLevel logLevel)
         {
-            string output = GetVsoConsoleOutput(logger =>
-            {
-                logger.Log(logLevel, nameof(Write_task_debug_message_if_log_level_below_warning));
-            });
+            using var services = new ServiceCollection()
+                .AddLogging(logging => logging.AddVsoConsole())
+                .BuildServiceProvider();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
 
-            Assert.StartsWith("##vso[task.debug]", output, StringComparison.Ordinal);
+            logger.Log(logLevel, $"This is a test using loglevel {{{nameof(LogLevel)}}}", logLevel);
         }
 
         [Theory]
-        [InlineData(LogLevel.Error)]
-        [InlineData(LogLevel.Critical)]
-        public void Write_task_log_issue_warning_message_if_log_level_above_warning(LogLevel logLevel)
+        [InlineData(LogLevel.Trace)]
+        [InlineData(LogLevel.Debug)]
+        [InlineData(LogLevel.Information)]
+        public static void LogsLogLevelAboveWarning(LogLevel logLevel)
         {
-            string output = GetVsoConsoleOutput(logger =>
-            {
-                logger.Log(logLevel, nameof(Write_task_log_issue_warning_message_if_log_level_above_warning));
-            });
+            using var services = new ServiceCollection()
+                .AddLogging(logging => logging.AddVsoConsole())
+                .BuildServiceProvider();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
 
-            Assert.StartsWith("##vso[task.logissue type=error]", output, StringComparison.Ordinal);
+            logger.Log(logLevel, $"This is a test using loglevel {{{nameof(LogLevel)}}}", logLevel);
         }
 
         [Fact]
-        public void Writes_nothing_if_log_level_is_none()
+        public static void LogsLogLevelNone()
         {
-            string output = GetVsoConsoleOutput(logger =>
-            {
-                logger.Log(LogLevel.None, nameof(Write_task_log_issue_warning_message_if_log_level_above_warning));
-            });
+            const LogLevel logLevel = LogLevel.None;
+            using var services = new ServiceCollection()
+                .AddLogging(logging => logging.AddVsoConsole())
+                .BuildServiceProvider();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
 
-            Assert.Empty(output);
+            logger.Log(logLevel, $"This is a test using loglevel {{{nameof(LogLevel)}}}", logLevel);
         }
 
         [Fact]
-        public void Writes_log_issue_message_with_properties_from_string_dictionary_state()
+        public static void LogsWithStringDictionaryState()
         {
-            string output = GetVsoConsoleOutput(logger =>
+            using var services = new ServiceCollection()
+                .AddLogging(logging => logging.AddVsoConsole())
+                .BuildServiceProvider();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
+
+            var dict = new Dictionary<string, string>
             {
-                var dict = new Dictionary<string, string>
-                {
-                    ["code"] = "TEST"
-                };
+                ["code"] = "TEST"
+            };
 
-                logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
-            });
-
-            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message\n", output,
-                ignoreLineEndingDifferences: true);
+            logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
         }
 
         [Fact]
-        public void Writes_log_issue_message_with_properties_from_object_dictionary_state()
+        public static void LogsWithObjectDictionaryState()
         {
-            string output = GetVsoConsoleOutput(logger =>
+            using var services = new ServiceCollection()
+                .AddLogging(logging => logging.AddVsoConsole())
+                .BuildServiceProvider();
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger(typeof(VsoConsoleLoggingTest));
+
+            var dict = new Dictionary<string, object>
             {
-                var dict = new Dictionary<string, object>
-                {
-                    ["code"] = "TEST"
-                };
+                ["code"] = "TEST"
+            };
 
-                logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
-            });
-
-            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message\n", output,
-                ignoreLineEndingDifferences: true);
-        }
-
-        [Fact]
-        public void Writes_log_issue_message_with_properties_from_formatted_log_values()
-        {
-            string output = GetVsoConsoleOutput(logger =>
-            {
-                logger.LogWarning("Message: {code}", "TEST");
-            });
-
-            Assert.Equal("##vso[task.logissue type=warning;code=TEST]Message: TEST\n", output,
-                ignoreLineEndingDifferences: true);
+            logger.Log(LogLevel.Warning, default, dict, null, (state, except) => "Message");
         }
     }
 }
