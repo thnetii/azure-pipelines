@@ -76,7 +76,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                     errCode, sourcePath, lineNumber, columnNumber);
             if (!string.IsNullOrEmpty(vsoOutput))
                 consoleLogger.Log(logLevel, eventId, state, exception,
-                    (state, except) => "VSO Console log output" + Environment.NewLine + vsoOutput);
+                    (state, except) => vsoOutput);
         }
 
         private static VstsTaskLogIssueType ToVstsTaskLogIssueType(LogLevel logLevel)
