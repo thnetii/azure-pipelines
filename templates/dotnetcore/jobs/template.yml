@@ -1,0 +1,66 @@
+parameters:
+  - name:     checkout
+    type:     stepList
+    default:  []
+  - name:     presteps
+    type:     stepList
+    default:  []
+  - name:     poststeps
+    type:     stepList
+    default:  []
+  - name:     job
+    type:     object
+    default:  {}
+  - name:     commands
+    type:     object
+    default:
+      - restore
+      - build
+      - test
+      - pack
+      - publish
+  - name:     restore
+    type:     object
+    default:
+      presteps:
+        - template: ../../msbuildlogger/steps.yml
+      arguments:
+        - $(Dotnet.MsBuildLoggerArgument)
+      task.continueOnError: true
+  - name:     build
+    type:     object
+    default:  {}
+  - name:     test
+    type:     object
+    default:
+      inputs.publishTestResults: true
+  - name:     pack
+    type:     object
+    default:  {}
+  - name:     publish
+    type:     object
+    default:  {}
+
+jobs:
+  - template: ../../generic/jobs/single.yml
+    parameters:
+      ${{ if ne(variables.null, parameters.skip) }}:
+        skip: ${{ parameters.skip }}
+      job:
+        ${{ if join('_', parameters.job.job) }}:
+          job: ${{ join('_', parameters.job.job) }}
+        ${{ if join(' ', parameters.job.displayName) }}:
+          displayName: ${{ join(' ', parameters.job.displayName) }}
+        ${{ each prop in parameters.job }}:
+          ${{ if notIn(prop.key, 'job', 'displayName', 'steps') }}:
+            ${{ prop.key }}: ${{ prop.value }}
+        steps:
+          - template: ../../dotnetcore/steps/template.yml
+            parameters:
+              checkout:   ${{ parameters.checkout }}
+              presteps:   ${{ parameters.presteps }}
+              poststeps:  ${{ parameters.poststeps }}
+              commands:   ${{ parameters.commands }}
+              ${{ each command in parameters.commands }}:
+                ${{ if ne(variables.null, parameters[command]) }}:
+                  ${{ command }}: ${{ parameters[command] }}

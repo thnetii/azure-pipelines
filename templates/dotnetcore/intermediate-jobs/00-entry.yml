@@ -1,11 +1,3 @@
-name: $(Date:yyyy-MM-dd)-rev$(Rev:r)
-trigger:
-  branches:
-    include:
-      - master
-      - rel/*
-pr:
-  - '*'
 parameters:
   - name:         checkout
     type:         stepList
@@ -82,22 +74,30 @@ parameters:
     type:         object
     displayName:  Common Parameters
     default:
-      projects: |
-        src/**/*.csproj
       arguments:
         - -p:BuildId=$(Build.BuildId) -p:BuildSourceBranch=$(Build.SourceBranch) -nodeReuse:false
   - name:         restore
     type:         object
     displayName:  Default Restore Parameters
-    default:      {}
+    default:
+      projects: |
+        src/**/*.csproj
+        tests?/**/*.csproj
+        samples?/**/*.csproj
   - name:         build
     type:         object
     displayName:  Default Build Parameters
-    default:      {}
+    default:
+      projects: |
+        src/**/*.csproj
+        tests?/**/*.csproj
+        samples?/**/*.csproj
   - name:         test
     type:         object
     displayName:  Default Test Parameters
-    default:      {}
+    default:
+      projects: |
+        tests?/**/*.csproj
   - name:         pack
     type:         object
     displayName:  Default Pack Parameters
@@ -116,7 +116,7 @@ stages:
     displayName:  Build
     jobs:
       - ${{ if eq('true', parameters.augmentParameters) }}:
-        - template: ../generic/jobs/invoke-inner-augment.yml
+        - template: ../generic/jobs/invoke-lvl2-augment.yml
           parameters:
             invoke:
               template: ../../dotnetcore/azure-pipelines.yml
@@ -144,7 +144,10 @@ stages:
                   sequenceAppend.displayName: []
                   sequenceAppend.arguments:   []
             keys:
-              -
+              - debugConfiguration:
+                - job
+                - common
+                - restore
       - ${{ if ne('true', parameters.augmentParameters) }}:
         - template: intermediate-jobs/00-root.yml
           parameters:
@@ -180,4 +183,3 @@ stages:
             test:     ${{ parameters.test }}
             pack:     ${{ parameters.pack }}
             publish:  ${{ parameters.publish }}
-

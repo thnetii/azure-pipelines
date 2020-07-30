@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "THNETII.AzureDevOps.Pipelines.YamlEval": {
+      "commandName": "Project",
+      "commandLineArgs": "[config:Environment=Development] [config:Lifetime:SuppressStatusMessages=false]"
+    }
+  }
+}

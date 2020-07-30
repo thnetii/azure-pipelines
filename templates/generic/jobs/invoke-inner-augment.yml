@@ -1,0 +1,54 @@
+# Example:
+# - template:     <path-to-this-file.yml>
+#   parameters:
+#     invoke:
+#       template: <path-to-template-to-invoke.yml>
+#       parameters:
+#         name: value
+#         container:
+#           key1: value1
+#           key2: value2
+#     keys:
+#       - container
+#     operand:
+#       other: not-used
+#       container:
+#         key1: not-overridden
+#         key3: augmented3
+# ->
+# - template: <path-to-template-to-invoke.yml>
+#   parameters:
+#     name: value
+#     container:
+#       key1: value1
+#       key2: value2
+#       key3: augmented3
+
+parameters:
+  - name:     invoke
+    type:     object
+  - name:     keys
+    type:     object
+    default:  []
+  - name:     operand
+    type:     object
+    default:  {}
+
+jobs:
+  - template:   ${{ parameters.invoke.template }}
+    parameters:
+      ${{ each invokeProp in parameters.invoke.parameters }}:
+        # Check that invokeProp key is not listed in keys
+        ${{ if not(containsValue(parameters.keys, invokeProp.key)) }}:
+          # Simply copy, leave invokeProp unchanged
+          ${{ invokeProp.key }}: ${{ invokeProp.value }}
+        # Check that invokeProp key is listed in keys
+        ${{ if     containsValue(parameters.keys, invokeProp.key)  }}:
+          # Since the prop is listed in keys, treat as a mapping object
+          ${{ invokeProp.key }}:
+            ${{ each innerProp in invokeProp.value }}:
+              ${{ innerProp.key }}: ${{ innerProp.value }}
+            ${{ each operandProp in parameters.operand[invokeProp.key] }}:
+              # Check that operandProp does not exist in invokeProp
+              ${{ if eq(variables.null, invokeProp.value[operandProp.key]) }}:
+                ${{ operandProp.key }}: ${{ operandProp.value }}

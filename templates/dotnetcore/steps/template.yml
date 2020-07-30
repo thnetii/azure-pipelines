@@ -1,0 +1,159 @@
+parameters:
+  - name:     checkout
+    type:     stepList
+    default:  []
+  - name:     presteps
+    type:     stepList
+    default:  []
+  - name:     poststeps
+    type:     stepList
+    default:  []
+  - name:     commands
+    type:     object
+    default:
+      - restore
+      - build
+      - test
+      - pack
+      - publish
+  - name:     restore
+    type:     object
+    default:
+      presteps:
+        - template: ../../msbuildlogger/steps.yml
+      arguments:
+        - $(Dotnet.MsBuildLoggerArgument)
+      task.continueOnError: true
+  - name:     build
+    type:     object
+    default:  {}
+  - name:     test
+    type:     object
+    default:
+      inputs.publishTestResults: true
+  - name:     pack
+    type:     object
+    default:  {}
+  - name:     publish
+    type:     object
+    default:  {}
+
+steps:
+  - ${{ each step in parameters.checkout }}:
+    - ${{ step }}
+
+  - script: dotnet --info && dotnet msbuild -version
+    displayName: .NET Core Version information
+
+  - ${{ each step in parameters.presteps }}:
+    - ${{ step }}
+
+  - ${{ each command in parameters.commands }}:
+    - template: ../../generic/steps/single.yml
+      parameters:
+        presteps:   ${{ parameters[command].presteps }}
+        poststeps:  ${{ parameters[command].poststeps }}
+        ${{ if ne(variables.null, parameters[command].skip) }}:
+          skip:       ${{ parameters[command].skip }}
+        step:
+          task:         DotNetCoreCLI@2
+          displayName:  dotnet ${{ coalesce(parameters[command].command, command) }} ${{ join(' ', parameters[command].displayName) }}
+          inputs:
+            ${{ if parameters[command].command }}:
+              command:  custom
+              custom:   ${{ parameters[command].command }}
+            ${{ if not(parameters[command].command) }}:
+              command:  ${{ command }}
+            ${{ if ne(variables.null, parameters[command].projects) }}:
+              projects:   ${{ parameters[command].projects }}
+            ${{ if eq('publish', command) }}:
+              arguments:  --output "$(Build.ArtifactStagingDirectory)" ${{ join(' ', parameters[command].arguments) }}
+              modifyOutputPath: true
+            ${{ if ne('publish', command) }}:
+              arguments:  ${{ join(' ', parameters[command].arguments) }}
+            ${{ if eq('restore', command) }}:
+              restoreArguments: ${{ join(' ', parameters[command].arguments) }}
+            ${{ each inputsPair in parameters[command] }}:
+              ${{ if and(startsWith(inputsPair.key, 'inputs.'), notIn(replace(inputsPair.key, 'inputs.', ''), 'command', 'custom', 'projects', 'arguments')) }}:
+                ${{ replace(inputsPair.key, 'inputs.', '') }}: ${{ inputsPair.value }}
+          ${{ each taskPair in parameters[command] }}:
+            ${{ if and(startsWith(taskPair.key, 'task.'), notIn(replace(taskPair.key, 'task.', ''), 'task', 'displayName', 'inputs')) }}:
+              ${{ replace(taskPair.key, 'task.', '') }}: ${{ taskPair.value }}
+    - ${{ if eq('pack', command) }}:
+      - template: ../../generic/steps/single.yml
+        parameters:
+          ${{ if ne(variables.null, parameters[command].skip) }}:
+            skip:       ${{ parameters[command].skip }}
+          step:
+            task:         PublishBuildArtifacts@1
+            displayName:  Upload NuGet artifacts
+            inputs:
+              pathtoPublish: |
+                ${{
+                  format(
+                    '{0}{1}',
+                    coalesce(
+                      parameters[command]['inputs.packDirectory'],
+                      parameters[command]['inputs.outputDir'],
+                      '$(Build.ArtifactStagingDirectory)'
+                    ),
+                    '/*.nupkg'
+                  )
+                }}
+                ${{
+                  format(
+                    '{0}{1}',
+                    coalesce(
+                      parameters[command]['inputs.packDirectory'],
+                      parameters[command]['inputs.outputDir'],
+                      '$(Build.ArtifactStagingDirectory)'
+                    ),
+                    '/*.snupkg'
+                  )
+                }}
+              artifactName: |
+                ${{
+                  coalesce(
+                    parameters[command].artifactName,
+                    '$(Build.DefinitionName).nuget'
+                  )
+                }}
+            continueOnError: true
+            ${{ each taskPair in parameters[command] }}:
+              ${{ if and(startsWith(taskPair.key, 'task.'), notIn(replace(taskPair.key, 'task.', ''), 'task', 'displayName', 'inputs', 'continueOnError')) }}:
+                ${{ replace(taskPair.key, 'task.', '') }}: ${{ taskPair.value }}
+    - ${{ if eq('publish', command) }}:
+      - template: ../../generic/steps/single.yml
+        parameters:
+          ${{ if ne(variables.null, parameters[command].skip) }}:
+            skip:       ${{ parameters[command].skip }}
+          step:
+            task:         PublishBuildArtifacts@1
+            displayName:  Upload Binary artifacts
+            inputs:
+              pathtoPublish: |
+                ${{
+                  format(
+                    '{0}{1}',
+                    coalesce(
+                      parameters[command]['inputs.packDirectory'],
+                      parameters[command]['inputs.outputDir'],
+                      '$(Build.ArtifactStagingDirectory)'
+                    ),
+                    '/*.nupkg'
+                  )
+                }}
+              artifactName: |
+                ${{
+                  coalesce(
+                    parameters[command].artifactName,
+                    '$(Build.DefinitionName)-artifacts'
+                  )
+                }}
+            continueOnError: true
+            ${{ each taskPair in parameters[command] }}:
+              ${{ if and(startsWith(taskPair.key, 'task.'), notIn(replace(taskPair.key, 'task.', ''), 'task', 'displayName', 'inputs', 'continueOnError')) }}:
+                ${{ replace(taskPair.key, 'task.', '') }}: ${{ taskPair.value }}
+
+  - ${{ each step in parameters.poststeps }}:
+    - ${{ step }}

@@ -5,13 +5,22 @@ parameters:
   - name:         merge
     displayName:  Object to merge
     type:         object
-  - name:         sequences
+  - name:         strategy
     displayName:  Sequence merge details
     type:         object
-  - name:         mappings
-    displayName:  Mapping merge details
-    type:         object
 steps:
+  - ${{ if    eq(variables.null, parameters.merge) }}:
+    - template:   ${{ parameters.invoke.template }}
+      parameters: ${{ parameters.invoke.parameters }}
+  - ${{ if    ne(variables.null, parameters.merge) }}:
+    - template:   invoke-merge.yml
+      parameters:
+
+        invoke:
+          template: ${{ parameters.invoke.template }}
+
+
+
   - ${{ if ne(variables.null, parameters.sequences) }}:
     - template:   invoke-merge.yml
       parameters:

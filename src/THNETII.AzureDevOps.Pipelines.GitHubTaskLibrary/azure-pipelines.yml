@@ -4,7 +4,7 @@ trigger:
   branches:
     include:
     - master
-    - rel-tfx/*
+    - rel/tfx/*
   paths:
     include:
     - src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary

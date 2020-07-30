@@ -1,0 +1,53 @@
+# Example:
+# - template:     <path-to-this-file.yml>
+#   parameters:
+#     invoke:
+#       template: <path-to-template-to-invoke.yml>
+#       parameters:
+#         name: value
+#         container:
+#           namedSequence:
+#             - Default Item
+#           sequencePrepend.namedSequence:
+#             - Additional Item
+#     keys:
+#       - container
+# ->
+# - template: <path-to-template-to-invoke.yml>
+#   parameters:
+#     name: value
+#     container:
+#       namedSequence:
+#         - Additional Item
+#         - Default Item
+
+parameters:
+  - name:     invoke
+    type:     object
+  - name:     keys
+    type:     object
+    default:  []
+
+jobs:
+  - template: ${{ parameters.invoke.template }}
+    parameters:
+      ${{ each invokeProp in parameters.invoke.parameters }}:
+        # Check that invokeProp key is not listed in keys
+        ${{ if not(containsValue(parameters.keys, invokeProp.key)) }}:
+          # Simply copy, leave invokeProp unchanged
+          ${{ invokeProp.key }}: ${{ invokeProp.value }}
+        # Check that invokeProp key is listed in keys
+        ${{ if     containsValue(parameters.keys, invokeProp.key)  }}:
+          # Since the prop is listed in keys, treat as a mapping object
+          ${{ invokeProp.key }}:
+            ${{ each innerProp in invokeProp.value }}:
+              # Check that inner prop is not a special name, and that no special named key exists
+              ${{ if and(not(startsWith(innerProp.key, 'sequencePrepend.')), eq(variables.null, invokeProp.value[format('{0}{1}', 'sequencePrepend.', innerProp.key)])) }}:
+                ${{ innerProp.key }}: ${{ innerProp.value }}
+              # Check that inner prop is a special name key
+              ${{ if         startsWith(innerProp.key, 'sequencePrepend.') }}:
+                ${{ replace(innerProp.key, 'sequencePrepend.', '') }}:
+                  - ${{ each prependValue in innerProp.value }}:
+                    - ${{ prependValue }}
+                  - ${{ each originValue in invokeProp.value[replace(innerProp.key, 'sequencePrepend.', '')] }}:
+                    - ${{ originValue }}

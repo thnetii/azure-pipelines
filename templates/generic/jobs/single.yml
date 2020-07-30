@@ -20,8 +20,8 @@ parameters:
 jobs:
   - ${{ if not(parameters.skip) }}:
     - ${{ each prop in parameters.job }}:
-      ${{ if ne('steps', prop.key) }}:
-        ${{ prop.key }}: ${{ prop.value }}
+        ${{ if ne('steps', prop.key) }}:
+          ${{ prop.key }}: ${{ prop.value }}
       steps:
         - ${{ each step in parameters.checkout }}:
           - ${{ step }}
