@@ -1,0 +1,100 @@
+parameters:
+  - name: command
+    type: string
+    values:
+      - restore
+      - build
+      - test
+      - pack
+      - publish
+  - name: task
+    type: object
+
+steps:
+  - template: ../../generic/steps/single.yml
+    parameters:
+      presteps: ${{ parameters.task.presteps }}
+      ${{ if ne(variables.null, parameters.task.skip) }}:
+        skip:   ${{ parameters.task.skip }}
+      step:
+        task:         DotNetCoreCLI@2
+        # name
+        ${{ if ne(variables.null, parameters.task.name) }}:
+          name:       ${{ parameters.task.name }}
+        # displayName
+        displayName:  dotnet ${{ coalesce(parameters.task.command, parameters.command) }} ${{ join(' ', parameters.task.displayName) }}
+        # condition
+        ${{ if ne(variables.null, parameters.task.condition) }}:
+          ${{ if eq(1, length(parameters.task.condition)) }}:
+            condition: ${{ join('', parameters.task.condition) }}
+          ${{ if lt(1, length(parameters.task.condition)) }}:
+            condition: and(${{ join(', ', parameters.task.condition) }})
+        # continueOnError
+        ${{ if ne(variables.null, parameters.task.continueOnError) }}:
+          continueOnError:  ${{ parameters.task.continueOnError }}
+        # enabled
+        ${{ if ne(variables.null, parameters.task.enabled) }}:
+          enabled:  ${{ parameters.task.enabled }}
+        inputs:
+          # command / custom
+          ${{ if eq(variables.null, parameters.task.command) }}:
+            command:  ${{ parameters.command }}
+          ${{ if ne(variables.null, parameters.task.command) }}:
+            command:  custom
+            custom:   ${{ parameters.task.command }}
+          # projects
+          ${{ if ne(variables.null, parameters.task.projects) }}:
+            projects: ${{ parameters.task.projects }}
+          # arguments (+restoreArguments, +modifyOutputPath)
+          ${{ if eq('publish', parameters.command) }}:
+            arguments: --output "$(Build.ArtifactStagingDirectory)" ${{ join(' ', parameters.task.arguments) }}
+            modifyOutputPath: true
+          ${{ if ne('publish', parameters.command) }}:
+            arguments: ${{ join(' ', parameters.task.arguments) }}
+          ${{ if eq('restore', parameters.command) }}:
+            restoreArguments: ${{ join(' ', parameters.task.arguments) }}
+          # forward remaining input.*
+          ${{ each input in parameters.task.inputs }}:
+            ${{ input.key }}: ${{ input.value }}
+        # forwards remaining control.*
+        ${{ each control in parameters.task.control }}:
+          ${{ control.key }}: ${{ control.value }}
+      poststeps:
+        - ${{ if eq('pack', parameters.command) }}:
+          - task:             PublishBuildArtifacts@1
+            displayName:      Upload NuGet artifacts
+            # condition
+            ${{ if ne(variables.null, parameters.task.condition) }}:
+              ${{ if eq(1, length(parameters.task.condition)) }}:
+                condition: ${{ join('', parameters.task.condition) }}
+              ${{ if lt(1, length(parameters.task.condition)) }}:
+                condition: and(${{ join(', ', parameters.task.condition) }})
+            inputs:
+              pathToPublish: |
+                ${{ coalesce(parameters.task.inputs.packDirectory, parameters.task.inputs.outputDir, '$(Build.ArtifactStagingDirectory)') }}/*.nupkg
+                ${{ coalesce(parameters.task.inputs.packDirectory, parameters.task.inputs.outputDir, '$(Build.ArtifactStagingDirectory)') }}/*.snupkg
+              artifactName:   ${{ coalesce(parameters.task.artifactName, '$(Build.DefinitionName).nuget') }}
+            continueOnError:  true
+            # enabled
+            ${{ if eq('true', parameters.task.disableUpload) }}:
+              enabled: false
+        - ${{ if eq('publish', parameters.command) }}:
+          - task:             PublishBuildArtifacts@1
+            displayName:      Upload Binary artifacts
+            # condition
+            ${{ if ne(variables.null, parameters.task.condition) }}:
+              ${{ if eq(1, length(parameters.task.condition)) }}:
+                condition: ${{ join('', parameters.task.condition) }}
+              ${{ if lt(1, length(parameters.task.condition)) }}:
+                condition: and(${{ join(', ', parameters.task.condition) }})
+            inputs:
+              pathToPublish: |
+                ${{ coalesce(parameters.task.inputs.packDirectory, parameters.task.inputs.outputDir, '$(Build.ArtifactStagingDirectory)') }}/*.nupkg
+                ${{ coalesce(parameters.task.inputs.packDirectory, parameters.task.inputs.outputDir, '$(Build.ArtifactStagingDirectory)') }}/*.snupkg
+              artifactName:   ${{ coalesce(parameters.task.artifactName, '$(Build.DefinitionName).publish') }}
+            continueOnError:  true
+            # enabled
+            ${{ if eq('true', parameters.task.disableUpload) }}:
+              enabled: false
+        - ${{ each step in parameters.task.poststeps }}:
+          - ${{ step }}

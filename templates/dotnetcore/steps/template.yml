@@ -1,0 +1,69 @@
+parameters:
+  - name:     checkout
+    type:     stepList
+    default:  []
+  - name:     presteps
+    type:     stepList
+    default:  []
+  - name:     poststeps
+    type:     stepList
+    default:  []
+  - name:     restore
+    type:     object
+    default:
+      presteps:
+        - template: ../../msbuildlogger/steps.yml
+      arguments:
+        - $(Dotnet.MsBuildLoggerArgument)
+      task.continueOnError: true
+  - name:     build
+    type:     object
+    default:  {}
+  - name:     test
+    type:     object
+    default:
+      inputs.publishTestResults: true
+  - name:     pack
+    type:     object
+    default:  {}
+  - name:     publish
+    type:     object
+    default:  {}
+
+steps:
+  - ${{ each step in parameters.checkout }}:
+    - ${{ step }}
+
+  - script: dotnet --info && dotnet msbuild -version
+    displayName: .NET Core Version information
+
+  - ${{ each step in parameters.presteps }}:
+    - ${{ step }}
+
+  - template: command.yml
+    parameters:
+      command:  restore
+      task:     ${{ parameters.restore }}
+
+  - template: command.yml
+    parameters:
+      command:  build
+      task:     ${{ parameters.build }}
+
+  - template: command.yml
+    parameters:
+      command:  test
+      task:     ${{ parameters.test }}
+
+  - template: command.yml
+    parameters:
+      command:  pack
+      task:     ${{ parameters.pack }}
+
+  - template: command.yml
+    parameters:
+      command:  publish
+      task:     ${{ parameters.publish }}
+
+  - ${{ each step in parameters.poststeps }}:
+    - ${{ step }}
