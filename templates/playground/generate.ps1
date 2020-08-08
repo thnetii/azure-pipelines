@@ -1,13 +1,10 @@
-$Matrix = [PSCustomObject]@{ }
-1..5 | ForEach-Object {
-    $Row = [PSCustomObject]@{
-        "Playground.GeneratedJob.Echo" = "Output from Matrix row $_";
-        "Playground.GeneratedJob.DisplayName" = "Row $_";
-        "Playground.GeneratedJob.TaskDisplayName" = "Matrix Row $_ Output";
+$StepItems = 1..5 | ForEach-Object {
+    [PSCustomObject]@{
+        pwsh = "Write-Host `"Output from Step $_`"";
+        displayName = "Generated Step $_"
     }
-    $Matrix | Add-Member NoteProperty $_ $Row
 }
-$ValueString = $Matrix | ConvertTo-Json -Compress
+$ValueString = $StepItems | ConvertTo-Json -Compress
 $LoggingCommandFile = Resolve-Path -ErrorAction "Continue" $ENV:LoggingCommandFunctions
 if (-not $LoggingCommandFile) {
     $LoggingCommandFile = ([System.IO.Path]::Combine(
@@ -19,7 +16,7 @@ if (-not $LoggingCommandFile) {
 . $LoggingCommandFile
 $command = Write-LoggingCommand -Area 'task' -Event 'setvariable' `
     -Data $ValueString -Properties @{
-        'variable' = "legs";
+        'variable' = "items";
         'isOutput' = "true";
     } -AsOutput
 Write-Host $command
