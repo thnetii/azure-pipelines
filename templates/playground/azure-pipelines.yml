@@ -6,10 +6,25 @@ pr:       none
 pool:
   vmImage:      ubuntu-latest
 
-steps:
-  - template:   template.yml
-    parameters:
-      array:
-        - value:  15
-        - value:  42
-        - value:  10
+jobs:
+  - job: generator
+    displayName: Generate Job
+    steps:
+    - template: ../vstssdk-loggingcommandfunctions/steps.yml
+    - pwsh: |
+        & ([System.IO.Path]::Combine(
+          $ENV:Build_SourcesDirectory,
+          "templates", "playground", "generate.ps1"
+        ))
+      name: mtrx
+      displayName: Generate Job Matrix
+      env:
+        LoggingCommandFunctions: $(PowerShell.LoggingCommandFunctions)
+  - job: executor
+    dependsOn: generator
+    displayName: Generated Job $(Playground.GeneratedJob.DisplayName)
+    strategy:
+      matrix: $[ dependencies.generator.outputs['mtrx.legs'] ]
+    steps:
+      - pwsh: Write-Host "$(Playground.GeneratedJob.Echo)"
+        displayName: $(Playground.GeneratedJob.TaskDisplayName)
