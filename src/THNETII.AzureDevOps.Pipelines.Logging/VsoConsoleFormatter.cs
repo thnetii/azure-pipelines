@@ -1,50 +1,44 @@
-using Microsoft.Extensions.Logging;
-
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging.Console;
+
 using THNETII.AzureDevOps.Pipelines.VstsTaskSdk;
 using THNETII.TypeConverter;
 
 namespace THNETII.AzureDevOps.Pipelines.Logging
 {
-    internal class VsoConsoleLogger : ILogger
+    public class VsoConsoleFormatter : ConsoleFormatter
     {
-        private readonly ILogger consoleLogger;
+        public const string FormatterName = "vso";
 
-        public string Name { get; }
+        public VsoConsoleFormatter() : base(FormatterName) { }
 
-        public VsoConsoleLogger(string name, ILogger consoleLogger)
+        public override void Write<TState>(in LogEntry<TState> logEntry,
+            IExternalScopeProvider scopeProvider, TextWriter textWriter)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.consoleLogger = consoleLogger;
-        }
-
-        public IDisposable BeginScope<TState>(TState state) =>
-            consoleLogger.BeginScope(state);
-
-        public bool IsEnabled(LogLevel logLevel) => consoleLogger.IsEnabled(logLevel);
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
-            Exception exception, Func<TState, Exception, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
+            string message = logEntry.Formatter(logEntry.State, logEntry.Exception);
+            if (logEntry.Exception == null && message == null)
+            {
                 return;
-            if (formatter is null)
-                throw new ArgumentNullException(nameof(formatter));
+            }
 
-            var message = formatter(state, exception) ?? exception?.ToString() ??
-                string.Empty;
+            LogLevel logLevel = logEntry.LogLevel;
 
-            var stateLookup = state switch
+            var stateLookup = logEntry.State switch
             {
                 IEnumerable<KeyValuePair<string, string>> kvps => kvps
-                    .ToLookup(kvp => kvp.Key, kvp => (object)(kvp.Value)),
+                    .ToLookup(kvp => kvp.Key, kvp => (object)kvp.Value),
                 IEnumerable<KeyValuePair<string, object>> kvps => kvps
                     .ToLookup(kvp => kvp.Key, kvp => kvp.Value),
                 _ => Enumerable.Empty<KeyValuePair<string, object>>()
                     .ToLookup(kvp => kvp.Key, kvp => kvp.Value)
             };
+
+            var stringToInt = NumberStringConverter.InvariantCulture.Int32;
 
             var logIssueType = stateLookup["type"].FirstOrDefault() switch
             {
@@ -58,15 +52,15 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
             int lineNumber = stateLookup["linenumber"].FirstOrDefault() switch
             {
                 int v => v,
-                string s => int.TryParse(s, out int v) ? v : -1,
-                object o => int.TryParse(o.ToString(), out int v) ? v : -1,
+                string s => stringToInt.ParseOrDefault(s, -1),
+                object o => stringToInt.ParseOrDefault(o.ToString(), -1),
                 _ => -1
             };
             int columnNumber = stateLookup["columnnumber"].FirstOrDefault() switch
             {
                 int v => v,
-                string s => int.TryParse(s, out int v) ? v : -1,
-                object o => int.TryParse(o.ToString(), out int v) ? v : -1,
+                string s => stringToInt.ParseOrDefault(s, -1),
+                object o => stringToInt.ParseOrDefault(o.ToString(), -1),
                 _ => -1
             };
 
@@ -75,8 +69,7 @@ namespace THNETII.AzureDevOps.Pipelines.Logging
                 : VstsLoggingCommand.FormatTaskLogIssue(logIssueType, message,
                     errCode, sourcePath, lineNumber, columnNumber);
             if (!string.IsNullOrEmpty(vsoOutput))
-                consoleLogger.Log(logLevel, eventId, state, exception,
-                    (state, except) => vsoOutput);
+                textWriter?.WriteLine(vsoOutput);
         }
 
         private static VstsTaskLogIssueType ToVstsTaskLogIssueType(LogLevel logLevel)

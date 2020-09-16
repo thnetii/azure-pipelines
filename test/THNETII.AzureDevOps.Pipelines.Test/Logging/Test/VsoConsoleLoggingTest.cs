@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,39 +9,6 @@ namespace THNETII.AzureDevOps.Pipelines.Logging.Test
 {
     public static class VsoConsoleLoggingTest
     {
-        [Fact]
-        public static void GetServicesReturnsVsoConsoleLoggerProviderWhenConsoleAdded()
-        {
-            using var services = new ServiceCollection()
-                .AddLogging(logging =>
-                {
-                    logging.AddConsole();
-                    logging.AddVsoConsole();
-                })
-                .BuildServiceProvider();
-
-            var loggingProviders = services.GetServices<ILoggerProvider>()
-                .ToDictionary(i => i.GetType());
-            Assert.Contains(typeof(VsoConsoleLoggerProvider), loggingProviders.Keys);
-            Assert.NotNull(loggingProviders[typeof(VsoConsoleLoggerProvider)]);
-        }
-
-        [Fact]
-        public static void GetServicesReturnsVsoConsoleLoggerProviderWhenConsoleNotAdded()
-        {
-            using var services = new ServiceCollection()
-                .AddLogging(logging =>
-                {
-                    logging.AddVsoConsole();
-                })
-                .BuildServiceProvider();
-
-            var loggingProviders = services.GetServices<ILoggerProvider>()
-                .ToDictionary(i => i.GetType());
-            Assert.Contains(typeof(VsoConsoleLoggerProvider), loggingProviders.Keys);
-            Assert.NotNull(loggingProviders[typeof(VsoConsoleLoggerProvider)]);
-        }
-
         [Theory]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Debug)]
