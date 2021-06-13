@@ -20,19 +20,3 @@ update_configs:
   - match:
       dependency_type:  "development"
       update_type:      "all"
-- package_manager: "javascript"
-  directory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary
-  update_schedule: live
-  default_assignees:
-  - fredrikhr
-  automerged_updates:
-  - match:
-      update_type: "all"
-- package_manager: "javascript"
-  directory: src/THNETII.AzureDevOps.Pipelines.GitHubTaskLibrary/githubaccesstokentask
-  update_schedule: live
-  default_assignees:
-  - fredrikhr
-  automerged_updates:
-  - match:
-      update_type: "all"
