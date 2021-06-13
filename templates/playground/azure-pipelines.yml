@@ -6,12 +6,9 @@ pr:       none
 pool:
   vmImage:      ubuntu-latest
 
-stages:
-- stage: st1
-  displayName: Preparations
-  jobs:
-  - job: gen
-    displayName: Generate Build Steps
+jobs:
+  - job: generator
+    displayName: Generate Job
     steps:
     - template: ../vstssdk-loggingcommandfunctions/steps.yml
     - pwsh: |
@@ -19,16 +16,14 @@ stages:
           $ENV:Build_SourcesDirectory,
           "templates", "playground", "generate.ps1"
         ))
-      name: steps
-      displayName: Output steps for generated job
+      name: mtrx
+      displayName: Generate Job Matrix
       env:
         LoggingCommandFunctions: $(PowerShell.LoggingCommandFunctions)
-- stage: st2
-  dependsOn: st1
-  displayName: Jobs
-  jobs:
-  - job: exec
-    displayName: Execute Generated Job
+  - job: executor
+    dependsOn: generator
+    displayName: ''
+    strategy:
+      matrix: $[ dependencies.generator.outputs['mtrx.instances'] ]
     steps:
-    - $[ each step in stageDependencies.st1.outputs['gen.steps.items'] ]:
-      - $[ step ]
+      - template: template.yml
