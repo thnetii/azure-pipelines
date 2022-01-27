@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/src/azure-pipelines-vso-eslint"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 50
+    assignees:
+      - fredrikhr
+  - package-ecosystem: "npm"
+    directory: "/src/azure-pipelines-vso-tsc"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 50
+    assignees:
+      - fredrikhr
