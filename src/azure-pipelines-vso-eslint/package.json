@@ -1,0 +1,37 @@
+{
+  "name": "@thnetii/azure-pipelines-vso-eslint",
+  "version": "0.0.0",
+  "author": {
+    "name": "TH-NETII Rasch Solutions",
+    "email": "fredrik.rasch@gmail.com",
+    "url": "https://thnetii.td.org.uit.no"
+  },
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "license": "MIT",
+  "main": "eslint.mjs",
+  "bin": {
+    "vso-eslint": "./eslint.mjs"
+  },
+  "scripts": {
+    "start": "node .",
+    "lint": "npm run lint:tsc && npm run lint:eslint",
+    "lint:tsc": "npx tsc -p ./jsconfig.json",
+    "lint:eslint": "npx eslint -c ./.eslintrc.yml .",
+    "lint:vso-eslint": "npm run start -- -f compact -c ./.eslintrc.yml .",
+    "lint:vso-tsc": "node ../azure-pipelines-vso-tsc/tsc.mjs -p ./jsconfig.json"
+  },
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.1.10"
+  },
+  "devDependencies": {
+    "@types/q": "^1.5.5",
+    "eslint": "^8.7.0",
+    "eslint-plugin-node": "^11.1.0"
+  },
+  "peerDependencies": {
+    "typescript": "*"
+  }
+}

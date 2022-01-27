@@ -1,0 +1,141 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "src/azure-pipelines-vso-tsc/",
+      "problemMatcher": [],
+      "label": "npm install: azure-pipelines-vso-tsc",
+      "detail": "Install package dependencies"
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "path": "src/azure-pipelines-vso-tsc/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
+          ]
+        },
+        "$eslint-stylish"
+      ],
+      "label": "npm lint: azure-pipelines-vso-tsc",
+      "detail": "Typscript & ESLint"
+    },
+    {
+      "type": "npm",
+      "script": "lint:tsc",
+      "path": "src/azure-pipelines-vso-tsc/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
+          ]
+        }
+      ],
+      "label": "npm lint:tsc: azure-pipelines-vso-tsc",
+      "detail": "Typscript"
+    },
+    {
+      "type": "npm",
+      "script": "lint:vso-tsc",
+      "path": "src/azure-pipelines-vso-tsc/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
+          ]
+        }
+      ],
+      "label": "npm lint:vso-tsc: azure-pipelines-vso-tsc",
+      "detail": "Typscript"
+    },
+    {
+      "type": "npm",
+      "script": "lint:eslint",
+      "path": "src/azure-pipelines-vso-tsc/",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "label": "npm lint:eslint: azure-pipelines-vso-tsc",
+      "detail": "ESLint"
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "src/azure-pipelines-vso-eslint/",
+      "problemMatcher": [],
+      "label": "npm install: azure-pipelines-vso-eslint",
+      "detail": "Install package dependencies"
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "path": "src/azure-pipelines-vso-eslint/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
+          ]
+        },
+        "$eslint-stylish"
+      ],
+      "label": "npm lint: azure-pipelines-vso-eslint",
+      "detail": "Typscript & ESLint"
+    },
+    {
+      "type": "npm",
+      "script": "lint:tsc",
+      "path": "src/azure-pipelines-vso-eslint/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
+          ]
+        }
+      ],
+      "label": "npm lint:tsc: azure-pipelines-vso-eslint",
+      "detail": "Typscript"
+    },
+    {
+      "type": "npm",
+      "script": "lint:vso-tsc",
+      "path": "src/azure-pipelines-vso-eslint/",
+      "problemMatcher": [
+        {
+          "base": "$tsc",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
+          ]
+        }
+      ],
+      "label": "npm lint:vso-tsc: azure-pipelines-vso-eslint",
+      "detail": "Typscript"
+    },
+    {
+      "type": "npm",
+      "script": "lint:eslint",
+      "path": "src/azure-pipelines-vso-eslint/",
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "label": "npm lint:eslint: azure-pipelines-vso-eslint",
+      "detail": "ESLint"
+    }
+  ]
+}

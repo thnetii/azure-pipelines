@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "noEmit": true,
+    "checkJs": true,
+    "strict": true,
+    "noImplicitReturns": true
+  },
+  "include": [
+    "**/*.js",
+    "**/*.mjs",
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ],
+  "typeAcquisition": {
+    "enable": false
+  }
+}
