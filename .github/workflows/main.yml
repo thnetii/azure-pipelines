@@ -1,0 +1,23 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  js:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - azure-pipelines-vso-eslint
+          - azure-pipelines-vso-tsc
+    steps:
+      - uses: actions/checkout@v2
+      - name: npm install
+        run: npm install
+        working-directory: 'src/${{ matrix.project }}'
+      - name: npm run lint
+        run: npm run lint
+        working-directory: 'src/${{ matrix.project }}'
