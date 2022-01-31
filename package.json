@@ -1,0 +1,38 @@
+{
+  "name": "@thnetii/azure-pipelines",
+  "version": "0.0.0",
+  "workspaces": [
+    "src/azure-pipelines-vso-eslint",
+    "src/azure-pipelines-vso-tsc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/azure-pipelines.git"
+  },
+  "author": {
+    "name": "TH-NETII Rasch Solutions",
+    "email": "fredrik.rasch@gmail.com",
+    "url": "https://thnetii.td.org.uit.no"
+  },
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "files": [],
+  "scripts": {
+    "install": "npm-run-all install:*",
+    "install:vso-eslint": "cd src/azure-pipelines-vso-eslint && npm install && cd ..",
+    "install:vso-tsc": "cd src/azure-pipelines-vso-tsc && npm install && cd .."
+  },
+  "devDependencies": {
+    "eslint": "^8.8.0",
+    "eslint-plugin-node": "^11.1.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.5.5"
+  }
+}

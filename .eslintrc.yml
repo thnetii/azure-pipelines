@@ -17,7 +17,7 @@ rules:
   block-spacing: "error"
   brace-style: ["error", "1tbs"]
   camelcase: "off"
-  class-methods-use-this: "off"
+  class-methods-use-this: "warn"
   comma-dangle: ["error", "only-multiline"]
   comma-spacing: "error"
   comma-style: ["error", "last"]
@@ -169,7 +169,7 @@ rules:
   prefer-rest-params: "error"
   prefer-spread: "error"
   prefer-template: "error"
-  quotes: ["error", "single", { avoidEscape: true }]
+  quotes: ["error", "double", { avoidEscape: true }]
   quote-props: ["off", "as-needed"]
   radix: "error"
   require-unicode-regexp: "error"
