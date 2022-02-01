@@ -1,0 +1,4 @@
+extends:
+  - ../../.eslintrc.yml
+ignorePatterns:
+  - node_modules/**

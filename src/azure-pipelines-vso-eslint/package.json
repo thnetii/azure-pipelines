@@ -1,6 +1,11 @@
 {
   "name": "@thnetii/azure-pipelines-vso-eslint",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thnetii/azure-pipelines.git",
+    "directory": "src/azure-pipelines-vso-eslint"
+  },
   "author": {
     "name": "TH-NETII Rasch Solutions",
     "email": "fredrik.rasch@gmail.com",
@@ -10,11 +15,6 @@
     "name": "Fredrik Høisæther Rasch",
     "email": "fredrik.rasch@gmail.com"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thnetii/azure-pipelines.git",
-    "directory": "src/azure-pipelines-vso-eslint"
-  },
   "license": "MIT",
   "files": [],
   "main": "eslint.mjs",
@@ -22,22 +22,21 @@
     "vso-eslint": "./eslint.mjs"
   },
   "scripts": {
-    "start": "node .",
-    "lint": "npm-run-all --continue-on-error lint:tsc lint:eslint",
-    "lint:tsc": "tsc -p ../../jsconfig.json",
-    "lint:eslint": "eslint -c ../../.eslintrc.yml .",
-    "lint:vso": "npm-run-all --continue-on-error lint:vso-*",
-    "lint:vso-eslint": "npm run start -- -f compact -c ../../.eslintrc.yml .",
-    "lint:vso-tsc": "node ../azure-pipelines-vso-tsc/tsc.mjs -p ../../jsconfig.json"
+    "lint": "npm-run-all --continue-on-error lint:*",
+    "lint:tsc": "tsc -p ./jsconfig.json",
+    "lint:eslint": "eslint -c ./.eslintrc.yml .",
+    "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
+    "vso:lint:eslint": "node . -c ./.eslintrc.yml .",
+    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc -p ./jsconfig.json"
   },
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.1.10",
-    "npm-run-all": "^4.1.5"
+    "azure-pipelines-task-lib": "^3.1.10"
   },
   "devDependencies": {
-    "@types/q": "^1.5.5",
-    "eslint": "^8.7.0",
+    "@types/node": "^16",
+    "eslint": "^8.8.0",
     "eslint-plugin-node": "^11.1.0",
+    "npm-run-all": "^4.1.5",
     "typescript": "^4.5.5"
   },
   "peerDependencies": {

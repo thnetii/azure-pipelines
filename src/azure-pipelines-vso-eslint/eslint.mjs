@@ -17,11 +17,11 @@ const eslintRegexMatcher = /^(.+):\sline\s(\d+),\scol\s(\d+),\s(Error|Warning|In
 
 eslintRunner.on("stdline", /** @param {string} line */ line => {
   _writeLine(line);
-  const tscOutputMatch = eslintRegexMatcher.exec(line);
-  if (!tscOutputMatch) {
+  const eslintOutputMatch = eslintRegexMatcher.exec(line);
+  if (!eslintOutputMatch) {
     return;
   }
-  const [, file, lineno, column, severity, message, code] = tscOutputMatch;
+  const [, file, lineno, column, severity, message, code] = eslintOutputMatch;
   const logCmdProps = {
     sourcepath: path.relative(sourcesRootDirectory, file),
     type: severity,

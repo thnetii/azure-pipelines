@@ -6,18 +6,49 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  js:
+  npm-workspaces-discovery:
+    name: npm workspace discovery
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: npmPkgGetWorkspacesMatrix
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const pkgJson = require("./package.json");
+            core.info(JSON.stringify(pkgJson.workspaces, undefined, 2));
+            return {
+              include: pkgJson.workspaces.map(path => ({
+                workspace: path
+              }))
+            };
+    outputs:
+      workspacesMatrix: ${{ steps.npmPkgGetWorkspacesMatrix.outputs.result }}
+  npm-workspace-job:
+    name: npm workspace
+    runs-on: ubuntu-latest
+    needs: npm-workspaces-discovery
     strategy:
-      matrix:
-        project:
-          - azure-pipelines-vso-eslint
-          - azure-pipelines-vso-tsc
+      matrix: ${{ fromJson(needs['npm-workspaces-discovery'].outputs.workspacesMatrix) }}
     steps:
       - uses: actions/checkout@v2
       - name: npm install
-        run: npm install
-        working-directory: 'src/${{ matrix.project }}'
-      - name: npm run lint
-        run: npm run lint
-        working-directory: 'src/${{ matrix.project }}'
+        run: npm ci --workspace ${{ matrix.workspace }}
+      - name: npm run lint:tsc
+        if: always()
+        uses: thnetii/gh-actions/src/gh-actions-tsc@main
+        with:
+          arguments: |
+            --noEmit
+            -p
+            ./jsconfig.json
+          working-directory: ${{ matrix.workspace }}
+      - name: npm run lint:eslint
+        if: always()
+        uses: thnetii/gh-actions/src/gh-actions-eslint@main
+        with:
+          arguments: |
+            -c
+            ./.eslintrc.yml
+            .
+          working-directory: ${{ matrix.workspace }}
