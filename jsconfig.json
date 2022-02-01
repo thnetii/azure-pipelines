@@ -6,9 +6,5 @@
     "checkJs": true,
     "strict": true,
     "noImplicitReturns": true
-  },
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*"
-  ]
+  }
 }
