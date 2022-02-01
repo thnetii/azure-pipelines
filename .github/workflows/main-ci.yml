@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  tsc-noEmit:
+    name: TypeScript check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [src/azure-pipelines-vso-eslint, src/azure-pipelines-vso-tsc]
+        include:
+          - arguments: |
+              -p
+              ./jsconfig.json
+    steps:
+      - uses: actions/checkout@v2
+      - name: npm install
+        run: npm ci --workspace ${{ matrix.workspace }}
+      - name: npm run lint:tsc
+        uses: thnetii/gh-actions/src/gh-actions-tsc@main
+        with:
+          arguments: ${{ matrix.arguments }}
+          working-directory: ${{ matrix.workspace }}
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [src/azure-pipelines-vso-eslint, src/azure-pipelines-vso-tsc]
+        include:
+          - arguments: |
+              -c
+              ./.eslintrc.yml
+              .
+    steps:
+      - uses: actions/checkout@v2
+      - name: npm install
+        run: npm ci --workspace ${{ matrix.workspace }}
+      - name: npm run lint:eslint
+        uses: thnetii/gh-actions/src/gh-actions-eslint@main
+        with:
+          arguments: ${{ matrix.arguments }}
+          working-directory: ${{ matrix.workspace }}
