@@ -27,7 +27,7 @@ tscRunner.on("stdline", /** @param {string} line */ line => {
     type: severity,
     linenumber: lineno ? parseInt(lineno, 10) : undefined,
     columnnumber: column ? parseInt(column, 10) : undefined,
-    code
+    code: `TS${code}`
   };
   command("task.logissue", tscCmdProps, message);
 });
