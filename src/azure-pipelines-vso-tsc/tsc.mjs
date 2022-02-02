@@ -17,7 +17,6 @@ const tscRegexPattern = "^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)
 const tscRegexMatcher = new RegExp(tscRegexPattern, "u");
 
 tscRunner.on("stdline", /** @param {string} line */ line => {
-  _writeLine(line);
   const tscOutputMatch = tscRegexMatcher.exec(line);
   if (!tscOutputMatch) {
     return;
