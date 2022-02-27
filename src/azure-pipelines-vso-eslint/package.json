@@ -30,7 +30,7 @@
     "vso:lint:tsc": "node ../azure-pipelines-vso-tsc -p ./jsconfig.json"
   },
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.1.10"
+    "azure-pipelines-task-lib": "^3.2.0"
   },
   "devDependencies": {
     "@types/q": "^1.5.5",
