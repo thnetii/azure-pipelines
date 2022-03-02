@@ -19,7 +19,7 @@ jobs:
               -p
               ./jsconfig.json
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:tsc
@@ -40,7 +40,7 @@ jobs:
               ./.eslintrc.yml
               .
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:eslint
