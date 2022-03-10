@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import path from 'path';
-import { command, getVariable } from 'azure-pipelines-task-lib';
+import {
+  command, getVariable, setResult, TaskResult
+} from 'azure-pipelines-task-lib';
 import { _writeLine } from 'azure-pipelines-task-lib/internal.js';
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner.js';
 const argv = process.argv.slice(2);
@@ -8,7 +10,7 @@ const argv = process.argv.slice(2);
 const sourcesRootDirectory = getVariable('Build.SourcesDirectory')
   || process.env['Build.SourcesDirectory'] || path.resolve();
 
-const eslintTracker = {
+const runTracker = {
   warningCount: 0,
   errorCount: 0
 };
@@ -34,17 +36,21 @@ eslintRunner.on('stdline', /** @param {string} line */ line => {
     code
   };
   if (/^warning$/ui.test(severity)) {
-    eslintTracker.warningCount += 1;
+    runTracker.warningCount += 1;
   } else if (/^error$/ui.test(severity)) {
-    eslintTracker.errorCount += 1;
+    runTracker.errorCount += 1;
   }
   command('task.logissue', logCmdProps, message);
 });
 
 eslintRunner.exec().then(exitCode => {
-  command('task.complete', {
-    result: eslintTracker.errorCount ? 'Failed' : eslintTracker.warningCount
-      ? 'SucceededWithIssues' : 'Succeeded'
-  }, `ESLint exited with code: ${exitCode}`);
+  let result = TaskResult.Succeeded;
+  if (runTracker.warningCount) {
+    result = TaskResult.SucceededWithIssues;
+  }
+  if (runTracker.errorCount) {
+    result = TaskResult.Failed;
+  }
+  setResult(result, `ESLint exited with code: ${exitCode}`);
   process.exitCode = exitCode;
 });
