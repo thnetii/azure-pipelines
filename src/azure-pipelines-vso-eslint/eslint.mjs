@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import path from 'path';
 import {
-  command, getVariable, setResult, TaskResult
+  command, debug, getVariable, setResult, TaskResult
 } from 'azure-pipelines-task-lib';
 import { _writeLine } from 'azure-pipelines-task-lib/internal.js';
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner.js';
@@ -52,5 +52,5 @@ eslintRunner.exec({ ignoreReturnCode: true }).then(exitCode => {
     result = TaskResult.Failed;
   }
   setResult(result, '');
-  process.exitCode = exitCode;
+  debug(`ESLint exited with code '${exitCode}'.`);
 });
