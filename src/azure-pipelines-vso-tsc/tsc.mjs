@@ -8,6 +8,10 @@ const argv = process.argv.slice(2);
 const sourcesRootDirectory = getVariable("Build.SourcesDirectory")
   || process.env["Build.SourcesDirectory"] || path.resolve();
 
+const tscTracker = {
+  warningCount: 0,
+  errorCount: 0
+};
 const tscRunner = new ToolRunner("npx");
 tscRunner.arg("tsc");
 tscRunner.arg(argv);
@@ -29,9 +33,19 @@ tscRunner.on("stdline", /** @param {string} line */ line => {
     columnnumber: column ? parseInt(column, 10) : undefined,
     code: `TS${code}`
   };
+  if (/^warning$/ui.test(severity)) {
+    tscTracker.warningCount += 1;
+  }
+  else if (/^error$/ui.test(severity)) {
+    tscTracker.errorCount += 1;
+  }
   command("task.logissue", tscCmdProps, message);
 });
 
 tscRunner.exec().then(exitCode => {
+  command("task.complete", {
+    result: tscTracker.errorCount ? 'Failed' : tscTracker.warningCount
+      ? 'SucceededWithIssues' : 'Succeeded'
+  }, `TSC exited with code: ${exitCode}`);
   process.exitCode = exitCode;
 });

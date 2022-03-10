@@ -8,6 +8,10 @@ const argv = process.argv.slice(2);
 const sourcesRootDirectory = getVariable("Build.SourcesDirectory")
   || process.env["Build.SourcesDirectory"] || path.resolve();
 
+const eslintTracker = {
+  warningCount: 0,
+  errorCount: 0
+};
 const eslintRunner = new ToolRunner("npx");
 eslintRunner.arg("eslint");
 eslintRunner.arg(argv);
@@ -29,9 +33,19 @@ eslintRunner.on("stdline", /** @param {string} line */ line => {
     columnnumber: column ? parseInt(column, 10) : undefined,
     code
   };
+  if (/^warning$/ui.test(severity)) {
+    eslintTracker.warningCount += 1;
+  }
+  else if (/^error$/ui.test(severity)) {
+    eslintTracker.errorCount += 1;
+  }
   command("task.logissue", logCmdProps, message);
 });
 
 eslintRunner.exec().then(exitCode => {
+  command("task.complete", {
+    result: eslintTracker.errorCount ? 'Failed' : eslintTracker.warningCount
+      ? 'SucceededWithIssues' : 'Succeeded'
+  }, `ESLint exited with code: ${exitCode}`);
   process.exitCode = exitCode;
 });
