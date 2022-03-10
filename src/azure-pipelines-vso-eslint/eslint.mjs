@@ -43,7 +43,7 @@ eslintRunner.on('stdline', /** @param {string} line */ line => {
   command('task.logissue', logCmdProps, message);
 });
 
-eslintRunner.exec().then(exitCode => {
+eslintRunner.exec({ ignoreReturnCode: true }).then(exitCode => {
   let result = TaskResult.Succeeded;
   if (runTracker.warningCount) {
     result = TaskResult.SucceededWithIssues;
@@ -51,6 +51,6 @@ eslintRunner.exec().then(exitCode => {
   if (runTracker.errorCount) {
     result = TaskResult.Failed;
   }
-  setResult(result, `ESLint exited with code: ${exitCode}`);
+  setResult(result, '');
   process.exitCode = exitCode;
 });

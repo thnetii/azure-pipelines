@@ -43,7 +43,7 @@ tscRunner.on('stdline', /** @param {string} line */ line => {
   command('task.logissue', tscCmdProps, message);
 });
 
-tscRunner.exec().then(exitCode => {
+tscRunner.exec({ ignoreReturnCode: true }).then(exitCode => {
   let result = TaskResult.Succeeded;
   if (runTracker.warningCount) {
     result = TaskResult.SucceededWithIssues;
@@ -51,6 +51,6 @@ tscRunner.exec().then(exitCode => {
   if (runTracker.errorCount) {
     result = TaskResult.Failed;
   }
-  setResult(result, `TSC exited with code: ${exitCode}`);
+  setResult(result, '');
   process.exitCode = exitCode;
 });
