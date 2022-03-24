@@ -31,7 +31,7 @@
     "lint:eslint": "eslint -c ./.eslintrc.yml . --ext=js,mjs",
     "vso-lint": "npm-run-all --continue-on-error vso-lint:*",
     "vso-lint:tsc": "node src/azure-pipelines-vso-tsc --noEmit -p ./jsconfig.json",
-    "vso-lint:eslint": "node src/azure-pipelines-vso-eslint -c ./.eslintrc.yml . --ext=js,mjs"
+    "vso-lint:eslint": "eslint -c ./.eslintrc.yml -f ./src/eslint-formatter-vso . --ext=js,mjs"
   },
   "devDependencies": {
     "@tsconfig/node16-strictest-esm": "^1.0.0",
