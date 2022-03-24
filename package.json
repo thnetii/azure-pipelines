@@ -24,5 +24,10 @@
     "src/azure-pipelines-vso-tsc"
   ],
   "files": [],
-  "scripts": {}
+  "scripts": {
+    "lint:tsc": "tsc --noEmit -p ./jsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
 }

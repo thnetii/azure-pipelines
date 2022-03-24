@@ -8,39 +8,24 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  tsc-noEmit:
+  tsc:
     name: TypeScript check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        workspace: [src/azure-pipelines-vso-eslint, src/azure-pipelines-vso-tsc]
-        include:
-          - arguments: |
-              -p
-              ./jsconfig.json
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - name: npm install
-        run: npm ci --workspace ${{ matrix.workspace }}
+        run: npm ci -workspaces
       - name: npm run lint:tsc
-        run: npm run --workspace ${{ matrix.workspace }} lint:tsc
+        run: npm run lint:tsc
 
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        workspace: [src/azure-pipelines-vso-eslint, src/azure-pipelines-vso-tsc]
-        include:
-          - arguments: |
-              -c
-              ./.eslintrc.yml
-              .
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - name: npm install
-        run: npm ci --workspace ${{ matrix.workspace }}
+        run: npm ci -workspaces
       - name: npm run lint:eslint
-        run: npm run --workspace ${{ matrix.workspace }} lint:eslint
+        run: npm run -workspaces lint:eslint --if-present
