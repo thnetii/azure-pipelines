@@ -24,9 +24,5 @@
     "src/azure-pipelines-vso-tsc"
   ],
   "files": [],
-  "scripts": {},
-  "dependencies": {
-    "@thnetii/azure-pipelines-vso-eslint": "file:src/azure-pipelines-vso-eslint",
-    "@thnetii/azure-pipelines-vso-tsc": "file:src/azure-pipelines-vso-tsc"
-  }
+  "scripts": {}
 }

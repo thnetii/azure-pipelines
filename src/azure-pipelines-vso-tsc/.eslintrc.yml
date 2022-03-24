@@ -1,4 +1,4 @@
 extends:
-  - ../../.eslintrc.yml
-ignorePatterns:
-  - node_modules/**
+  - eslint:recommended
+  - plugin:node/recommended
+  - airbnb-base
