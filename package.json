@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "workspaces": [
-    "src/azure-pipelines-vso-eslint",
-    "src/azure-pipelines-vso-tsc"
+    "src/azure-pipelines-vso-tsc",
+    "src/eslint-formatter-vso"
   ],
   "files": [],
   "scripts": {
@@ -30,15 +30,15 @@
     "lint:eslint": "eslint -c ./.eslintrc.yml . --ext=js,mjs",
     "vso-lint": "npm-run-all --continue-on-error vso-lint:*",
     "vso-lint:tsc": "node src/azure-pipelines-vso-tsc --noEmit -p ./jsconfig.json",
-    "vso-lint:eslint": "node src/azure-pipelines-vso-eslint -c ./.eslintrc.yml . --ext=js,mjs"
+    "vso-lint:eslint": "eslint -c ./.eslintrc.yml -f ./src/eslint-formatter-vso . --ext=js,mjs"
   },
   "devDependencies": {
     "@tsconfig/node16-strictest-esm": "^1.0.0",
-    "typescript": "^4.5.5",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-node": "^11.1.0",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.5.5"
   }
 }

@@ -1,0 +1,32 @@
+{
+  "name": "@thnetii/eslint-formatter-vso",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/azure-pipelines.git",
+    "directory": "src/eslint-formatter-vso"
+  },
+  "author": "TH-NETII Rasch Solutions <fredrik.rasch@gmail.com> (https://thnetii.td.org.uit.no)",
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "license": "MIT",
+  "main": "formatter.js",
+  "files": [],
+  "scripts": {},
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.2.0",
+    "eslint-formatter-stylish": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.4.1"
+  },
+  "peerDependencies": {
+    "eslint": ">=7"
+  }
+}
