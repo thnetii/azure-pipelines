@@ -18,14 +18,7 @@
   "license": "MIT",
   "main": "formatter.js",
   "files": [],
-  "scripts": {
-    "lint": "npm-run-all --continue-on-error lint:*",
-    "lint:tsc": "tsc --noEmit -p ./jsconfig.json",
-    "lint:eslint": "eslint -c ./.eslintrc.yml .",
-    "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
-    "vso:lint:eslint": "node ./azure-pipelines-vso-eslint -c ./.eslintrc.yml .",
-    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc --noEmit -p ./jsconfig.json"
-  },
+  "scripts": {},
   "dependencies": {
     "azure-pipelines-task-lib": "^3.2.0"
   },
