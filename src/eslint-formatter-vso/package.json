@@ -11,6 +11,10 @@
     "name": "Fredrik Høisæther Rasch",
     "email": "fredrik.rasch@gmail.com"
   },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
   "license": "MIT",
   "files": [],
   "scripts": {
@@ -36,11 +40,5 @@
   },
   "peerDependencies": {
     "eslint": ">=7"
-  },
-  "bugs": {
-    "url": "https://github.com/thnetii/azure-pipelines/issues"
-  },
-  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
-  "main": "index.js",
-  "description": ""
+  }
 }
