@@ -16,21 +16,22 @@
     "url": "https://github.com/thnetii/azure-pipelines/issues"
   },
   "license": "MIT",
-  "module": "formatter.mjs",
+  "main": "formatter.js",
   "files": [],
   "scripts": {
     "lint": "npm-run-all --continue-on-error lint:*",
-    "lint:tsc": "tsc -p ./jsconfig.json",
-    "lint:eslint": "eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
+    "lint:tsc": "tsc --noEmit -p ./jsconfig.json",
+    "lint:eslint": "eslint -c ./.eslintrc.yml .",
     "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
-    "vso:lint:eslint": "node ./azure-pipelines-vso-eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
-    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc -p ./jsconfig.json"
+    "vso:lint:eslint": "node ./azure-pipelines-vso-eslint -c ./.eslintrc.yml .",
+    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc --noEmit -p ./jsconfig.json"
   },
   "dependencies": {
     "azure-pipelines-task-lib": "^3.2.0"
   },
   "devDependencies": {
     "@tsconfig/node16-strictest-esm": "^1.0.0",
+    "@types/eslint": "^8.4.1",
     "@types/q": "^1.5.5",
     "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
