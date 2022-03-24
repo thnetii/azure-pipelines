@@ -21,14 +21,7 @@
   "bin": {
     "vso-tsc": "./tsc.mjs"
   },
-  "scripts": {
-    "lint": "npm-run-all --continue-on-error lint:*",
-    "lint:tsc": "tsc --noEmit -p ../../jsconfig.json",
-    "lint:eslint": "eslint -c ../../.eslintrc.yml . --ext=js,mjs,cjs",
-    "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
-    "vso:lint:eslint": "node ../azure-pipelines-vso-eslint -c ../../.eslintrc.yml . --ext=js,mjs,cjs",
-    "vso:lint:tsc": "node . --noEmit -p ../../jsconfig.json"
-  },
+  "scripts": {},
   "dependencies": {
     "azure-pipelines-task-lib": "^3.2.0"
   },

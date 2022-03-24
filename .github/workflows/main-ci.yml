@@ -28,4 +28,4 @@ jobs:
       - name: npm install
         run: npm ci -workspaces
       - name: npm run lint:eslint
-        run: npm run -workspaces lint:eslint --if-present
+        run: npm run lint:eslint
