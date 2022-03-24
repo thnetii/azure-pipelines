@@ -24,9 +24,9 @@
   "scripts": {
     "lint": "npm-run-all --continue-on-error lint:*",
     "lint:tsc": "tsc -p ./jsconfig.json",
-    "lint:eslint": "eslint -c ./.eslintrc.yml .",
+    "lint:eslint": "eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
     "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
-    "vso:lint:eslint": "node ../azure-pipelines-vso-eslint -c ./.eslintrc.yml .",
+    "vso:lint:eslint": "node ../azure-pipelines-vso-eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
     "vso:lint:tsc": "node . -p ./jsconfig.json"
   },
   "dependencies": {

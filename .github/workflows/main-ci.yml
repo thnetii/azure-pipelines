@@ -20,13 +20,11 @@ jobs:
               ./jsconfig.json
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:tsc
-        uses: thnetii/gh-actions/src/gh-actions-tsc@main
-        with:
-          arguments: ${{ matrix.arguments }}
-          working-directory: ${{ matrix.workspace }}
+        run: npm run --workspace ${{ matrix.workspace }} lint:tsc
 
   eslint:
     name: ESLint
@@ -41,10 +39,8 @@ jobs:
               .
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:eslint
-        uses: thnetii/gh-actions/src/gh-actions-eslint@main
-        with:
-          arguments: ${{ matrix.arguments }}
-          working-directory: ${{ matrix.workspace }}
+        run: npm run --workspace ${{ matrix.workspace }} lint:eslint
