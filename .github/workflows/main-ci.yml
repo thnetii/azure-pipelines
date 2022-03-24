@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+      - uses: thnetii/gh-actions/src/add-matcher-npm@add-matcher-npm
       - name: npm install
         run: npm ci -workspaces --include-workspace-root
       - name: npm run lint:tsc
@@ -25,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+      - uses: thnetii/gh-actions/src/add-matcher-npm@add-matcher-npm
       - name: npm install
         run: npm ci -workspaces --include-workspace-root
       - name: npm run lint:eslint
