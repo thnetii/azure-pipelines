@@ -23,11 +23,11 @@
   },
   "scripts": {
     "lint": "npm-run-all --continue-on-error lint:*",
-    "lint:tsc": "tsc --noEmit -p ../jsconfig.json",
-    "lint:eslint": "eslint -c ../.eslintrc.yml . --ext=js,mjs,cjs",
+    "lint:tsc": "tsc --noEmit -p ../../jsconfig.json",
+    "lint:eslint": "eslint -c ../../.eslintrc.yml . --ext=js,mjs,cjs",
     "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
-    "vso:lint:eslint": "node . -c ../.eslintrc.yml . --ext=js,mjs,cjs",
-    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc --noEmit -p ../jsconfig.json"
+    "vso:lint:eslint": "node . -c ../../.eslintrc.yml . --ext=js,mjs,cjs",
+    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc --noEmit -p ../../jsconfig.json"
   },
   "dependencies": {
     "azure-pipelines-task-lib": "^3.2.0"
