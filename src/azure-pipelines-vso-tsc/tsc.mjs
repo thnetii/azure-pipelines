@@ -27,9 +27,9 @@ tscRunner.on('stdline', /** @param {string} line */ (line) => {
   if (!tscOutputMatch) {
     return;
   }
-  const [, file, lineno, column, severity, code, message] = tscOutputMatch;
+  const [, file, lineno, column, severity = '', code, message = ''] = tscOutputMatch;
   const tscCmdProps = {
-    sourcepath: path.relative(sourcesRootDirectory, file),
+    sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
     type: severity,
     linenumber: lineno ? parseInt(lineno, 10) : undefined,
     columnnumber: column ? parseInt(column, 10) : undefined,

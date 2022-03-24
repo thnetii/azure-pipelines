@@ -28,9 +28,9 @@ eslintRunner.on('stdline', /** @param {string} line */ (line) => {
   if (!eslintOutputMatch) {
     return;
   }
-  const [, file, lineno, column, severity, message, code] = eslintOutputMatch;
+  const [, file, lineno, column, severity = '', message = '', code] = eslintOutputMatch;
   const logCmdProps = {
-    sourcepath: path.relative(sourcesRootDirectory, file),
+    sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
     type: severity,
     linenumber: lineno ? parseInt(lineno, 10) : undefined,
     columnnumber: column ? parseInt(column, 10) : undefined,
