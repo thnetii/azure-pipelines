@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import path from 'path';
 import {
-  command, debug, getVariable, setResult, TaskResult
+  command, debug, getVariable, setResult, TaskResult,
 } from 'azure-pipelines-task-lib';
-import { _writeLine } from 'azure-pipelines-task-lib/internal.js';
-import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner.js';
+import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
+
 const argv = process.argv.slice(2);
 
 const sourcesRootDirectory = getVariable('Build.SourcesDirectory')
@@ -12,7 +12,7 @@ const sourcesRootDirectory = getVariable('Build.SourcesDirectory')
 
 const runTracker = {
   warningCount: 0,
-  errorCount: 0
+  errorCount: 0,
 };
 const tscRunner = new ToolRunner('npx');
 tscRunner.arg('tsc');
@@ -22,18 +22,18 @@ tscRunner.arg(argv);
 const tscRegexPattern = '^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$';
 const tscRegexMatcher = new RegExp(tscRegexPattern, 'u');
 
-tscRunner.on('stdline', /** @param {string} line */ line => {
+tscRunner.on('stdline', /** @param {string} line */ (line) => {
   const tscOutputMatch = tscRegexMatcher.exec(line);
   if (!tscOutputMatch) {
     return;
   }
-  const [, file, lineno, column, severity, code, message] = tscOutputMatch;
+  const [, file, lineno, column, severity = '', code, message = ''] = tscOutputMatch;
   const tscCmdProps = {
-    sourcepath: path.relative(sourcesRootDirectory, file),
+    sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
     type: severity,
     linenumber: lineno ? parseInt(lineno, 10) : undefined,
     columnnumber: column ? parseInt(column, 10) : undefined,
-    code: `TS${code}`
+    code: `TS${code}`,
   };
   if (/^warning$/ui.test(severity)) {
     runTracker.warningCount += 1;
@@ -43,7 +43,7 @@ tscRunner.on('stdline', /** @param {string} line */ line => {
   command('task.logissue', tscCmdProps, message);
 });
 
-tscRunner.exec({ ignoreReturnCode: true }).then(exitCode => {
+tscRunner.exec({ ignoreReturnCode: true }).then((exitCode) => {
   let result = TaskResult.Succeeded;
   if (runTracker.warningCount) {
     result = TaskResult.SucceededWithIssues;
