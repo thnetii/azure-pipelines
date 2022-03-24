@@ -21,7 +21,8 @@
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "workspaces": [
     "src/azure-pipelines-vso-eslint",
-    "src/azure-pipelines-vso-tsc"
+    "src/azure-pipelines-vso-tsc",
+    "src/eslint-formatter-vso"
   ],
   "files": [],
   "scripts": {

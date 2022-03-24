@@ -1,0 +1,46 @@
+{
+  "name": "@thnetii/eslint-formatter-vso",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/azure-pipelines.git",
+    "directory": "src/eslint-formatter-vso"
+  },
+  "author": "TH-NETII Rasch Solutions <fredrik.rasch@gmail.com> (https://thnetii.td.org.uit.no)",
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "license": "MIT",
+  "files": [],
+  "scripts": {
+    "lint": "npm-run-all --continue-on-error lint:*",
+    "lint:tsc": "tsc -p ./jsconfig.json",
+    "lint:eslint": "eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
+    "vso:lint": "npm-run-all --continue-on-error vso:lint:*",
+    "vso:lint:eslint": "node ./azure-pipelines-vso-eslint -c ./.eslintrc.yml . --ext=js,mjs,cjs",
+    "vso:lint:tsc": "node ../azure-pipelines-vso-tsc -p ./jsconfig.json"
+  },
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.2.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16-strictest-esm": "^1.0.0",
+    "@types/q": "^1.5.5",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-node": "^11.1.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.5.5"
+  },
+  "peerDependencies": {
+    "eslint": ">=7"
+  },
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "main": "index.js",
+  "description": ""
+}
