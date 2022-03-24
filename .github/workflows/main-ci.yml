@@ -16,7 +16,6 @@ jobs:
         workspace: [src/azure-pipelines-vso-eslint, src/azure-pipelines-vso-tsc]
         include:
           - arguments: |
-              --noEmit
               -p
               ./jsconfig.json
     steps:
@@ -25,10 +24,7 @@ jobs:
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:tsc
-        uses: thnetii/gh-actions/src/gh-actions-tsc@main
-        with:
-          arguments: ${{ matrix.arguments }}
-          working-directory: ${{ matrix.workspace }}
+        run: npm run --workspace ${{ matrix.workspace }} lint:tsc
 
   eslint:
     name: ESLint
