@@ -20,7 +20,7 @@ jobs:
               ./jsconfig.json
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:tsc
@@ -39,7 +39,7 @@ jobs:
               .
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
       - name: npm install
         run: npm ci --workspace ${{ matrix.workspace }}
       - name: npm run lint:eslint
