@@ -16,6 +16,7 @@
     "url": "https://github.com/thnetii/azure-pipelines/issues"
   },
   "license": "MIT",
+  "module": "formatter.mjs",
   "files": [],
   "scripts": {
     "lint": "npm-run-all --continue-on-error lint:*",
