@@ -1,5 +1,6 @@
 {
   "name": "@thnetii/azure-pipelines",
+  "private": true,
   "version": "0.0.0",
   "repository": {
     "type": "git",
@@ -10,15 +11,17 @@
     "email": "fredrik.rasch@gmail.com",
     "url": "https://thnetii.td.org.uit.no"
   },
-  "maintainer": {
-    "name": "Fredrik Høisæther Rasch",
-    "email": "fredrik.rasch@gmail.com"
-  },
-  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Fredrik Høisæther Rasch",
+      "email": "fredrik.rasch@gmail.com"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/thnetii/azure-pipelines/issues"
   },
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "license": "MIT",
   "workspaces": [
     "src/azure-pipelines-vso-tsc",
     "src/eslint-formatter-vso"
