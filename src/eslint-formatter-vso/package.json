@@ -16,6 +16,10 @@
     "url": "https://github.com/thnetii/azure-pipelines/issues"
   },
   "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14"
+  },
   "main": "formatter.js",
   "files": [],
   "scripts": {},

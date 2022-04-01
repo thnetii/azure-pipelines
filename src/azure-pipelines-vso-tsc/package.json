@@ -20,10 +20,14 @@
     "url": "https://github.com/thnetii/azure-pipelines/issues"
   },
   "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14"
+  },
   "files": [],
-  "main": "tsc.mjs",
+  "main": "tsc.js",
   "bin": {
-    "vso-tsc": "./tsc.mjs"
+    "vso-tsc": "./tsc.js"
   },
   "scripts": {},
   "dependencies": {

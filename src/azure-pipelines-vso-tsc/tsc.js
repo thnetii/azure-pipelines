@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import path from 'path';
-import {
+const path = require('path');
+const {
   command, debug, getVariable, setResult, TaskResult,
-} from 'azure-pipelines-task-lib';
-import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
+} = require('azure-pipelines-task-lib');
+const { ToolRunner } = require('azure-pipelines-task-lib/toolrunner');
 
 const argv = process.argv.slice(2);
 
@@ -22,7 +22,7 @@ tscRunner.arg(argv);
 const tscRegexPattern = '^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$';
 const tscRegexMatcher = new RegExp(tscRegexPattern, 'u');
 
-tscRunner.on('stdline', /** @param {string} line */ (line) => {
+tscRunner.on('stdline', /** @param {string} line */(line) => {
   const tscOutputMatch = tscRegexMatcher.exec(line);
   if (!tscOutputMatch) {
     return;
