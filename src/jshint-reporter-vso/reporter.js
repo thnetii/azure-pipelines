@@ -21,16 +21,9 @@ module.exports = {
       const relPath = path.relative(sourcesRootDirectory, file);
       const severity = errorRegex.test(details.id)
         ? IssueType.Error : IssueType.Warning;
-      let message = details.reason;
-      if (details.evidence) {
-        message = `${message}\n\nCode:\n${details.evidence}`;
-      }
-      if (details.scope) {
-        message = `${message}\n\nin JavaScript scope: ${details.scope}`;
-      }
       logIssue(
         severity,
-        message,
+        details.reason,
         relPath,
         details.line,
         details.character,
