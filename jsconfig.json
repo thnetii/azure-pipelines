@@ -1,7 +1,8 @@
 {
   "extends": "@tsconfig/node16-strictest-esm/tsconfig.json",
   "compilerOptions": {
+    "module": "commonjs",
     "moduleResolution": "Node",
-    "noImplicitAny": true
+    "maxNodeModuleJsDepth": 0
   }
 }
