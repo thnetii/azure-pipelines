@@ -24,7 +24,8 @@
   "license": "MIT",
   "workspaces": [
     "src/azure-pipelines-vso-tsc",
-    "src/eslint-formatter-vso"
+    "src/eslint-formatter-vso",
+    "src/jshint-reporter-vso"
   ],
   "files": [],
   "scripts": {

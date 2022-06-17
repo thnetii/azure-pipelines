@@ -1,0 +1,33 @@
+{
+  "name": "@thnetii/jshint-reporter-vso",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thnetii/azure-pipelines.git",
+    "directory": "src/jshint-reporter-vso"
+  },
+  "author": "TH-NETII Rasch Solutions <fredrik.rasch@gmail.com> (https://thnetii.td.org.uit.no)",
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14"
+  },
+  "main": "reporter.js",
+  "files": [],
+  "scripts": {},
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.2.0",
+    "jshint": "^2.13.4"
+  },
+  "devDependencies": {
+    "@types/jshint": "^2.12.1"
+  }
+}
