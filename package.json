@@ -23,6 +23,7 @@
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "license": "MIT",
   "workspaces": [
+    "src/azure-pipelines-vso-npm",
     "src/azure-pipelines-vso-tsc",
     "src/eslint-formatter-vso",
     "src/jshint-reporter-vso"

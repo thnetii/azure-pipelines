@@ -1,0 +1,42 @@
+{
+  "name": "@thnetii/azure-pipelines-vso-npm",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thnetii/azure-pipelines.git",
+    "directory": "src/azure-pipelines-vso-npm"
+  },
+  "author": {
+    "name": "TH-NETII Rasch Solutions",
+    "email": "fredrik.rasch@gmail.com",
+    "url": "https://thnetii.td.org.uit.no"
+  },
+  "maintainer": {
+    "name": "Fredrik Høisæther Rasch",
+    "email": "fredrik.rasch@gmail.com"
+  },
+  "homepage": "https://github.com/thnetii/azure-pipelines#readme",
+  "bugs": {
+    "url": "https://github.com/thnetii/azure-pipelines/issues"
+  },
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [],
+  "main": "vso-npm.js",
+  "bin": {
+    "vso-npm": "./vso-npm.js"
+  },
+  "scripts": {},
+  "dependencies": {
+    "azure-pipelines-task-lib": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/q": "^1.5.5"
+  },
+  "peerDependencies": {
+    "typescript": ">=2.1.0"
+  }
+}
