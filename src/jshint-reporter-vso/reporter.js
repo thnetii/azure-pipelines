@@ -4,7 +4,10 @@ const {
   getVariable, setResult, TaskResult, IssueType,
 } = require('azure-pipelines-task-lib');
 const { logIssue } = require('azure-pipelines-task-lib/task');
-const { reporter: defaultReporter } = require('jshint/src/reporters/default');
+const jshintDefaultReporter = /** @type {JSHintReporterModule} */(
+  // @ts-ignore
+  require('jshint/src/reporters/default')
+);
 
 const errorRegex = /error/iu;
 
@@ -41,29 +44,22 @@ module.exports = {
     if (totalCount.warning) result = TaskResult.SucceededWithIssues;
     if (totalCount.error) result = TaskResult.Failed;
     setResult(result, '');
-    defaultReporter(errors, data, opts);
+    jshintDefaultReporter.reporter(errors, data, opts);
   },
 };
 
 /**
- * @typedef {Object} JSHintErrorDetail
- * @property {'(error)' | string} id usually '(error)'
- * @property {string} code error/warning code
- * @property {string} reason error/warning message
- * @property {string} evidence a piece of code that generated this error
- * @property {number} line
- * @property {number} character
- * @property {'(main)' | string} scope message scope: usally '(main)' unless the code was eval'ed
- */
-
-/**
  * @typedef {Object} JSHintErrorRecord
  * @property {string} file filename
- * @property {JSHintErrorDetail} error
+ * @property {import('jshint').LintError} error
  */
 
 /**
- * @typedef {(errors: JSHintErrorRecord[], data: *, opts: *) => void} JSHintReporter
+ * @typedef {(
+ *  errors: JSHintErrorRecord[],
+ *  data?: import('jshint').LintData,
+ *  opts?: import('jshint').LintOptions
+ * ) => void} JSHintReporter
  */
 
 /**
