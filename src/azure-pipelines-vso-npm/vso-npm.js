@@ -17,10 +17,16 @@ toolRunner.arg(argv);
 /** @see https://github.com/thnetii/gh-actions/blob/f159471f6c222ff68652dca83441d13942100355/src/add-matcher-npm/npm.json */
 const regexErrorPattern = '^npm\\s+ERR!\\s+(.*)$';
 const regexErrorMatcher = new RegExp(regexErrorPattern, 'u');
-const regexWarningPattern = '^npm\\s+WARN\\s+(\\S+)\\s+(.*)$';
+const regexWarningPattern = '^npm\\s+WARN\\s+(\\S+)\\s(.*)$';
 const regexWarningMatcher = new RegExp(regexWarningPattern, 'u');
 
-/** @typedef {(props: Object, message: string) => void} onMatchCallback */
+/**
+ * @typedef {Object} NpmIssueProperties
+ * @property {'Error' | 'Warning'} type
+ * @property {string} [code]
+ */
+
+/** @typedef {(props: NpmIssueProperties, message: string) => void} onMatchCallback */
 
 /**
  * @param {string} line
@@ -42,11 +48,11 @@ const tryGetWarningMatch = (line, onMatch) => {
   const match = regexWarningMatcher.exec(line);
   if (!match) return false;
   const [, code, message] = match;
-  onMatch({ type: 'Warning', code }, message || '');
+  onMatch({ type: 'Warning', code }, `${code} ${message}`);
   return true;
 };
 
-/** @type {{props: Object, message: string}[]} */
+/** @type {{props: NpmIssueProperties, message: string}[]} */
 const logIssueBuffer = [];
 /** @type {onMatchCallback} */
 const pushLogIssue = (props, message) => {
@@ -136,13 +142,44 @@ toolRunner.on('stderr', /** @param {Buffer} data */(data) => {
   }
 });
 
+/** @see https://github.com/dword-design/package-name-regex/blob/658ce7a661512f3e1e5496d6eb1dfd5ec8ae65a1/src/index.js */
+const npmPackageNameRegex = /(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*/;
+const npmPackageNameRegexWithVersionAndColon = new RegExp(
+  `^\\s*${npmPackageNameRegex.source}@\\S+:`,
+  'u',
+);
+
 toolRunner.exec({ ignoreReturnCode: true }).then((exitCode) => {
   if (stderrBuffer) {
     onStdErrLine(stderrBuffer);
   }
   return exitCode;
 }).then((exitCode) => {
-  for (const { props, message } of logIssueBuffer) {
+  const mergedLogIssueBuffer = logIssueBuffer.reduce((acc, curr) => {
+    const prv = acc[acc.length - 1];
+    let merged = false;
+    if (prv) {
+      const { props: { type: prvType, code: prvCode }, message: prvMsg } = prv;
+      const { props: { type, code }, message } = curr;
+      if (
+        prvType === type && prvCode && code && prvCode === code
+        && prvMsg.startsWith(prvCode) && message.startsWith(code)
+      ) {
+        const prvReason = prvMsg.substring(prvCode.length);
+        const reason = message.substring(code.length);
+        if (
+          npmPackageNameRegexWithVersionAndColon.test(prvReason)
+          && !npmPackageNameRegexWithVersionAndColon.test(reason)
+        ) {
+          prv.message += `\n${reason}`;
+          merged = true;
+        }
+      }
+    }
+    if (!merged) { acc.push(curr); }
+    return acc;
+  }, /** @type {typeof logIssueBuffer} */([]));
+  for (const { props, message } of mergedLogIssueBuffer) {
     command('task.logissue', props, message);
   }
   let result = TaskResult.Succeeded;
