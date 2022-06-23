@@ -24,7 +24,7 @@
   "files": [],
   "scripts": {},
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.2.0",
+    "azure-pipelines-task-lib": "^3.3.1",
     "eslint-formatter-stylish": "^8.3.0"
   },
   "devDependencies": {
