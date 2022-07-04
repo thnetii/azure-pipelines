@@ -8,17 +8,28 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  npm:
+    name: Npm packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - name: npm clean-install -workspaces --include-workspace-root
+        uses: thnetii/gh-actions/src/gh-actions-npm@main
+        with:
+          arguments: |
+            clean-install
+            -workspaces
+            --include-workspace-root
+
   tsc:
     name: TypeScript check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - uses: thnetii/gh-actions/src/add-matcher-npm@main
-      - name: npm install
-        run: npm ci -workspaces --include-workspace-root
-      - name: npm run lint:tsc
-        run: npm run lint:tsc
+      - run: npm ci -workspaces --include-workspace-root
+      - run: npm run lint:tsc
 
   eslint:
     name: ESLint
@@ -26,8 +37,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - uses: thnetii/gh-actions/src/add-matcher-npm@main
-      - name: npm install
-        run: npm ci -workspaces --include-workspace-root
-      - name: npm run lint:eslint
-        run: npm run lint:eslint
+      - run: npm ci -workspaces --include-workspace-root
+      - run: npm run lint:eslint
