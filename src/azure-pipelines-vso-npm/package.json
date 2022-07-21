@@ -31,7 +31,8 @@
   },
   "scripts": {},
   "dependencies": {
-    "azure-pipelines-task-lib": "^3.3.1"
+    "azure-pipelines-task-lib": "^3.3.1",
+    "uuid": "^7"
   },
   "devDependencies": {
     "@types/q": "^1.5.5"
