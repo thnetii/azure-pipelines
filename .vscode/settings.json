@@ -1,4 +1,7 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "eslint.enable": true,
+  "eslint.lintTask.enable": true,
+  "prettier.enable": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }
