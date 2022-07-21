@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 const os = require('os');
 const {
-  command, debug, setResult, TaskResult,
+  command,
+  debug,
+  setResult,
+  TaskResult,
 } = require('azure-pipelines-task-lib');
 const { ToolRunner } = require('azure-pipelines-task-lib/toolrunner');
 
@@ -101,10 +104,10 @@ const getIndexOfAnyInfo = (str, search) => {
    * @param {IndexOfAnyFoundMatchInfo} r2
    */
   const getBetterResult = (r1, r2) => {
-    if (!r1.found) { return r2; }
-    if (r1.idx < r2.idx) { return r1; }
-    if (r1.idx > r2.idx) { return r2; }
-    if (r1.match.length > r2.match.length) { return r1; }
+    if (!r1.found) return r2;
+    if (r1.idx < r2.idx) return r1;
+    if (r1.idx > r2.idx) return r2;
+    if (r1.match.length > r2.match.length) return r1;
     return r2;
   };
 
@@ -122,73 +125,92 @@ const getIndexOfAnyInfo = (str, search) => {
 };
 
 let stderrBuffer = '';
-toolRunner.on('stderr', /** @param {Buffer} data */(data) => {
-  /** @see https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader.readline?view=net-6.0#remarks */
-  const eol = ['\r', '\n', '\r\n', os.EOL];
-  try {
-    let s = stderrBuffer + data.toString();
-    let idxInfo = getIndexOfAnyInfo(s, eol);
-    while (idxInfo.found) {
-      const line = s.substring(0, idxInfo.idx);
-      onStdErrLine(line);
-      // the rest of the string ...
-      s = s.substring(idxInfo.idx + idxInfo.match.length);
-      idxInfo = getIndexOfAnyInfo(s, eol);
+toolRunner.on(
+  'stderr',
+  /** @param {Buffer} data */ (data) => {
+    /** @see https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader.readline?view=net-6.0#remarks */
+    const eol = ['\r', '\n', '\r\n', os.EOL];
+    try {
+      let s = stderrBuffer + data.toString();
+      let idxInfo = getIndexOfAnyInfo(s, eol);
+      while (idxInfo.found) {
+        const line = s.substring(0, idxInfo.idx);
+        onStdErrLine(line);
+        // the rest of the string ...
+        s = s.substring(idxInfo.idx + idxInfo.match.length);
+        idxInfo = getIndexOfAnyInfo(s, eol);
+      }
+      stderrBuffer = s;
+    } catch (err) {
+      // streaming lines to console is best effort.  Don't fail a build.
+      debug('error processing line');
     }
-    stderrBuffer = s;
-  } catch (err) {
-    // streaming lines to console is best effort.  Don't fail a build.
-    debug('error processing line');
   }
-});
-
-/** @see https://github.com/dword-design/package-name-regex/blob/658ce7a661512f3e1e5496d6eb1dfd5ec8ae65a1/src/index.js */
-const npmPackageNameRegex = /(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*/;
-const npmPackageNameRegexWithVersionAndColon = new RegExp(
-  `^\\s*${npmPackageNameRegex.source}@\\S+:`,
-  'u',
 );
 
-toolRunner.exec({ ignoreReturnCode: true }).then((exitCode) => {
-  if (stderrBuffer) {
-    onStdErrLine(stderrBuffer);
-  }
-  return exitCode;
-}).then((exitCode) => {
-  const mergedLogIssueBuffer = logIssueBuffer.reduce((acc, curr) => {
-    const prv = acc[acc.length - 1];
-    let merged = false;
-    if (prv) {
-      const { props: { type: prvType, code: prvCode }, message: prvMsg } = prv;
-      const { props: { type, code }, message } = curr;
-      if (
-        prvType === type && prvCode && code && prvCode === code
-        && prvMsg.startsWith(prvCode) && message.startsWith(code)
-      ) {
-        const prvReason = prvMsg.substring(prvCode.length);
-        const reason = message.substring(code.length);
+/** @see https://github.com/dword-design/package-name-regex/blob/658ce7a661512f3e1e5496d6eb1dfd5ec8ae65a1/src/index.js */
+const npmPackageNameRegex =
+  /(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*/;
+const npmPackageNameRegexWithVersionAndColon = new RegExp(
+  `^\\s*${npmPackageNameRegex.source}@\\S+:`,
+  'u'
+);
+
+toolRunner
+  .exec({ ignoreReturnCode: true })
+  .then((exitCode) => {
+    if (stderrBuffer) {
+      onStdErrLine(stderrBuffer);
+    }
+    return exitCode;
+  })
+  .then((exitCode) => {
+    const mergedLogIssueBuffer = logIssueBuffer.reduce((acc, curr) => {
+      const prv = acc[acc.length - 1];
+      let merged = false;
+      if (prv) {
+        const {
+          props: { type: prvType, code: prvCode },
+          message: prvMsg,
+        } = prv;
+        const {
+          props: { type, code },
+          message,
+        } = curr;
         if (
-          npmPackageNameRegexWithVersionAndColon.test(prvReason)
-          && !npmPackageNameRegexWithVersionAndColon.test(reason)
+          prvType === type &&
+          prvCode &&
+          code &&
+          prvCode === code &&
+          prvMsg.startsWith(prvCode) &&
+          message.startsWith(code)
         ) {
-          prv.message += `\n${reason}`;
-          merged = true;
+          const prvReason = prvMsg.substring(prvCode.length);
+          const reason = message.substring(code.length);
+          if (
+            npmPackageNameRegexWithVersionAndColon.test(prvReason) &&
+            !npmPackageNameRegexWithVersionAndColon.test(reason)
+          ) {
+            prv.message += `\n${reason}`;
+            merged = true;
+          }
         }
       }
+      if (!merged) {
+        acc.push(curr);
+      }
+      return acc;
+    }, /** @type {typeof logIssueBuffer} */ ([]));
+    for (const { props, message } of mergedLogIssueBuffer) {
+      command('task.logissue', props, message);
     }
-    if (!merged) { acc.push(curr); }
-    return acc;
-  }, /** @type {typeof logIssueBuffer} */([]));
-  for (const { props, message } of mergedLogIssueBuffer) {
-    command('task.logissue', props, message);
-  }
-  let result = TaskResult.Succeeded;
-  if (runTracker.warningCount) {
-    result = TaskResult.SucceededWithIssues;
-  }
-  if (runTracker.errorCount) {
-    result = TaskResult.Failed;
-  }
-  setResult(result, '');
-  debug(`npm exited with code '${exitCode}'.`);
-});
+    let result = TaskResult.Succeeded;
+    if (runTracker.warningCount) {
+      result = TaskResult.SucceededWithIssues;
+    }
+    if (runTracker.errorCount) {
+      result = TaskResult.Failed;
+    }
+    setResult(result, '');
+    debug(`npm exited with code '${exitCode}'.`);
+  });
