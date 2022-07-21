@@ -52,9 +52,7 @@
       "type": "npm",
       "script": "lint:eslint",
       "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": [
-        "$eslint-stylish"
-      ],
+      "problemMatcher": ["$eslint-stylish"],
       "label": "npm lint:eslint: azure-pipelines-vso-eslint",
       "detail": "ESLint"
     },
@@ -62,9 +60,7 @@
       "type": "npm",
       "script": "lint:eslint",
       "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": [
-        "$eslint-stylish"
-      ],
+      "problemMatcher": ["$eslint-stylish"],
       "label": "npm lint:eslint: azure-pipelines-vso-tsc",
       "detail": "ESLint"
     },

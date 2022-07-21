@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 const path = require('path');
 const {
-  command, debug, getVariable, setResult, TaskResult,
+  command,
+  debug,
+  getVariable,
+  setResult,
+  TaskResult,
 } = require('azure-pipelines-task-lib');
 const { ToolRunner } = require('azure-pipelines-task-lib/toolrunner');
 
 const argv = process.argv.slice(2);
 
-const sourcesRootDirectory = getVariable('Build.SourcesDirectory')
-  || process.env['Build.SourcesDirectory'] || path.resolve();
+const sourcesRootDirectory =
+  getVariable('Build.SourcesDirectory') ||
+  process.env['Build.SourcesDirectory'] ||
+  path.resolve();
 
 const runTracker = {
   warningCount: 0,
@@ -19,29 +25,34 @@ tscRunner.arg('tsc');
 tscRunner.arg(argv);
 
 /** @see https://github.com/microsoft/vscode/blob/7db1a2b88f7557e0a43fec75b6ba7e50b3e9f77e/extensions/typescript-language-features/package.json#L1296 */
-const tscRegexPattern = '^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$';
+const tscRegexPattern =
+  '^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$';
 const tscRegexMatcher = new RegExp(tscRegexPattern, 'u');
 
-tscRunner.on('stdline', /** @param {string} line */(line) => {
-  const tscOutputMatch = tscRegexMatcher.exec(line);
-  if (!tscOutputMatch) {
-    return;
+tscRunner.on(
+  'stdline',
+  /** @param {string} line */ (line) => {
+    const tscOutputMatch = tscRegexMatcher.exec(line);
+    if (!tscOutputMatch) {
+      return;
+    }
+    const [, file, lineno, column, severity = '', code, message = ''] =
+      tscOutputMatch;
+    const tscCmdProps = {
+      sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
+      type: severity,
+      linenumber: lineno ? parseInt(lineno, 10) : undefined,
+      columnnumber: column ? parseInt(column, 10) : undefined,
+      code: `TS${code}`,
+    };
+    if (/^warning$/iu.test(severity)) {
+      runTracker.warningCount += 1;
+    } else if (/^error$/iu.test(severity)) {
+      runTracker.errorCount += 1;
+    }
+    command('task.logissue', tscCmdProps, message);
   }
-  const [, file, lineno, column, severity = '', code, message = ''] = tscOutputMatch;
-  const tscCmdProps = {
-    sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
-    type: severity,
-    linenumber: lineno ? parseInt(lineno, 10) : undefined,
-    columnnumber: column ? parseInt(column, 10) : undefined,
-    code: `TS${code}`,
-  };
-  if (/^warning$/ui.test(severity)) {
-    runTracker.warningCount += 1;
-  } else if (/^error$/ui.test(severity)) {
-    runTracker.errorCount += 1;
-  }
-  command('task.logissue', tscCmdProps, message);
-});
+);
 
 tscRunner.exec({ ignoreReturnCode: true }).then((exitCode) => {
   let result = TaskResult.Succeeded;
