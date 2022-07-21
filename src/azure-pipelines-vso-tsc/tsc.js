@@ -28,29 +28,57 @@ tscRunner.arg(argv);
 const tscRegexPattern =
   '^([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$';
 const tscRegexMatcher = new RegExp(tscRegexPattern, 'u');
+const tscShortRegexMatcher = /^(error|warning|info)\s+TS(\d+)\s*:\s*(.*)$/u;
+
+/**
+ * @param {string} line
+ */
+function getTscFullRegexInfo(line) {
+  const tscOutputMatch = tscRegexMatcher.exec(line);
+  if (!tscOutputMatch) return false;
+  const [, file, lineno, column, severity = '', code, message = ''] =
+    tscOutputMatch;
+  const tscCmdProps = {
+    sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
+    type: severity,
+    linenumber: lineno ? parseInt(lineno, 10) : undefined,
+    columnnumber: column ? parseInt(column, 10) : undefined,
+    code: `TS${code}`,
+  };
+  return {
+    message,
+    props: tscCmdProps,
+  };
+}
+
+/**
+ * @param {string} line
+ */
+function getTscShortRegexInfo(line) {
+  const tscOutputMatch = tscShortRegexMatcher.exec(line);
+  if (!tscOutputMatch) return false;
+  const [, severity = '', code, message = ''] = tscOutputMatch;
+  const tscCmdProps = {
+    type: severity,
+    code: `TS${code}`,
+  };
+  return {
+    message,
+    props: tscCmdProps,
+  };
+}
 
 tscRunner.on(
   'stdline',
   /** @param {string} line */ (line) => {
-    const tscOutputMatch = tscRegexMatcher.exec(line);
-    if (!tscOutputMatch) {
-      return;
-    }
-    const [, file, lineno, column, severity = '', code, message = ''] =
-      tscOutputMatch;
-    const tscCmdProps = {
-      sourcepath: file ? path.relative(sourcesRootDirectory, file) : file,
-      type: severity,
-      linenumber: lineno ? parseInt(lineno, 10) : undefined,
-      columnnumber: column ? parseInt(column, 10) : undefined,
-      code: `TS${code}`,
-    };
-    if (/^warning$/iu.test(severity)) {
+    const info = getTscFullRegexInfo(line) || getTscShortRegexInfo(line);
+    if (!info) return;
+    if (/^warning$/iu.test(info.props.type)) {
       runTracker.warningCount += 1;
-    } else if (/^error$/iu.test(severity)) {
+    } else if (/^error$/iu.test(info.props.type)) {
       runTracker.errorCount += 1;
     }
-    command('task.logissue', tscCmdProps, message);
+    command('task.logissue', info.props, info.message);
   }
 );
 
