@@ -14,14 +14,14 @@ const argv = process.argv.slice(2);
 const sourcesRootDirectory =
   getVariable('Build.SourcesDirectory') ||
   process.env['Build.SourcesDirectory'] ||
-  path.resolve();
+  process.cwd();
 
 const runTracker = {
   warningCount: 0,
   errorCount: 0,
 };
-const tscRunner = new ToolRunner('npx');
-tscRunner.arg('tsc');
+const tscRunner = new ToolRunner('npm');
+tscRunner.arg(['exec', '--', 'tsc']);
 tscRunner.arg(argv);
 
 /** @see https://github.com/microsoft/vscode/blob/7db1a2b88f7557e0a43fec75b6ba7e50b3e9f77e/extensions/typescript-language-features/package.json#L1296 */
