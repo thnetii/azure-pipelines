@@ -22,6 +22,22 @@
         "${workspaceFolder}/src/eslint-formatter-vso",
         "."
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "NPM for Azure Pipelines",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**",
+        "${workspaceFolder}/src/*/node_modules/**"
+      ],
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/src/azure-pipelines-vso-npm/vso-npm.js",
+      "args": [
+        "clean-install",
+      ],
+      "outputCapture": "std"
     }
   ]
 }
