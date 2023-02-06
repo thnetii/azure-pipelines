@@ -1,172 +1,104 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "install",
+      "type": "shell",
+      "label": "ESLint",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "--format=compact",
+        "."
+      ],
+      "detail": "eslint --format=compact .",
+      "problemMatcher": ["$eslint-compact"],
+      "presentation": {
+        "echo": true,
+        "panel": "dedicated",
+        "revealProblems": "onProblem",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "ESLint with fixers",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "--format=compact",
+        "--fix",
+        "."
+      ],
+      "detail": "eslint --format=compact --fix .",
+      "problemMatcher": ["$eslint-compact"],
+      "presentation": {
+        "echo": true,
+        "panel": "dedicated",
+        "revealProblems": "onProblem",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "TypeScript type checker",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "./jsconfig.json"
+      ],
+      "detail": "tsc --noEmit -p ./jsconfig",
+      "problemMatcher": ["$tsc"],
+      "presentation": {
+        "echo": true,
+        "panel": "dedicated",
+        "revealProblems": "onProblem",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "Prettier check",
+      "command": [
+        "node",
+        "node_modules/prettier/bin-prettier.js",
+        "--check",
+        "."
+      ],
+      "detail": "prettier --check .",
       "problemMatcher": [],
-      "label": "npm install",
-      "detail": "Install package dependencies"
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
-
-    // lint
     {
-      "type": "npm",
-      "script": "lint",
-      "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
-          ]
-        },
-        "$eslint-stylish"
+      "type": "shell",
+      "label": "Prettier write changes",
+      "command": [
+        "node",
+        "node_modules/prettier/bin-prettier.js",
+        "--write",
+        "."
       ],
-      "label": "npm lint: azure-pipelines-vso-eslint",
-      "detail": "Typscript & ESLint"
-    },
-    {
-      "type": "npm",
-      "script": "lint",
-      "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
-          ]
-        },
-        "$eslint-stylish"
-      ],
-      "label": "npm lint: azure-pipelines-vso-tsc",
-      "detail": "Typscript & ESLint"
-    },
-
-    // lint:eslint
-    {
-      "type": "npm",
-      "script": "lint:eslint",
-      "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": ["$eslint-stylish"],
-      "label": "npm lint:eslint: azure-pipelines-vso-eslint",
-      "detail": "ESLint"
-    },
-    {
-      "type": "npm",
-      "script": "lint:eslint",
-      "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": ["$eslint-stylish"],
-      "label": "npm lint:eslint: azure-pipelines-vso-tsc",
-      "detail": "ESLint"
-    },
-
-    // lint:tsc
-    {
-      "type": "npm",
-      "script": "lint:tsc",
-      "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
-          ]
-        }
-      ],
-      "label": "npm lint:tsc: azure-pipelines-vso-eslint",
-      "detail": "Typscript"
-    },
-    {
-      "type": "npm",
-      "script": "lint:tsc",
-      "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
-          ]
-        }
-      ],
-      "label": "npm lint:tsc: azure-pipelines-vso-tsc",
-      "detail": "Typscript"
-    },
-
-    // lint: vso-tsc
-    {
-      "type": "npm",
-      "script": "lint:vso-tsc",
-      "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
-          ]
-        }
-      ],
-      "label": "npm lint:vso-tsc: azure-pipelines-vso-eslint",
-      "detail": "Typscript"
-    },
-    {
-      "type": "npm",
-      "script": "lint:vso-tsc",
-      "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
-          ]
-        }
-      ],
-      "label": "npm lint:vso-tsc: azure-pipelines-vso-tsc",
-      "detail": "Typscript"
-    },
-
-    // lint:vso-eslint
-    {
-      "type": "npm",
-      "script": "lint:vso-eslint",
-      "path": "src/azure-pipelines-vso-eslint/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-eslint"
-          ]
-        },
-        "$eslint-stylish"
-      ],
-      "label": "npm lint:vso-eslint: azure-pipelines-vso-eslint",
-      "detail": "Typscript & ESLint"
-    },
-    {
-      "type": "npm",
-      "script": "lint:vso-eslint",
-      "path": "src/azure-pipelines-vso-tsc/",
-      "problemMatcher": [
-        {
-          "base": "$tsc",
-          "fileLocation": [
-            "relative",
-            "${workspaceFolder}/src/azure-pipelines-vso-tsc"
-          ]
-        },
-        "$eslint-stylish"
-      ],
-      "label": "npm lint:vso-eslint: azure-pipelines-vso-tsc",
-      "detail": "Typscript & ESLint"
+      "detail": "prettier --write .",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": true,
+        "clear": true
+      }
     }
   ]
 }

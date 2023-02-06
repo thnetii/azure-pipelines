@@ -34,9 +34,7 @@
       ],
       "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/src/azure-pipelines-vso-npm/vso-npm.js",
-      "args": [
-        "clean-install",
-      ],
+      "args": ["clean-install"],
       "outputCapture": "std"
     }
   ]
