@@ -1,5 +1,5 @@
 {
-  "name": "@thnetii/azure-pipelines",
+  "name": "@thnetii/azure-pipelines-workspace-root",
   "private": true,
   "version": "0.0.0",
   "repository": {
@@ -23,10 +23,8 @@
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "license": "MIT",
   "workspaces": [
-    "src/azure-pipelines-vso-npm",
-    "src/azure-pipelines-vso-tsc",
-    "src/eslint-formatter-vso",
-    "src/jshint-reporter-vso"
+    ".submodules/GitHub/thnetii/eslint-config/src/eslint-config-node-base",
+    "src/*"
   ],
   "files": [],
   "scripts": {
@@ -40,7 +38,7 @@
     "vso-lint:eslint": "eslint -c ./.eslintrc.yml -f ./src/eslint-formatter-vso ."
   },
   "devDependencies": {
-    "@thnetii/eslint-config-node-base": "https://gitpkg.now.sh/thnetii/eslint-config/src/eslint-config-node-base?main",
+    "@thnetii/eslint-config-node-base": "*",
     "@tsconfig/node16-strictest-esm": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^4.7.4"
