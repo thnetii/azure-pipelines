@@ -27,7 +27,7 @@ const regexWarningMatcher = new RegExp(regexWarningPattern, 'u');
 /**
  * @typedef {Object} NpmIssueProperties
  * @property {'Error' | 'Warning'} type
- * @property {string} [code]
+ * @property {string | undefined} [code]
  */
 
 /** @typedef {(props: NpmIssueProperties, message: string) => void} onMatchCallback */
