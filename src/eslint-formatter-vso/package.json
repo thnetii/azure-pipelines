@@ -28,7 +28,7 @@
     "eslint-formatter-stylish": "^8.3.0"
   },
   "devDependencies": {
-    "@types/eslint": "^8.37.0"
+    "@types/eslint": "^8.40.0"
   },
   "peerDependencies": {
     "eslint": ">=7"
