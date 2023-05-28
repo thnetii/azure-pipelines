@@ -23,7 +23,6 @@
   "homepage": "https://github.com/thnetii/azure-pipelines#readme",
   "license": "MIT",
   "workspaces": [
-    ".submodules/GitHub/thnetii/eslint-config/src/eslint-config-node-base",
     "src/*"
   ],
   "files": [],
@@ -38,7 +37,7 @@
     "vso-lint:eslint": "eslint -c ./.eslintrc.yml -f ./src/eslint-formatter-vso ."
   },
   "devDependencies": {
-    "@thnetii/eslint-config-node-base": "*",
+    "@thnetii/eslint-config-node-base": "file:.submodules/GitHub/thnetii/eslint-config/src/eslint-config-node-base",
     "@tsconfig/node16": "^1",
     "@tsconfig/strictest": "^2",
     "npm-run-all": "^4.1.5",
