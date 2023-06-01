@@ -22,7 +22,7 @@
   "license": "MIT",
   "type": "commonjs",
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "files": [],
   "main": "tsc.js",

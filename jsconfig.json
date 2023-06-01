@@ -1,12 +1,6 @@
 {
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
-    "@tsconfig/node16/tsconfig.json"
-  ],
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "Node",
-    "maxNodeModuleJsDepth": 0,
-    "ignoreDeprecations": "5.0"
-  }
+    "@tsconfig/node18/tsconfig.json"
+  ]
 }
