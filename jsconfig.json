@@ -2,5 +2,8 @@
   "extends": [
     "@tsconfig/strictest/tsconfig.json",
     "@tsconfig/node18/tsconfig.json"
-  ]
+  ],
+  "compilerOptions": {
+    "maxNodeModuleJsDepth": 0
+  }
 }
