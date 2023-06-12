@@ -24,13 +24,10 @@
   "files": [],
   "scripts": {},
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.3.1",
-    "eslint-formatter-stylish": "^8.3.0"
+    "azure-pipelines-task-lib": "^4.3",
+    "eslint-formatter-stylish": "^8"
   },
   "devDependencies": {
-    "@types/eslint": "^8.37.0"
-  },
-  "peerDependencies": {
-    "eslint": ">=7"
+    "@types/eslint": "^8"
   }
 }
