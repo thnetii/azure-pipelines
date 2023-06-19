@@ -24,7 +24,7 @@
   "files": [],
   "scripts": {},
   "dependencies": {
-    "azure-pipelines-task-lib": "^4.3",
+    "azure-pipelines-task-lib": "^4.4",
     "jshint": "^2.12"
   },
   "devDependencies": {
